@@ -34,8 +34,6 @@ public class TestSpatioTempioralSetSolver {
 		GeometricConstraintSolver groundSolver2 = (GeometricConstraintSolver)solver.getConstraintSolvers()[1];
 		
 		//Vars representing robots and what panels (if any) they see
-		//TODO: Need to set the "default" polygon (which represents the full space perhaps) when a variable
-		//of type polygon is created.  This should be done in the geometric solver directly I guess.
 		int numRobots = 20;
 		Variable[] robots = new Variable[numRobots];
 		for (int i = 0; i < numRobots; i++) robots[i] = solver.createVariable("Robot"+i+" sees");
@@ -66,9 +64,9 @@ public class TestSpatioTempioralSetSolver {
 		ConstraintNetwork.draw(groundSolver1.getConstraintNetwork(),"Activities");
 		
 		//TODO: Will not work because domains of polygons are not instantiated
-		//ConstraintNetwork.draw(groundSolver2.getConstraintNetwork(),"Polygons");
+		ConstraintNetwork.draw(groundSolver2.getConstraintNetwork(),"Polygons");
 		
-		PolygonFrame pf = new PolygonFrame("Polygon Constraint Network", groundSolver2.getConstraintNetwork());
+		PolygonFrame pf = new PolygonFrame("Polygon Constraint Network", groundSolver2.getConstraintNetwork(), 0.1f);
 		
 		try { Thread.sleep(1000); }
 		catch (InterruptedException e) { e.printStackTrace(); }
