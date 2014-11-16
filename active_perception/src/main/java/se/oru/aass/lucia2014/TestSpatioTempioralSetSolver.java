@@ -10,9 +10,11 @@ import org.metacsp.framework.Variable;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.symbols.SymbolicValueConstraint;
 import org.metacsp.multi.symbols.SymbolicValueConstraint.Type;
+import org.metacsp.multi.symbols.SymbolicVariableConstraintSolver;
 import org.metacsp.spatial.geometry.GeometricConstraintSolver;
 import org.metacsp.utility.UI.PolygonFrame;
 
+import se.oru.aass.lucia2014.multi.spaceTimeSets.SpatioTemporalSet;
 import se.oru.aass.lucia2014.multi.spaceTimeSets.SpatioTemporalSetNetworkSolver;
 
 
@@ -32,13 +34,14 @@ public class TestSpatioTempioralSetSolver {
 		symbols[numPanels] = "None";
 		
 		SpatioTemporalSetNetworkSolver solver = new SpatioTemporalSetNetworkSolver(0,100000,500,symbols);
-		ActivityNetworkSolver groundSolver1 = (ActivityNetworkSolver)solver.getConstraintSolvers()[0];
-		GeometricConstraintSolver groundSolver2 = (GeometricConstraintSolver)solver.getConstraintSolvers()[1];
+		ActivityNetworkSolver groundSolver1 = solver.getActivitySolver();
+		GeometricConstraintSolver groundSolver2 = solver.getGeometricSolver();
+		SymbolicVariableConstraintSolver groundSolver3 = solver.getSetSolver();
 		
 		//Vars representing robots and what panels (if any) they see
 		int numRobots = 20;
 		Variable[] robots = new Variable[numRobots];
-		for (int i = 0; i < numRobots; i++) robots[i] = solver.createVariable("Robot"+i+" sees");
+		for (int i = 0; i < numRobots; i++) robots[i] = solver.createVariable("state of Robot"+i);
 		
 		//Randomly choose robots (as many as there are panels)
 		Random rand = new Random(1234431);
@@ -65,9 +68,12 @@ public class TestSpatioTempioralSetSolver {
 		
 		ConstraintNetwork.draw(groundSolver1.getConstraintNetwork(),"Activities");
 		
-		//TODO: Will not work because domains of polygons are not instantiated
 		ConstraintNetwork.draw(groundSolver2.getConstraintNetwork(),"Polygons");
+
+		ConstraintNetwork.draw(groundSolver3.getConstraintNetwork(),"Sets");
 		
+//		System.out.println("VAR0: " + ((SpatioTemporalSet)robots[0]).getSet().getDomain());
+
 		PolygonFrame pf = new PolygonFrame("Polygon Constraint Network", groundSolver2.getConstraintNetwork(), 0.1f);
 		
 		try { Thread.sleep(1000); }
@@ -75,7 +81,8 @@ public class TestSpatioTempioralSetSolver {
 
 		System.out.println("Added constraints? " + solver.addConstraints(cons.toArray(new Constraint[cons.size()])));
 		System.out.println("Done.");
-		
+
+		System.out.println("VAR0: " + ((SpatioTemporalSet)robots[0]).getSet().getDomain());
 	}
 
 
