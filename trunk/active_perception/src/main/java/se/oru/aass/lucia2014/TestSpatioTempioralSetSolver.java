@@ -74,7 +74,7 @@ public class TestSpatioTempioralSetSolver {
 		
 //		System.out.println("VAR0: " + ((SpatioTemporalSet)robots[0]).getSet().getDomain());
 
-		PolygonFrame pf = new PolygonFrame("Polygon Constraint Network", groundSolver2.getConstraintNetwork(), 0.1f);
+		PolygonFrame pf = new PolygonFrame("Polygon Constraint Network", groundSolver2.getConstraintNetwork());
 		
 		try { Thread.sleep(1000); }
 		catch (InterruptedException e) { e.printStackTrace(); }

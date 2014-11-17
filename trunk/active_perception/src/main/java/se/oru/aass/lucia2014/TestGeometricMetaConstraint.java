@@ -1,5 +1,6 @@
 package se.oru.aass.lucia2014;
 
+import java.util.Random;
 import java.util.Vector;
 
 import org.metacsp.framework.Constraint;
@@ -23,52 +24,16 @@ import se.oru.aass.lucia2014.meta.spaceTimeSets.LuciaMetaConstraintSolver;
 import se.oru.aass.lucia2014.meta.spaceTimeSets.SimpleMoveBasePlanner;
 import se.oru.aass.lucia2014.multi.spaceTimeSets.SpatioTemporalSet;
 import se.oru.aass.lucia2014.multi.spaceTimeSets.SpatioTemporalSetNetworkSolver;
-
+import se.oru.aass.lucia2014.util.Panel;
+import se.oru.aass.lucia2014.util.Robot;
 
 public class TestGeometricMetaConstraint {
-	
-	private static void setupPanels(String[] panels, GeometricConstraintSolver geometricSolver) {
 		
-		//Make 2 polygons for each panel
-		for (int i = 0; i < panels.length; i++) {
-			Variable[] geoms = geometricSolver.createVariables(2,"Viewpoints " + panels[i]);
-			Vector<Vec2> vecs1 = new Vector<Vec2>();
-			vecs1.add(new Vec2(-10+(10*i),-10));
-			vecs1.add(new Vec2(-7+(10*i),-3));
-			vecs1.add(new Vec2(-1+(10*i),-1));
-			vecs1.add(new Vec2(0+(10*i),-10));
-			((Polygon)geoms[0]).setDomain(vecs1.toArray(new Vec2[vecs1.size()]));
-			((Polygon)geoms[0]).setMovable(false);
-			
-			Vector<Vec2> vecs2 = new Vector<Vec2>();
-			vecs2.add(new Vec2(-10+(10*i),10));
-			vecs2.add(new Vec2(-7+(10*i),3));
-			vecs2.add(new Vec2(1+(10*i),1));
-			vecs2.add(new Vec2(0+(10*i),10));
-			((Polygon)geoms[1]).setDomain(vecs2.toArray(new Vec2[vecs2.size()]));
-			((Polygon)geoms[1]).setMovable(false);
-		}
-		
-	}
-	
-	private static void setRobotPositions(Variable[] robots) {
-		for (Variable v : robots) {
-			Polygon robot = ((SpatioTemporalSet)v).getPolygon();
-			Vector<Vec2> vecs = new Vector<Vec2>();
-			vecs.add(new Vec2(0,0));
-			vecs.add(new Vec2(4,0));
-			vecs.add(new Vec2(4,4));
-			vecs.add(new Vec2(0,4));
-			robot.setDomain(vecs.toArray(new Vec2[vecs.size()]));
-			robot.setMovable(true);
-		}
-	}
-	
 	public static void main(String[] args) {
 		
 		//MetaCSPLogging.setLevel(Level.FINE);
 		//Symbols represent panels seen by robots
-		int numPanels = 1;
+		int numPanels = 4;
 		String[] panels = new String[numPanels];
 		String[] symbols = new String[numPanels+1];
 		for (int i = 0; i < numPanels; i++) {
@@ -84,16 +49,20 @@ public class TestGeometricMetaConstraint {
 		GeometricConstraintSolver geometricSolver = spatioTemporalSetSolver.getGeometricSolver();
 		SymbolicVariableConstraintSolver setSolver = spatioTemporalSetSolver.getSetSolver();
 		
-		setupPanels(panels, geometricSolver);
+		Panel p1 = new Panel(panels[0], new Vec2(7.0f,-9.0f), new Vec2(9.0f,-7.0f), geometricSolver);
+		Panel p2 = new Panel(panels[1], new Vec2(-7.0f,-9.0f), new Vec2(-9.0f,-7.0f), geometricSolver);
+		Panel p3 = new Panel(panels[2], new Vec2(-9.0f,7.0f), new Vec2(-7.0f,9.0f), geometricSolver);
+		Panel p4 = new Panel(panels[3], new Vec2(7.0f,9.0f), new Vec2(9.0f,7.0f), geometricSolver);
 		
 		//Vars representing robots and what panels (if any) they see
-		Vector<Constraint> initialCondition = new Vector<Constraint>();
-		int numRobots = 1;
+		Vector<Constraint> initialCondition = new Vector<Constraint>();		
+		int numRobots = 5;
 		String[] robotTimelines = new String[numRobots];
 		Variable[] robots = new Variable[numRobots];
 		for (int i = 0; i < numRobots; i++) {
 			robotTimelines[i] = "State of Robot"+i;
-			robots[i] = spatioTemporalSetSolver.createVariable(robotTimelines[i]);
+			Robot robot = new Robot(robotTimelines[i], new Vec2(0.0f,0.0f), 0.5f, 0.0f, spatioTemporalSetSolver);
+			robots[i] = robot.getspatioTemporalSet();
 			SymbolicValueConstraint seesNothing = new SymbolicValueConstraint(SymbolicValueConstraint.Type.VALUEEQUALS);
 			robots[i].setMarking(LuciaMetaConstraintSolver.Markings.SUPPORTED);
 			seesNothing.setValue("None");
@@ -106,8 +75,6 @@ public class TestGeometricMetaConstraint {
 			dur.setTo(robots[i]);
 			initialCondition.add(dur);
 		}
-		
-		setRobotPositions(robots);
 		
 		spatioTemporalSetSolver.addConstraints(initialCondition.toArray(new Constraint[initialCondition.size()]));
 		
@@ -125,7 +92,7 @@ public class TestGeometricMetaConstraint {
 		ConstraintNetwork.draw(spatioTemporalSetSolver.getConstraintNetwork(), "SpatioTemporalSet network");
 		ConstraintNetwork.draw(activitySolver.getConstraintNetwork(),"Activity network");
 		ConstraintNetwork.draw(geometricSolver.getConstraintNetwork(),"Polygon network");
-		PolygonFrame pf = new PolygonFrame("Polygon Constraint Network", geometricSolver.getConstraintNetwork());
+		PolygonFrame pf = new PolygonFrame("Polygon Constraint Network", geometricSolver.getConstraintNetwork()/*,850.0f*/);
 
 		TimelinePublisher tp = new TimelinePublisher((ActivityNetworkSolver)activitySolver, new Bounds(0,6000), true, robotTimelines);
 		TimelineVisualizer tv = new TimelineVisualizer(tp);
