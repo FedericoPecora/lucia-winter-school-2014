@@ -22,7 +22,7 @@ public class TestGeometricConstraintSolverSmall {
 		p0.setMovable(true);
 		
 		ConstraintNetwork.draw(solver.getConstraintNetwork());
-		PolygonFrame pf = new PolygonFrame("Polygon Constraint Network", solver.getConstraintNetwork(), 0.1f);
+		PolygonFrame pf = new PolygonFrame("Polygon Constraint Network", solver.getConstraintNetwork());
 	}
 
 }
