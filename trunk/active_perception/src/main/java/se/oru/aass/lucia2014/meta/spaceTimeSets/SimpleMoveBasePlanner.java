@@ -49,27 +49,36 @@ public class SimpleMoveBasePlanner extends MetaConstraint {
 		goal.setMarking(LuciaMetaConstraintSolver.Markings.SUPPORTED);
 		System.out.println("Achieving goal " + goal);
 		//Create actions for the mini-plan
-		Variable[] moveActions = this.getActivityNetworkSolver().createVariables(2,goal.getComponent());
+		Variable[] moveActions = this.getActivityNetworkSolver().createVariables(1,goal.getComponent());
 		((SymbolicVariableActivity)moveActions[0]).setSymbolicDomain("move_base");
-		((SymbolicVariableActivity)moveActions[1]).setSymbolicDomain("rotate_until_QRcode");
 		
 		//Create constraints for the mini-plan
 		moveActions[0].setMarking(LuciaMetaConstraintSolver.Markings.SUPPORTED);
-		moveActions[1].setMarking(LuciaMetaConstraintSolver.Markings.SUPPORTED);
-		AllenIntervalConstraint moveMeetsRotate = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Meets);
-		moveMeetsRotate.setFrom(moveActions[0]);
-		moveMeetsRotate.setTo(moveActions[1]);
 		AllenIntervalConstraint durationMove = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(3000,APSPSolver.INF));
 		durationMove.setFrom(moveActions[0]);
 		durationMove.setTo(moveActions[0]);
-		AllenIntervalConstraint durationRotate = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(3000,APSPSolver.INF));
-		durationRotate.setFrom(moveActions[1]);
-		durationRotate.setTo(moveActions[1]);
-		AllenIntervalConstraint rotateMeetsGoal = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Meets);
-		rotateMeetsGoal.setFrom(moveActions[1]);
-		rotateMeetsGoal.setTo(((SpatioTemporalSet)goal).getActivity());
-				
-		ret.addConstraints(moveMeetsRotate,durationMove,durationRotate,rotateMeetsGoal);
+		AllenIntervalConstraint moveMeetsGoal = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Meets);
+		moveMeetsGoal.setFrom(moveActions[0]);
+		moveMeetsGoal.setTo(((SpatioTemporalSet)goal).getActivity());
+		
+		//Get the previous observe from current goal
+		SpatioTemporalSet previousObserve = null;
+		Constraint[] cons = getGroundSolver().getConstraintNetwork().getIngoingEdges(goal);
+		for (Constraint con : cons) {
+			if (con instanceof AllenIntervalConstraint) {
+				AllenIntervalConstraint aic = (AllenIntervalConstraint)con;
+				if (aic.getTypes()[0].equals(AllenIntervalConstraint.Type.Before)) {
+					previousObserve = (SpatioTemporalSet)aic.getFrom();
+					break;
+				}
+			}
+		}
+		
+		AllenIntervalConstraint previousObserveBeforePlan = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Meets);
+		previousObserveBeforePlan.setFrom(previousObserve.getActivity());
+		previousObserveBeforePlan.setTo(moveActions[0]);
+		
+		ret.addConstraints(durationMove,moveMeetsGoal,previousObserveBeforePlan);
 		
 		return new ConstraintNetwork[] {ret};
 	}

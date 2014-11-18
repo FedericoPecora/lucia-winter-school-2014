@@ -41,19 +41,19 @@ public class AssignmentMetaConstraint extends MetaConstraint {
 	@Override
 	public ConstraintNetwork[] getMetaVariables() {
 		//get int[] unseenPanels
-		FocusConstraint currentSituation = null;
+		FocusConstraint currentFocus = null;
 		for (Constraint con : this.getGroundSolver().getConstraints()) {
 			if (con instanceof FocusConstraint) {
-				currentSituation = (FocusConstraint)con;
+				currentFocus = (FocusConstraint)con;
 				break;
 			}
 		}
 		
-		if (currentSituation == null) {
-			currentSituation = new FocusConstraint();
-			currentSituation.setScope(this.getGroundSolver().getVariables());
+		if (currentFocus == null) {
+			currentFocus = new FocusConstraint();
+			currentFocus.setScope(this.getGroundSolver().getVariables());
 		}
-		Variable[] vars = currentSituation.getScope();
+		Variable[] vars = currentFocus.getScope();
 		
 		int numRobots = vars.length;
 		boolean thereIsAnUnseenPanel = false;
@@ -144,17 +144,17 @@ public class AssignmentMetaConstraint extends MetaConstraint {
 	    }
 
 	    //Create the new current situation 
-		FocusConstraint currentSituation = null;
+		FocusConstraint newFocus = null;
 		for (Constraint c : this.getGroundSolver().getConstraints()) {
 			if (c instanceof FocusConstraint) {
-				currentSituation = (FocusConstraint)c;
+				newFocus = (FocusConstraint)c;
 				break;
 			}
 		}
-		this.getGroundSolver().removeConstraint(currentSituation);
-		currentSituation = new FocusConstraint();
-		currentSituation.setScope(newVars.toArray(new Variable[newVars.size()]));
-		this.getGroundSolver().addConstraint(currentSituation);
+		this.getGroundSolver().removeConstraint(newFocus);
+		newFocus = new FocusConstraint();
+		newFocus.setScope(newVars.toArray(new Variable[newVars.size()]));
+		this.getGroundSolver().addConstraint(newFocus);
 		
 		return metaValues.toArray(new ConstraintNetwork[metaValues.size()]);
 	}
