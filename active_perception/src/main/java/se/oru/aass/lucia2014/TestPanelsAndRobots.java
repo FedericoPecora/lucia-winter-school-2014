@@ -21,14 +21,13 @@ import org.metacsp.utility.timelinePlotting.TimelineVisualizer;
 
 import se.oru.aass.lucia2014.meta.spaceTimeSets.AssignmentMetaConstraint;
 import se.oru.aass.lucia2014.meta.spaceTimeSets.LuciaMetaConstraintSolver;
-import se.oru.aass.lucia2014.meta.spaceTimeSets.ObservabilityMetaConstraint;
 import se.oru.aass.lucia2014.meta.spaceTimeSets.SimpleMoveBasePlanner;
 import se.oru.aass.lucia2014.multi.spaceTimeSets.SpatioTemporalSet;
 import se.oru.aass.lucia2014.multi.spaceTimeSets.SpatioTemporalSetNetworkSolver;
 import se.oru.aass.lucia2014.util.Panel;
 import se.oru.aass.lucia2014.util.Robot;
 
-public class TestGeometricMetaConstraint {
+public class TestPanelsAndRobots {
 		
 	public static void main(String[] args) {
 		
@@ -86,10 +85,7 @@ public class TestGeometricMetaConstraint {
 		SimpleMoveBasePlanner mc2 = new SimpleMoveBasePlanner(null, null);
 		metaSolver.addMetaConstraint(mc2);
 		
-		ObservabilityMetaConstraint mc3 = new ObservabilityMetaConstraint(null, null);
-		metaSolver.addMetaConstraint(mc3);
-		
-		metaSolver.backtrack();
+		//metaSolver.backtrack();
 		
 		System.out.println("Done!");
 		
