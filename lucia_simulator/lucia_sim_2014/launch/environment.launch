@@ -1,0 +1,49 @@
+<launch>
+  <!-- Gazebo config -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="use_sim_time" value="true"/>
+    <arg name="debug" value="false"/>
+    <arg name="gui" value="true"/>
+    <arg name="world_name" value="$(find lucia_sim_2014)/launch/worlds/lucia.world"/>
+  </include>
+
+  <!-- Map server -->
+  <arg name="map_file" default="$(find lucia_sim_2014)/launch/maps/panels.yaml"/>
+  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" >
+  <param name="frame_id" value="/map" />
+  </node>
+
+  <!-- Launch for multi robots -->
+  <include file="$(find lucia_sim_2014)/launch/multi-robots.launch.xml" />
+
+  <!-- Service for panel locations -->
+  <node pkg="lucia_sim_2014" type="panel_serv" name="panel_serv" output="screen">
+
+                <!-- panel_1-->
+		<param name="panel1_x1" type="double" value="7.0" />
+		<param name="panel1_y1" type="double" value="-9.0" />
+		<param name="panel1_x2" type="double" value="9.0" />
+		<param name="panel1_y2" type="double" value="-7.0" />
+
+                <!-- panel_2-->
+		<param name="panel2_x1" type="double" value="-7.0" />
+		<param name="panel2_y1" type="double" value="-9.0" />
+		<param name="panel2_x2" type="double" value="-9.0" />
+		<param name="panel2_y2" type="double" value="-7.0" />
+
+                <!-- panel_3-->
+		<param name="panel3_x1" type="double" value="-9.0" />
+		<param name="panel3_y1" type="double" value="7.0" />
+		<param name="panel3_x2" type="double" value="-7.0" />
+		<param name="panel3_y2" type="double" value="-9.0" />
+
+                <!-- panel_4-->
+		<param name="panel4_x1" type="double" value="7.0" />
+		<param name="panel4_y1" type="double" value="9.0" />
+		<param name="panel4_x2" type="double" value="9.0" />
+		<param name="panel4_y2" type="double" value="7.0" />
+   </node>
+
+
+</launch>
+

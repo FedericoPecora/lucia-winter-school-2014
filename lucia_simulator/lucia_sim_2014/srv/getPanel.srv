@@ -1,0 +1,18 @@
+int8 read
+---
+float64 panel1_x1
+float64 panel1_x2
+float64 panel1_y1
+float64 panel1_y2
+float64 panel2_x1
+float64 panel2_x2
+float64 panel2_y1
+float64 panel2_y2
+float64 panel3_x1
+float64 panel3_x2
+float64 panel3_y1
+float64 panel3_y2
+float64 panel4_x1
+float64 panel4_x2
+float64 panel4_y1
+float64 panel4_y2
