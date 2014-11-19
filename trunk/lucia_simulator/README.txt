@@ -11,21 +11,24 @@ Before installing the software, please install the following dependencies:
 ===============================================
 Installing the Lucia simulator and robot nodes: 
 ===============================================
+0- Henceforth we assume that your ROS workspace directory is <catkin_ws>.
 
-1- Copy kobuki_gazebo_plugins package to your <ros_workspace>/src
+1- Check out the latest version of the simulator from Google Code into the source subdirectory of your ROS workspace:
+> cd <catkin_ws>/src
+> svn checkout http://lucia-winter-school-2014.googlecode.com/svn/trunk/lucia_simulator .
 
 2- Build kobuki_gazebo_plugins:
-> cd <ros_workspace>
+> cd <catkin_ws>
 > catkin_make gazebo_ros_kobuki 
 
 3- Its good to make a backup of your libgazebo_ros_kobuki.so 
 > sudo mv /opt/ros/hydro/lib/libgazebo_ros_kobuki.so /opt/ros/hydro/lib/libgazebo_ros_kobuki.so.backup 
 
 3- Add newly compiled kobuki_gazebo_plugin to ROS libs:
-> sudo mv ~/ros_workspace/devel/lib/libgazebo_ros_kobuki.so /opt/ros/hydro/lib/libgazebo_ros_kobuki.so 
+> sudo mv <catkin_ws>/devel/lib/libgazebo_ros_kobuki.so /opt/ros/hydro/lib/libgazebo_ros_kobuki.so 
 
-4- Copy lucia_sim_2014 to your <ros_workspace>/src and build it:
-> cd <ros_workspace>
+4- Build Lucia simulator:
+> cd <catkin_ws>
 > catkin_make lucia_sim_2014_generate_messages
 > catkin_make lucia_sim_2014
 
