@@ -47,7 +47,7 @@ public class SimpleMoveBasePlanner extends MetaConstraint {
 		ConstraintNetwork ret = new ConstraintNetwork(null);
 		Variable goal = metaVariable.getConstraintNetwork().getVariables()[0];
 		goal.setMarking(LuciaMetaConstraintSolver.Markings.SUPPORTED);
-		System.out.println("Achieving goal " + goal);
+		//System.out.println("Achieving goal " + goal);
 		//Create actions for the mini-plan
 		Variable[] moveActions = this.getActivityNetworkSolver().createVariables(1,goal.getComponent());
 		((SymbolicVariableActivity)moveActions[0]).setSymbolicDomain("move_base");

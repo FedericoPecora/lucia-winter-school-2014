@@ -1,5 +1,6 @@
 package se.oru.aass.lucia2014.meta.spaceTimeSets;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -31,15 +32,10 @@ public class ObservabilityMetaConstraint extends MetaConstraint {
 
 	@Override
 	public ConstraintNetwork[] getMetaVariables() {
-		Variable[] focusedVariables = null;
-		for (Constraint con : this.getGroundSolver().getConstraints()) {
-			if (con instanceof FocusConstraint) {
-				focusedVariables = con.getScope();
-			}
-		}
-		
-		if (focusedVariables == null) return null;
-		
+		//Get the focused vars first
+		if (((LuciaMetaConstraintSolver)this.metaCS).getCurrentFocus() == null) return null;
+		Variable[] focusedVariables = ((LuciaMetaConstraintSolver)this.metaCS).getCurrentFocus().getScope();
+				
 		HashMap<Variable,Variable[]> observesToPolys = new HashMap<Variable, Variable[]>();
 		Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
 		for (Variable fv : focusedVariables) {
@@ -68,7 +64,7 @@ public class ObservabilityMetaConstraint extends MetaConstraint {
 			if (!(GeometricConstraintSolver.getRelation(obsPoly, panelPoly1).equals(GeometricConstraint.Type.INSIDE)
 					|| GeometricConstraintSolver.getRelation(obsPoly, panelPoly2).equals(GeometricConstraint.Type.INSIDE))) {
 				ConstraintNetwork cn = new ConstraintNetwork(null);
-				cn.addVariable(obsPoly);
+				cn.addVariable(observes);
 				cn.addVariable(panelPoly1);
 				cn.addVariable(panelPoly2);
 				ret.add(cn);
@@ -81,6 +77,7 @@ public class ObservabilityMetaConstraint extends MetaConstraint {
 	@Override
 	public ConstraintNetwork[] getMetaValues(MetaVariable metaVariable) {
 		Variable[] vars = metaVariable.getConstraintNetwork().getVariables();
+		//for (Variable var : vars) System.out.println("metaVar is: " + var);
 		SpatioTemporalSet observeAction = null;
 		Polygon panel1 = null;
 		Polygon panel2 = null;
@@ -90,7 +87,7 @@ public class ObservabilityMetaConstraint extends MetaConstraint {
 			else panel2 = (Polygon)var;
 		}
 		
-		//Create metavalues (one for each possbile panel)
+		//Create metavalues (one for each possible panel)
 		ConstraintNetwork cn1 = new ConstraintNetwork(null);
 		ConstraintNetwork cn2 = new ConstraintNetwork(null);
 		GeometricConstraint inside1 = new GeometricConstraint(GeometricConstraint.Type.INSIDE);
