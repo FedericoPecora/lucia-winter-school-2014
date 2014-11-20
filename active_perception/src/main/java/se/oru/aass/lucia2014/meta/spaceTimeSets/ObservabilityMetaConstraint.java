@@ -17,6 +17,7 @@ import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.spatial.geometry.GeometricConstraint;
 import org.metacsp.spatial.geometry.GeometricConstraintSolver;
 import org.metacsp.spatial.geometry.Polygon;
+import org.metacsp.utility.UI.PolygonFrame;
 
 import se.oru.aass.lucia2014.multi.spaceTimeSets.SpatioTemporalSet;
 
@@ -34,33 +35,33 @@ public class ObservabilityMetaConstraint extends MetaConstraint {
 	public ConstraintNetwork[] getMetaVariables() {
 		//Get the focused vars first
 		if (((LuciaMetaConstraintSolver)this.metaCS).getCurrentFocus() == null) return null;
-		Variable[] focusedVariables = ((LuciaMetaConstraintSolver)this.metaCS).getCurrentFocus().getScope();
+		Variable[] observeActivities = ((LuciaMetaConstraintSolver)this.metaCS).getCurrentFocus().getScope();
 				
-		HashMap<Variable,Variable[]> observesToPolys = new HashMap<Variable, Variable[]>();
+		HashMap<Variable,Variable[]> observeActivitiesToPolygons = new HashMap<Variable, Variable[]>();
 		Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
-		for (Variable fv : focusedVariables) {
+		for (Variable fv : observeActivities) {
 			String panel = ((SpatioTemporalSet)fv).getSet().getSymbols()[0];
 			for (Variable panelPoly : this.getGeometricSolver().getVariables()) {
 				if (panelPoly.getComponent().equals(panel)) {
-					if (!observesToPolys.containsKey(fv)) {
+					if (!observeActivitiesToPolygons.containsKey(fv)) {
 						Variable[] panels = new Variable[2];
 						panels[0] = panelPoly;
-						observesToPolys.put(fv, panels);
+						observeActivitiesToPolygons.put(fv, panels);
 					}
 					else {
-						Variable[] panels = observesToPolys.get(fv);
+						Variable[] panels = observeActivitiesToPolygons.get(fv);
 						panels[1] = panelPoly;
-						observesToPolys.put(fv, panels);
+						observeActivitiesToPolygons.put(fv, panels);
 						break;
 					}
 				}
 			}
 		}
 		
-		for (Variable observes : observesToPolys.keySet()) {
+		for (Variable observes : observeActivitiesToPolygons.keySet()) {
 			Polygon obsPoly = ((SpatioTemporalSet)observes).getPolygon();
-			Polygon panelPoly1 = (Polygon)observesToPolys.get(observes)[0];
-			Polygon panelPoly2 = (Polygon)observesToPolys.get(observes)[1];
+			Polygon panelPoly1 = (Polygon)observeActivitiesToPolygons.get(observes)[0];
+			Polygon panelPoly2 = (Polygon)observeActivitiesToPolygons.get(observes)[1];
 			if (!(GeometricConstraintSolver.getRelation(obsPoly, panelPoly1).equals(GeometricConstraint.Type.INSIDE)
 					|| GeometricConstraintSolver.getRelation(obsPoly, panelPoly2).equals(GeometricConstraint.Type.INSIDE))) {
 				ConstraintNetwork cn = new ConstraintNetwork(null);
@@ -97,7 +98,7 @@ public class ObservabilityMetaConstraint extends MetaConstraint {
 		inside2.setFrom(observeAction.getPolygon());
 		inside2.setTo(panel2);
 		cn1.addConstraint(inside1);
-		cn1.addConstraint(inside2);
+		cn2.addConstraint(inside2);
 		
 		return new ConstraintNetwork[] {cn1,cn2};
 	}
