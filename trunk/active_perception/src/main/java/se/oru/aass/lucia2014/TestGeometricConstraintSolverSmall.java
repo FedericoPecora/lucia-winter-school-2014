@@ -19,6 +19,12 @@ public class TestGeometricConstraintSolverSmall {
 		Variable var = solver.createVariable();
 		
 		Polygon p0 = (Polygon)var;
+		Vector<Vec2> vecs1 = new Vector<Vec2>();
+		vecs1.add(new Vec2(100,87));
+		vecs1.add(new Vec2(60,30));
+		vecs1.add(new Vec2(220,60));
+		vecs1.add(new Vec2(180,120));
+		p0.setDomain(vecs1.toArray(new Vec2[vecs1.size()]));
 		p0.setMovable(true);
 		
 		ConstraintNetwork.draw(solver.getConstraintNetwork());

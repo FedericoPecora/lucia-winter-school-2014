@@ -24,6 +24,7 @@ public class Robot {
 		}
 		this.variable = (SpatioTemporalSet)cs.createVariable(id);
 		((SpatioTemporalSet)this.variable).getPolygon().setDomain(verts);
+		((SpatioTemporalSet)this.variable).getPolygon().setMovable(true);
 	}
 
 }

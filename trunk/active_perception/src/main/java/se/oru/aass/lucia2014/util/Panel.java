@@ -39,6 +39,8 @@ public class Panel {
 		poly2 = (Polygon)polys[1];
 		poly1.setDomain(lefts.toArray(new Vec2[lefts.size()]));
 		poly2.setDomain(rights.toArray(new Vec2[rights.size()]));
+		poly1.setMovable(false);
+		poly2.setMovable(false);
 	}
 
 	private static Vector<Vec2> getTrapazoid(float d1, float d2, Vec2 a1, Vec2 a2, float r1, float r2) {

@@ -17,12 +17,14 @@ import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.symbols.SymbolicValueConstraint;
 import org.metacsp.multi.symbols.SymbolicVariable;
 import org.metacsp.multi.symbols.SymbolicValueConstraint.Type;
+import org.metacsp.spatial.geometry.Vec2;
 import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
 import org.metacsp.utility.Permutation;
 
 import se.oru.aass.lucia2014.multi.spaceTimeSets.SpatioTemporalSet;
 import se.oru.aass.lucia2014.multi.spaceTimeSets.SpatioTemporalSetNetworkSolver;
+import se.oru.aass.lucia2014.util.Robot;
 
 public class AssignmentMetaConstraint extends MetaConstraint {
 
@@ -100,6 +102,8 @@ public class AssignmentMetaConstraint extends MetaConstraint {
 			before.setTo(newVar);
 			newCons.add(before);
 			((SpatioTemporalSet)newVar).setTask("Observe");
+			((SpatioTemporalSet)newVar).getPolygon().setMovable(true);
+			((SpatioTemporalSet)newVar).getPolygon().setDomain(((SpatioTemporalSet)var).getPolygon().getFullSpaceRepresentation().toArray(new Vec2[((SpatioTemporalSet)var).getPolygon().getFullSpaceRepresentation().size()]));
 		}
 		
 		//Force every chosen robot to see one of the panels (w/o deciding which panel)		
