@@ -25,8 +25,8 @@ import se.oru.aass.lucia2014.meta.spaceTimeSets.ObservabilityMetaConstraint;
 import se.oru.aass.lucia2014.meta.spaceTimeSets.SimpleMoveBasePlanner;
 import se.oru.aass.lucia2014.multi.spaceTimeSets.SpatioTemporalSet;
 import se.oru.aass.lucia2014.multi.spaceTimeSets.SpatioTemporalSetNetworkSolver;
-import se.oru.aass.lucia2014.util.Panel;
-import se.oru.aass.lucia2014.util.Robot;
+import se.oru.aass.lucia2014.util.PanelFactory;
+import se.oru.aass.lucia2014.util.RobotFactory;
 
 public class TestGeometricMetaConstraint {
 		
@@ -50,11 +50,11 @@ public class TestGeometricMetaConstraint {
 		GeometricConstraintSolver geometricSolver = spatioTemporalSetSolver.getGeometricSolver();
 		SymbolicVariableConstraintSolver setSolver = spatioTemporalSetSolver.getSetSolver();
 		
-		Panel p1 = new Panel(panels[0], new Vec2(7.0f,-9.0f), new Vec2(9.0f,-7.0f), geometricSolver);
-		Panel p2 = new Panel(panels[1], new Vec2(-7.0f,-9.0f), new Vec2(-9.0f,-7.0f), geometricSolver);
-		Panel p3 = new Panel(panels[2], new Vec2(-9.0f,7.0f), new Vec2(-7.0f,9.0f), geometricSolver);
-		Panel p4 = new Panel(panels[3], new Vec2(7.0f,9.0f), new Vec2(9.0f,7.0f), geometricSolver);
-		
+		Variable[] panel1 = PanelFactory.createPolygonVariables(panels[0], new Vec2(7.0f,-9.0f), new Vec2(9.0f,-7.0f), geometricSolver);
+		Variable[] panel2 = PanelFactory.createPolygonVariables(panels[1], new Vec2(-7.0f,-9.0f), new Vec2(-9.0f,-7.0f), geometricSolver);
+		Variable[] panel3 = PanelFactory.createPolygonVariables(panels[2], new Vec2(-9.0f,7.0f), new Vec2(-7.0f,9.0f), geometricSolver);
+		Variable[] panel4 = PanelFactory.createPolygonVariables(panels[3], new Vec2(7.0f,9.0f), new Vec2(9.0f,7.0f), geometricSolver);
+				
 		//Vars representing robots and what panels (if any) they see
 		Vector<Constraint> initialCondition = new Vector<Constraint>();		
 		int numRobots = 5;
@@ -62,8 +62,7 @@ public class TestGeometricMetaConstraint {
 		Variable[] robots = new Variable[numRobots];
 		for (int i = 0; i < numRobots; i++) {
 			robotTimelines[i] = "State of Robot"+i;
-			Robot robot = new Robot(robotTimelines[i], new Vec2(0.0f,0.0f), 0.5f, 0.0f, spatioTemporalSetSolver);
-			robots[i] = robot.getspatioTemporalSet();
+			robots[i] = RobotFactory.createSpatioTemporalSetVariable(robotTimelines[i], new Vec2(0.0f,0.0f), 0.0f, spatioTemporalSetSolver);
 			SymbolicValueConstraint seesNothing = new SymbolicValueConstraint(SymbolicValueConstraint.Type.VALUEEQUALS);
 			robots[i].setMarking(LuciaMetaConstraintSolver.Markings.SUPPORTED);
 			seesNothing.setValue("None");

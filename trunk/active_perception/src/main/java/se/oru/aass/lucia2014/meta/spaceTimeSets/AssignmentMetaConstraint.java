@@ -23,8 +23,7 @@ import org.metacsp.time.Bounds;
 import org.metacsp.utility.Permutation;
 
 import se.oru.aass.lucia2014.multi.spaceTimeSets.SpatioTemporalSet;
-import se.oru.aass.lucia2014.multi.spaceTimeSets.SpatioTemporalSetNetworkSolver;
-import se.oru.aass.lucia2014.util.Robot;
+import se.oru.aass.lucia2014.util.RobotFactory;
 
 public class AssignmentMetaConstraint extends MetaConstraint {
 
@@ -94,7 +93,7 @@ public class AssignmentMetaConstraint extends MetaConstraint {
 		Vector<Variable> newVars = new Vector<Variable>();
 		Vector<Constraint> newCons = new Vector<Constraint>();
 		for (Variable var : metaVariable.getConstraintNetwork().getVariables()) {
-			Variable newVar = this.getGroundSolver().createVariable(var.getComponent());
+			Variable newVar = RobotFactory.createSpatioTemporalSetVariable(var.getComponent(), new Vec2(0.0f,0.0f), 0.0f, this.getGroundSolver());
 			newVar.setMarking(LuciaMetaConstraintSolver.Markings.UNSUPPORTED);
 			newVars.add(newVar);
 			AllenIntervalConstraint before = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before);
@@ -102,8 +101,6 @@ public class AssignmentMetaConstraint extends MetaConstraint {
 			before.setTo(newVar);
 			newCons.add(before);
 			((SpatioTemporalSet)newVar).setTask("Observe");
-			((SpatioTemporalSet)newVar).getPolygon().setMovable(true);
-			((SpatioTemporalSet)newVar).getPolygon().setDomain(((SpatioTemporalSet)var).getPolygon().getFullSpaceRepresentation().toArray(new Vec2[((SpatioTemporalSet)var).getPolygon().getFullSpaceRepresentation().size()]));
 		}
 		
 		//Force every chosen robot to see one of the panels (w/o deciding which panel)		
