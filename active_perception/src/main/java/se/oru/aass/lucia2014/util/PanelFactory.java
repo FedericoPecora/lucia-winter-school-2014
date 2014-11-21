@@ -10,37 +10,26 @@ import org.metacsp.framework.Variable;
 import org.metacsp.spatial.geometry.Polygon;
 import org.metacsp.spatial.geometry.Vec2;
 
-public class Panel {
+public class PanelFactory {
 
-	private String id;
-	private Polygon poly1, poly2;
-
-	public Polygon getPoly1() {
-		return poly1;
-	}
-
-	public Polygon getPoly2() {
-		return poly2;
-	}
-
-	public Panel(String id, Vec2 p1, Vec2 p2, ConstraintSolver cs) {
-		float d1 = 0.4f;
-		float d2 = 2f;
-		float teta = 0.5236f; //30 degrees
-		//radii of circle
-		float r1 = (float)(d1/Math.cos(teta));
-		float r2 = (float)(d2/Math.cos(teta));
-
+	private static final float d1 = 0.4f;
+	private static final float d2 = 2f;
+	private static final float teta = 0.5236f; //30 degrees
+	//radii of circle
+	private static final float r1 = (float)(d1/Math.cos(teta));
+	private static final float r2 = (float)(d2/Math.cos(teta));
+			
+	public static Variable[] createPolygonVariables(String id, Vec2 p1, Vec2 p2, ConstraintSolver cs) {
 		Vector<Vec2> rights = getTrapazoid(d1, d2, p1, p2, r1, r2);        
 		Vector<Vec2> lefts = getTrapazoid(-d1, -d2, p1, p2, r1, r2);
-
 		Variable[] polys = cs.createVariables(2, id);
-		poly1 = (Polygon)polys[0];
-		poly2 = (Polygon)polys[1];
+		Polygon poly1 = (Polygon)polys[0];
+		Polygon poly2 = (Polygon)polys[1];
 		poly1.setDomain(lefts.toArray(new Vec2[lefts.size()]));
 		poly2.setDomain(rights.toArray(new Vec2[rights.size()]));
 		poly1.setMovable(false);
 		poly2.setMovable(false);
+		return polys;
 	}
 
 	private static Vector<Vec2> getTrapazoid(float d1, float d2, Vec2 a1, Vec2 a2, float r1, float r2) {

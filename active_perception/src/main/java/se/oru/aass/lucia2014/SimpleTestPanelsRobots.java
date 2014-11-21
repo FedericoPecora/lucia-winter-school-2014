@@ -26,8 +26,8 @@ import se.oru.aass.lucia2014.meta.spaceTimeSets.ObservabilityMetaConstraint;
 import se.oru.aass.lucia2014.meta.spaceTimeSets.SimpleMoveBasePlanner;
 import se.oru.aass.lucia2014.multi.spaceTimeSets.SpatioTemporalSet;
 import se.oru.aass.lucia2014.multi.spaceTimeSets.SpatioTemporalSetNetworkSolver;
-import se.oru.aass.lucia2014.util.Panel;
-import se.oru.aass.lucia2014.util.Robot;
+import se.oru.aass.lucia2014.util.PanelFactory;
+import se.oru.aass.lucia2014.util.RobotFactory;
 
 public class SimpleTestPanelsRobots {
 		
@@ -51,11 +51,11 @@ public class SimpleTestPanelsRobots {
 		GeometricConstraintSolver geometricSolver = spatioTemporalSetSolver.getGeometricSolver();
 		SymbolicVariableConstraintSolver setSolver = spatioTemporalSetSolver.getSetSolver();
 		
-		Panel p1 = new Panel(panels[0], new Vec2(7.0f,-9.0f), new Vec2(9.0f,-7.0f), geometricSolver);
-		Robot robot = new Robot("A Robot", new Vec2(0.0f,0.0f), 0.1f, 0.0f, spatioTemporalSetSolver);
+		Variable p1 = PanelFactory.createPolygonVariables(panels[0], new Vec2(7.0f,-9.0f), new Vec2(9.0f,-7.0f), geometricSolver)[0];
+		Variable robot = RobotFactory.createSpatioTemporalSetVariable("A Robot", new Vec2(0.0f,0.0f), 0.0f, spatioTemporalSetSolver);
 		
-		Polygon poly1 = robot.getspatioTemporalSet().getPolygon();
-		Polygon poly2 = p1.getPoly1();
+		Polygon poly1 = ((SpatioTemporalSet)robot).getPolygon();
+		Polygon poly2 = (Polygon)p1;
 		
 		if (!GeometricConstraintSolver.getRelation(poly1, poly2).equals(GeometricConstraint.Type.INSIDE)) {
 			GeometricConstraint inside = new GeometricConstraint(GeometricConstraint.Type.INSIDE);
