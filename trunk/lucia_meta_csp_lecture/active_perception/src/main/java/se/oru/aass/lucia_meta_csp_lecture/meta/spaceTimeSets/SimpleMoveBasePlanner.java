@@ -19,7 +19,7 @@ import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
 import org.sat4j.core.Vec;
 
-import se.oru.aass.lucia2014.multi.spaceTimeSets.SpatioTemporalSet;
+import se.oru.aass.lucia_meta_csp_lecture.multi.spaceTimeSets.SpatioTemporalSet;
 
 public class SimpleMoveBasePlanner extends MetaConstraint {
 

@@ -6,10 +6,10 @@ import org.metacsp.sensing.ConstraintNetworkAnimator;
 import org.metacsp.sensing.Sensor;
 import org.metacsp.spatial.geometry.Vec2;
 
-import se.oru.aass.lucia2014.meta.spaceTimeSets.LuciaMetaConstraintSolver;
-import se.oru.aass.lucia2014.multi.spaceTimeSets.SpatioTemporalSet;
-import se.oru.aass.lucia2014.multi.spaceTimeSets.SpatioTemporalSetNetworkSolver;
-import se.oru.aass.lucia2014.util.RobotFactory;
+import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.LuciaMetaConstraintSolver;
+import se.oru.aass.lucia_meta_csp_lecture.multi.spaceTimeSets.SpatioTemporalSet;
+import se.oru.aass.lucia_meta_csp_lecture.multi.spaceTimeSets.SpatioTemporalSetNetworkSolver;
+import se.oru.aass.lucia_meta_csp_lecture.util.RobotFactory;
 
 public class ROSTopicSensor extends Sensor {
 

@@ -19,7 +19,7 @@ import org.metacsp.spatial.geometry.GeometricConstraintSolver;
 import org.metacsp.spatial.geometry.Polygon;
 import org.metacsp.utility.UI.PolygonFrame;
 
-import se.oru.aass.lucia2014.multi.spaceTimeSets.SpatioTemporalSet;
+import se.oru.aass.lucia_meta_csp_lecture.multi.spaceTimeSets.SpatioTemporalSet;
 
 import com.sun.org.apache.bcel.internal.generic.INSTANCEOF;
 

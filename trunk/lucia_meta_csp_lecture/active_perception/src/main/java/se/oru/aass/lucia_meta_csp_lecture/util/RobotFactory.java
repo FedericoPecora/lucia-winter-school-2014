@@ -5,7 +5,7 @@ import org.metacsp.framework.Variable;
 import org.metacsp.spatial.geometry.Polygon;
 import org.metacsp.spatial.geometry.Vec2;
 
-import se.oru.aass.lucia2014.multi.spaceTimeSets.SpatioTemporalSet;
+import se.oru.aass.lucia_meta_csp_lecture.multi.spaceTimeSets.SpatioTemporalSet;
 
 public class RobotFactory {
 	

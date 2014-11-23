@@ -19,14 +19,14 @@ import org.metacsp.utility.UI.PolygonFrame;
 import org.metacsp.utility.timelinePlotting.TimelinePublisher;
 import org.metacsp.utility.timelinePlotting.TimelineVisualizer;
 
-import se.oru.aass.lucia2014.meta.spaceTimeSets.AssignmentMetaConstraint;
-import se.oru.aass.lucia2014.meta.spaceTimeSets.LuciaMetaConstraintSolver;
-import se.oru.aass.lucia2014.meta.spaceTimeSets.ObservabilityMetaConstraint;
-import se.oru.aass.lucia2014.meta.spaceTimeSets.SimpleMoveBasePlanner;
-import se.oru.aass.lucia2014.multi.spaceTimeSets.SpatioTemporalSet;
-import se.oru.aass.lucia2014.multi.spaceTimeSets.SpatioTemporalSetNetworkSolver;
-import se.oru.aass.lucia2014.util.PanelFactory;
-import se.oru.aass.lucia2014.util.RobotFactory;
+import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.AssignmentMetaConstraint;
+import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.LuciaMetaConstraintSolver;
+import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.ObservabilityMetaConstraint;
+import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.SimpleMoveBasePlanner;
+import se.oru.aass.lucia_meta_csp_lecture.multi.spaceTimeSets.SpatioTemporalSet;
+import se.oru.aass.lucia_meta_csp_lecture.multi.spaceTimeSets.SpatioTemporalSetNetworkSolver;
+import se.oru.aass.lucia_meta_csp_lecture.util.PanelFactory;
+import se.oru.aass.lucia_meta_csp_lecture.util.RobotFactory;
 
 public class TestGeometricMetaConstraint {
 		

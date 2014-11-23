@@ -16,10 +16,10 @@ import org.metacsp.spatial.geometry.GeometricConstraintSolver;
 import org.metacsp.utility.UI.PolygonFrame;
 import org.metacsp.utility.logging.MetaCSPLogging;
 
-import se.oru.aass.lucia2014.meta.spaceTimeSets.AssignmentMetaConstraint;
-import se.oru.aass.lucia2014.meta.spaceTimeSets.LuciaMetaConstraintSolver;
-import se.oru.aass.lucia2014.multi.spaceTimeSets.SpatioTemporalSet;
-import se.oru.aass.lucia2014.multi.spaceTimeSets.SpatioTemporalSetNetworkSolver;
+import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.AssignmentMetaConstraint;
+import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.LuciaMetaConstraintSolver;
+import se.oru.aass.lucia_meta_csp_lecture.multi.spaceTimeSets.SpatioTemporalSet;
+import se.oru.aass.lucia_meta_csp_lecture.multi.spaceTimeSets.SpatioTemporalSetNetworkSolver;
 
 
 public class TestAssignmentMetaConstraint {

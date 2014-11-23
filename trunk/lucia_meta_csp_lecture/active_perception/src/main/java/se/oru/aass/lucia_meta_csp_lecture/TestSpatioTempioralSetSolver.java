@@ -14,8 +14,8 @@ import org.metacsp.multi.symbols.SymbolicVariableConstraintSolver;
 import org.metacsp.spatial.geometry.GeometricConstraintSolver;
 import org.metacsp.utility.UI.PolygonFrame;
 
-import se.oru.aass.lucia2014.multi.spaceTimeSets.SpatioTemporalSet;
-import se.oru.aass.lucia2014.multi.spaceTimeSets.SpatioTemporalSetNetworkSolver;
+import se.oru.aass.lucia_meta_csp_lecture.multi.spaceTimeSets.SpatioTemporalSet;
+import se.oru.aass.lucia_meta_csp_lecture.multi.spaceTimeSets.SpatioTemporalSetNetworkSolver;
 
 
 public class TestSpatioTempioralSetSolver {

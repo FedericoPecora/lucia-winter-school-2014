@@ -8,7 +8,7 @@ import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.symbols.SymbolicValueConstraint;
 import org.metacsp.spatial.geometry.GeometricConstraint;
 
-import se.oru.aass.lucia2014.multi.spaceTimeSets.SpatioTemporalSetNetworkSolver;
+import se.oru.aass.lucia_meta_csp_lecture.multi.spaceTimeSets.SpatioTemporalSetNetworkSolver;
 
 public class LuciaMetaConstraintSolver extends MetaConstraintSolver {
 
