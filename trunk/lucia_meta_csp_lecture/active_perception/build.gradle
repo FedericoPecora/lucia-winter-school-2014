@@ -39,6 +39,7 @@ dependencies {
   compile 'org.metacsp:meta-csp-framework:0.0.0-SNAPSHOT'
   /* Example of a local subproject dependency */ 
   /* compile project(':sibling_gradle_project') */
-  compile project(':lucia_sim_2014')
+  //compile project(':lucia_sim_2014')
+  compile 'se.oru.aass.lucia_meta_csp_lecture:lucia_sim_2014:0.0.0'
 }
 
