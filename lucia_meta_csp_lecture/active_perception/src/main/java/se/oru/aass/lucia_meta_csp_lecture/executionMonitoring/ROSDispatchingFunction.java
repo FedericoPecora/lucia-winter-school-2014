@@ -22,7 +22,7 @@ public class ROSDispatchingFunction extends DispatchingFunction {
 	public ROSDispatchingFunction(String component, SpatioTemporalSetNetworkSolver solver) {
 		super(component);
 		this.solver = solver;
-		ROSTopicListener tl = new ROSTopicListener(component, this);
+		//ROSTopicListener tl = new ROSTopicListener(component, this);
 	}
 	
 	public void finishCurrentActivity() {

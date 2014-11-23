@@ -25,10 +25,14 @@ import org.metacsp.time.Bounds;
 import org.metacsp.utility.UI.PolygonFrame;
 import org.metacsp.utility.timelinePlotting.TimelinePublisher;
 import org.metacsp.utility.timelinePlotting.TimelineVisualizer;
+import org.ros.exception.RemoteException;
+import org.ros.exception.RosRuntimeException;
+import org.ros.exception.ServiceNotFoundException;
 import org.ros.namespace.GraphName;
 import org.ros.node.AbstractNodeMain;
 import org.ros.node.ConnectedNode;
 import org.ros.node.service.ServiceClient;
+import org.ros.node.service.ServiceResponseListener;
 
 import se.oru.aass.lucia_meta_csp_lecture.executionMonitoring.ROSDispatchingFunction;
 import se.oru.aass.lucia_meta_csp_lecture.executionMonitoring.ROSTopicSensor;
@@ -59,8 +63,27 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 		return GraphName.of("LuciaCSPNode");
 	}
 
-	private void getPanels() {
-		ServiceClient<getPanelRequest, getPanelResponse> serviceClient;
+	private void getPanelsFromROSService(final String[] panelNames) {
+		ServiceClient<getPanelRequest, getPanelResponse> serviceClient = null;
+		try { serviceClient = connectedNode.newServiceClient("getPanel", getPanel._TYPE); }
+		catch (ServiceNotFoundException e) { throw new RosRuntimeException(e); }
+		final getPanelRequest request = serviceClient.newMessage();
+		request.setRead((byte) 0);
+		serviceClient.call(request, new ServiceResponseListener<getPanelResponse>() {
+			
+			@Override
+			public void onSuccess(getPanelResponse arg0) {
+				Variable[] panel1 = PanelFactory.createPolygonVariables(panelNames[0], new Vec2((float)arg0.getPanel1X1(),(float)arg0.getPanel1Y1()), new Vec2((float)arg0.getPanel1X2(),(float)arg0.getPanel1Y2()), geometricSolver);
+				Variable[] panel2 = PanelFactory.createPolygonVariables(panelNames[1], new Vec2((float)arg0.getPanel2X1(),(float)arg0.getPanel2Y1()), new Vec2((float)arg0.getPanel2X2(),(float)arg0.getPanel2Y2()), geometricSolver);
+				Variable[] panel3 = PanelFactory.createPolygonVariables(panelNames[2], new Vec2((float)arg0.getPanel3X1(),(float)arg0.getPanel3Y1()), new Vec2((float)arg0.getPanel3X2(),(float)arg0.getPanel3Y2()), geometricSolver);
+				Variable[] panel4 = PanelFactory.createPolygonVariables(panelNames[3], new Vec2((float)arg0.getPanel4X1(),(float)arg0.getPanel4Y1()), new Vec2((float)arg0.getPanel4X2(),(float)arg0.getPanel4Y2()), geometricSolver);
+			}
+			
+			@Override
+			public void onFailure(RemoteException arg0) {
+				throw new RosRuntimeException(arg0);				
+			}
+		});
 	}
 
 	@Override
@@ -87,11 +110,8 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 		geometricSolver = spatioTemporalSetSolver.getGeometricSolver();
 		setSolver = spatioTemporalSetSolver.getSetSolver();
 		
-		Variable[] panel1 = PanelFactory.createPolygonVariables(panelNames[0], new Vec2(7.0f,-9.0f), new Vec2(9.0f,-7.0f), geometricSolver);
-		Variable[] panel2 = PanelFactory.createPolygonVariables(panelNames[1], new Vec2(-7.0f,-9.0f), new Vec2(-9.0f,-7.0f), geometricSolver);
-		Variable[] panel3 = PanelFactory.createPolygonVariables(panelNames[2], new Vec2(-9.0f,7.0f), new Vec2(-7.0f,9.0f), geometricSolver);
-		Variable[] panel4 = PanelFactory.createPolygonVariables(panelNames[3], new Vec2(7.0f,9.0f), new Vec2(9.0f,7.0f), geometricSolver);
-
+		getPanelsFromROSService(panelNames);
+		
 		InferenceCallback cb = new InferenceCallback() {
 			@Override
 			public void doInference(long timeNow) {
@@ -150,7 +170,6 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 		TimelinePublisher tp = new TimelinePublisher((ActivityNetworkSolver)activitySolver, new Bounds(0,120000), true, robotTimelines);
 		TimelineVisualizer tv = new TimelineVisualizer(tp);
 		tv.startAutomaticUpdate(1000);
-
 	}
 
 }
