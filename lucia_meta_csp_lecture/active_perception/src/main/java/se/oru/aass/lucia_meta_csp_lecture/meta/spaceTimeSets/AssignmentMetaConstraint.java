@@ -22,8 +22,8 @@ import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
 import org.metacsp.utility.Permutation;
 
-import se.oru.aass.lucia2014.multi.spaceTimeSets.SpatioTemporalSet;
-import se.oru.aass.lucia2014.util.RobotFactory;
+import se.oru.aass.lucia_meta_csp_lecture.multi.spaceTimeSets.SpatioTemporalSet;
+import se.oru.aass.lucia_meta_csp_lecture.util.RobotFactory;
 
 public class AssignmentMetaConstraint extends MetaConstraint {
 

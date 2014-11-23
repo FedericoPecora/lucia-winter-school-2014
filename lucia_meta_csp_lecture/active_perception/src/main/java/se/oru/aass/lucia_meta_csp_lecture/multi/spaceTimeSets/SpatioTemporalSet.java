@@ -11,7 +11,7 @@ import org.metacsp.multi.allenInterval.AllenInterval;
 import org.metacsp.multi.symbols.SymbolicVariable;
 import org.metacsp.spatial.geometry.Polygon;
 
-import se.oru.aass.lucia2014.meta.spaceTimeSets.LuciaMetaConstraintSolver;
+import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.LuciaMetaConstraintSolver;
 
 public class SpatioTemporalSet extends MultiVariable implements Activity {
 

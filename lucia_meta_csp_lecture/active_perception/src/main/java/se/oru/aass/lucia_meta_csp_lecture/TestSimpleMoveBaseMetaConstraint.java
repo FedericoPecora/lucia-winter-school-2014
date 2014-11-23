@@ -21,11 +21,11 @@ import org.metacsp.utility.logging.MetaCSPLogging;
 import org.metacsp.utility.timelinePlotting.TimelinePublisher;
 import org.metacsp.utility.timelinePlotting.TimelineVisualizer;
 
-import se.oru.aass.lucia2014.meta.spaceTimeSets.AssignmentMetaConstraint;
-import se.oru.aass.lucia2014.meta.spaceTimeSets.LuciaMetaConstraintSolver;
-import se.oru.aass.lucia2014.meta.spaceTimeSets.SimpleMoveBasePlanner;
-import se.oru.aass.lucia2014.multi.spaceTimeSets.SpatioTemporalSet;
-import se.oru.aass.lucia2014.multi.spaceTimeSets.SpatioTemporalSetNetworkSolver;
+import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.AssignmentMetaConstraint;
+import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.LuciaMetaConstraintSolver;
+import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.SimpleMoveBasePlanner;
+import se.oru.aass.lucia_meta_csp_lecture.multi.spaceTimeSets.SpatioTemporalSet;
+import se.oru.aass.lucia_meta_csp_lecture.multi.spaceTimeSets.SpatioTemporalSetNetworkSolver;
 
 
 public class TestSimpleMoveBaseMetaConstraint {

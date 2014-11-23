@@ -10,8 +10,8 @@ import org.metacsp.sensing.ConstraintNetworkAnimator;
 import org.metacsp.spatial.geometry.Polygon;
 import org.metacsp.spatial.geometry.Vec2;
 
-import se.oru.aass.lucia2014.multi.spaceTimeSets.SpatioTemporalSet;
-import se.oru.aass.lucia2014.multi.spaceTimeSets.SpatioTemporalSetNetworkSolver;
+import se.oru.aass.lucia_meta_csp_lecture.multi.spaceTimeSets.SpatioTemporalSet;
+import se.oru.aass.lucia_meta_csp_lecture.multi.spaceTimeSets.SpatioTemporalSetNetworkSolver;
 
 public class ROSDispatchingFunction extends DispatchingFunction {
 	

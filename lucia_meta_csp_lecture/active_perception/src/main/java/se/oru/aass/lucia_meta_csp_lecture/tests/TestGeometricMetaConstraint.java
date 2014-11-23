@@ -3,6 +3,10 @@ package se.oru.aass.lucia_meta_csp_lecture.tests;
 import java.util.Calendar;
 import java.util.Vector;
 
+import lucia_sim_2014.getPanel;
+import lucia_sim_2014.getPanelRequest;
+import lucia_sim_2014.getPanelResponse;
+
 import org.apache.commons.logging.Log;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
@@ -26,17 +30,18 @@ import org.ros.node.AbstractNodeMain;
 import org.ros.node.ConnectedNode;
 import org.ros.node.service.ServiceClient;
 
-import se.oru.aass.lucia2014.executionMonitoring.ROSDispatchingFunction;
-import se.oru.aass.lucia2014.executionMonitoring.ROSTopicSensor;
-import se.oru.aass.lucia2014.executionMonitoring.ROSTopicListener;
-import se.oru.aass.lucia2014.meta.spaceTimeSets.AssignmentMetaConstraint;
-import se.oru.aass.lucia2014.meta.spaceTimeSets.LuciaMetaConstraintSolver;
-import se.oru.aass.lucia2014.meta.spaceTimeSets.ObservabilityMetaConstraint;
-import se.oru.aass.lucia2014.meta.spaceTimeSets.SimpleMoveBasePlanner;
-import se.oru.aass.lucia2014.multi.spaceTimeSets.SpatioTemporalSet;
-import se.oru.aass.lucia2014.multi.spaceTimeSets.SpatioTemporalSetNetworkSolver;
-import se.oru.aass.lucia2014.util.PanelFactory;
-import se.oru.aass.lucia2014.util.RobotFactory;
+import se.oru.aass.lucia_meta_csp_lecture.executionMonitoring.ROSDispatchingFunction;
+import se.oru.aass.lucia_meta_csp_lecture.executionMonitoring.ROSTopicSensor;
+import se.oru.aass.lucia_meta_csp_lecture.executionMonitoring.ROSTopicListener;
+import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.AssignmentMetaConstraint;
+import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.LuciaMetaConstraintSolver;
+import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.ObservabilityMetaConstraint;
+import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.SimpleMoveBasePlanner;
+import se.oru.aass.lucia_meta_csp_lecture.multi.spaceTimeSets.SpatioTemporalSet;
+import se.oru.aass.lucia_meta_csp_lecture.multi.spaceTimeSets.SpatioTemporalSetNetworkSolver;
+import se.oru.aass.lucia_meta_csp_lecture.util.PanelFactory;
+import se.oru.aass.lucia_meta_csp_lecture.util.RobotFactory;
+import se.oru.aass.lucia_meta_csp_lecture.*;
 
 
 public class TestGeometricMetaConstraint extends AbstractNodeMain {
@@ -54,9 +59,9 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 		return GraphName.of("LuciaCSPNode");
 	}
 
-//	private void getPanels() {
-//		ServiceClient<.AddTwoInts.Request, test_ros.AddTwoInts.Response> serviceClient;
-//	}
+	private void getPanels() {
+		ServiceClient<getPanelRequest, getPanelResponse> serviceClient;
+	}
 
 	@Override
 	public void onStart(ConnectedNode connectedNode) {
