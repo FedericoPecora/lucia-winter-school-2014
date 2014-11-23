@@ -45,7 +45,7 @@ allprojects {
       A github url provides a good standard unique name for your project
       Example below, but you may wish to switch to your own unique url.
     */
-    group 'se.oru.aass.lucia2014'
+    group 'se.oru.aass.lucia_meta_csp_lecture'
     version = project.catkin.pkg.version
 }
 
