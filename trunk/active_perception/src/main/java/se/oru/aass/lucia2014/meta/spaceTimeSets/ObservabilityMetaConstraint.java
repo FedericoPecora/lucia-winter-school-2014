@@ -100,6 +100,9 @@ public class ObservabilityMetaConstraint extends MetaConstraint {
 		cn1.addConstraint(inside1);
 		cn2.addConstraint(inside2);
 		
+		cn1.setAnnotation(this);
+		cn2.setAnnotation(this);
+		
 		return new ConstraintNetwork[] {cn1,cn2};
 	}
 
