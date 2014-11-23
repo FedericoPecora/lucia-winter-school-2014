@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>
+rosrun lucia_meta_csp_lecture active_perception se.oru.aass.lucia_meta_csp_lecture.tests.TestGeometricMetaConstraint
+  <node name="lucia_meta_csp_lecture" pkg="lucia_meta_csp_lecture" type="active_perception" args="se.oru.aass.lucia_meta_csp_lecture.tests.TestGeometricMetaConstraint" output="screen">
+     <!--param name="domain" value="$(find lucia)/domains/testProactivePlanningLucia.ddl" /-->
+  </node>
+</launch>
