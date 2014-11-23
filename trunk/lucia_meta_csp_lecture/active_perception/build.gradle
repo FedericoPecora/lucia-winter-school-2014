@@ -20,6 +20,10 @@ apply plugin:'eclipse'
 apply plugin:'application'
 mainClassName = 'org.ros.RosRun'
 
+//JDK version
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
+
 repositories {
   mavenLocal()
   mavenCentral()
@@ -39,7 +43,7 @@ dependencies {
   compile 'org.metacsp:meta-csp-framework:0.0.0-SNAPSHOT'
   /* Example of a local subproject dependency */ 
   /* compile project(':sibling_gradle_project') */
-  //compile project(':lucia_sim_2014')
-  compile 'se.oru.aass.lucia_meta_csp_lecture:lucia_sim_2014:0.0.0'
+  compile project(':lucia_sim_2014')
+  //compile 'se.oru.aass.lucia_meta_csp_lecture:lucia_sim_2014:0.0.0'
 }
 

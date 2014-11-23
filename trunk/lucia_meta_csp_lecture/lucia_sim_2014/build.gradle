@@ -14,8 +14,28 @@
  * the License.
  */
 
+//JDK version
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
+
+apply plugin:'java' 
+apply plugin:'eclipse'
+
+repositories {
+  mavenLocal()
+  mavenCentral()
+}
+
+dependencies {
+  /* An external maven artifact dependency */
+  compile 'org.ros.rosjava_core:rosjava:[0.1,)'
+  /* Example of a local subproject dependency */ 
+  /* compile project(':sibling_gradle_project') */
+}
+
 try {
     project.catkin.tree.generateMessageArtifact(project, 'lucia_sim_2014')
 } catch (NullPointerException e) {
     println("Couldn't find lucia_sim_2014 on the ROS_PACKAGE_PATH")
 }
+
