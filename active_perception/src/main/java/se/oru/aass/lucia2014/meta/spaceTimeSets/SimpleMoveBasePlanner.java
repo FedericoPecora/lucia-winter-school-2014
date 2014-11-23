@@ -4,6 +4,7 @@ import java.util.Vector;
 
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
+import org.metacsp.framework.ConstraintNetworkMarking;
 import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.ValueOrderingH;
 import org.metacsp.framework.Variable;
@@ -62,23 +63,25 @@ public class SimpleMoveBasePlanner extends MetaConstraint {
 		moveMeetsGoal.setTo(((SpatioTemporalSet)goal).getActivity());
 		
 		//Get the previous observe from current goal
-		SpatioTemporalSet previousObserve = null;
-		Constraint[] cons = getGroundSolver().getConstraintNetwork().getIngoingEdges(goal);
-		for (Constraint con : cons) {
-			if (con instanceof AllenIntervalConstraint) {
-				AllenIntervalConstraint aic = (AllenIntervalConstraint)con;
-				if (aic.getTypes()[0].equals(AllenIntervalConstraint.Type.Before)) {
-					previousObserve = (SpatioTemporalSet)aic.getFrom();
-					break;
-				}
-			}
-		}
+		//Wrong: instead, make a release with timeNow, because we need to dispatch thsi action
+//		SpatioTemporalSet previousObserve = null;
+//		Constraint[] cons = getGroundSolver().getConstraintNetwork().getIngoingEdges(goal);
+//		for (Constraint con : cons) {
+//			if (con instanceof AllenIntervalConstraint) {
+//				AllenIntervalConstraint aic = (AllenIntervalConstraint)con;
+//				if (aic.getTypes()[0].equals(AllenIntervalConstraint.Type.Before)) {
+//					previousObserve = (SpatioTemporalSet)aic.getFrom();
+//					break;
+//				}
+//			}
+//		}
+//		
+//		AllenIntervalConstraint previousObserveBeforePlan = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Meets);
+//		previousObserveBeforePlan.setFrom(previousObserve.getActivity());
+//		previousObserveBeforePlan.setTo(moveActions[0]);
 		
-		AllenIntervalConstraint previousObserveBeforePlan = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Meets);
-		previousObserveBeforePlan.setFrom(previousObserve.getActivity());
-		previousObserveBeforePlan.setTo(moveActions[0]);
-		
-		ret.addConstraints(durationMove,moveMeetsGoal,previousObserveBeforePlan);
+		ret.addConstraints(durationMove,moveMeetsGoal/*,previousObserveBeforePlan*/);
+		ret.setAnnotation(this);
 		
 		return new ConstraintNetwork[] {ret};
 	}

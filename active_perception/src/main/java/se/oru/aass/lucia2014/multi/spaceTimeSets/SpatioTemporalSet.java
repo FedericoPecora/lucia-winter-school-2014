@@ -5,20 +5,22 @@ import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.Domain;
 import org.metacsp.framework.Variable;
 import org.metacsp.framework.multi.MultiVariable;
+import org.metacsp.multi.activity.Activity;
 import org.metacsp.multi.activity.SymbolicVariableActivity;
+import org.metacsp.multi.allenInterval.AllenInterval;
 import org.metacsp.multi.symbols.SymbolicVariable;
 import org.metacsp.spatial.geometry.Polygon;
 
 import se.oru.aass.lucia2014.meta.spaceTimeSets.LuciaMetaConstraintSolver;
 
-public class SpatioTemporalSet extends MultiVariable {
+public class SpatioTemporalSet extends MultiVariable implements Activity {
 
+	private static final long serialVersionUID = 6109882181961186026L;
+	
 	public SpatioTemporalSet(ConstraintSolver cs, int id, ConstraintSolver[] internalSolvers, Variable[] internalVars) {
 		super(cs, id, internalSolvers, internalVars);
 		this.setMarking(LuciaMetaConstraintSolver.Markings.UNSUPPORTED);
 	}
-
-	private static final long serialVersionUID = 6109882181961186026L;
 
 	@Override
 	public int compareTo(Variable o) {
@@ -68,6 +70,16 @@ public class SpatioTemporalSet extends MultiVariable {
 
 	public Polygon getPolygon() {
 		return (Polygon)this.getInternalVariables()[2];
+	}
+
+	@Override
+	public AllenInterval getTemporalVariable() {
+		return this.getActivity().getTemporalVariable();
+	}
+
+	@Override
+	public Variable getVariable() {
+		return this.getActivity();
 	}
 
 }

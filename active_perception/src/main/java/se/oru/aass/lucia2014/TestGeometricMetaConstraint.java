@@ -35,10 +35,10 @@ public class TestGeometricMetaConstraint {
 		//MetaCSPLogging.setLevel(Level.FINE);
 		//Symbols represent panels seen by robots
 		int numPanels = 4;
-		String[] panels = new String[numPanels];
+		String[] panelNames = new String[numPanels];
 		String[] symbols = new String[numPanels+1];
 		for (int i = 0; i < numPanels; i++) {
-			panels[i] = "P"+i;
+			panelNames[i] = "P"+i;
 			symbols[i] = "P"+i;
 		}
 		//Another symbol ("None") represents the fact that a robot sees no panel
@@ -50,10 +50,10 @@ public class TestGeometricMetaConstraint {
 		GeometricConstraintSolver geometricSolver = spatioTemporalSetSolver.getGeometricSolver();
 		SymbolicVariableConstraintSolver setSolver = spatioTemporalSetSolver.getSetSolver();
 		
-		Variable[] panel1 = PanelFactory.createPolygonVariables(panels[0], new Vec2(7.0f,-9.0f), new Vec2(9.0f,-7.0f), geometricSolver);
-		Variable[] panel2 = PanelFactory.createPolygonVariables(panels[1], new Vec2(-7.0f,-9.0f), new Vec2(-9.0f,-7.0f), geometricSolver);
-		Variable[] panel3 = PanelFactory.createPolygonVariables(panels[2], new Vec2(-9.0f,7.0f), new Vec2(-7.0f,9.0f), geometricSolver);
-		Variable[] panel4 = PanelFactory.createPolygonVariables(panels[3], new Vec2(7.0f,9.0f), new Vec2(9.0f,7.0f), geometricSolver);
+		Variable[] panel1 = PanelFactory.createPolygonVariables(panelNames[0], new Vec2(7.0f,-9.0f), new Vec2(9.0f,-7.0f), geometricSolver);
+		Variable[] panel2 = PanelFactory.createPolygonVariables(panelNames[1], new Vec2(-7.0f,-9.0f), new Vec2(-9.0f,-7.0f), geometricSolver);
+		Variable[] panel3 = PanelFactory.createPolygonVariables(panelNames[2], new Vec2(-9.0f,7.0f), new Vec2(-7.0f,9.0f), geometricSolver);
+		Variable[] panel4 = PanelFactory.createPolygonVariables(panelNames[3], new Vec2(7.0f,9.0f), new Vec2(9.0f,7.0f), geometricSolver);
 				
 		//Vars representing robots and what panels (if any) they see
 		Vector<Constraint> initialCondition = new Vector<Constraint>();		
@@ -79,7 +79,7 @@ public class TestGeometricMetaConstraint {
 		spatioTemporalSetSolver.addConstraints(initialCondition.toArray(new Constraint[initialCondition.size()]));
 		
 		AssignmentMetaConstraint mc1 = new AssignmentMetaConstraint(null, null);
-		mc1.setPanels(panels);
+		mc1.setPanels(panelNames);
 		metaSolver.addMetaConstraint(mc1);
 		
 		SimpleMoveBasePlanner mc2 = new SimpleMoveBasePlanner(null, null);

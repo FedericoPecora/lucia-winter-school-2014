@@ -51,6 +51,14 @@ public class AssignmentMetaConstraint extends MetaConstraint {
 		Variable[] vars = ((LuciaMetaConstraintSolver)this.metaCS).getCurrentFocus().getScope();
 		
 		int numRobots = vars.length;
+		
+		//return "no conflict" if there aren't enough robots to cover the panels
+		//(and reset focus not null, so we do it all next time...)
+		if (numRobots < this.panels.length) {
+			((LuciaMetaConstraintSolver)this.metaCS).setCurrentFocus(null);
+			return null;
+		}
+		
 		boolean thereIsAnUnseenPanel = false;
 		for (int i = 0; i < panels.length; i++) {
 			boolean unseen = true;
@@ -135,6 +143,7 @@ public class AssignmentMetaConstraint extends MetaConstraint {
 	    	  cn.addConstraints(chooseValue,durationObserve);
 	      }
 	      for (Constraint newCon : newCons) cn.addConstraint(newCon);
+	      cn.setAnnotation(this);
 	      metaValues.add(cn);
 	    }
 
