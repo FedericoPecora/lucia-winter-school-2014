@@ -65,6 +65,7 @@ endif( OpenCV_FOUND )
  add_service_files(
    FILES
    getQR.srv
+   getStatus.srv
    sendGoal.srv
    getLocation.srv
    getPanel.srv
