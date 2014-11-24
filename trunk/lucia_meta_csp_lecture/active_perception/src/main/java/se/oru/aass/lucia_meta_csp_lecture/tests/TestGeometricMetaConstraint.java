@@ -89,10 +89,19 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 	@Override
 	public void onStart(ConnectedNode connectedNode) {
 		this.connectedNode = connectedNode;
+		
+		while (true) {
+			try {
+				this.connectedNode.getCurrentTime();
+				break;
+			}
+			catch(NullPointerException e) { }
+		}
+		
 		final Log log = connectedNode.getLog();
 		log.info("Lucia CSP Node starting...");
 
-		//TODO: get panels from ROS topic
+		//Make symbol names (including panels)
 		int numPanels = 4;
 		String[] panelNames = new String[numPanels];
 		String[] symbols = new String[numPanels+1];
@@ -103,7 +112,7 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 		//Another symbol ("None") represents the fact that a robot sees no panel
 		symbols[numPanels] = "None";
 
-		long origin = connectedNode.getCurrentTime().totalNsecs()/1000;
+		long origin = connectedNode.getCurrentTime().totalNsecs()/1000000;
 		metaSolver = new LuciaMetaConstraintSolver(origin,origin+1000000,500,symbols);
 		spatioTemporalSetSolver = (SpatioTemporalSetNetworkSolver)metaSolver.getConstraintSolvers()[0];
 		activitySolver = spatioTemporalSetSolver.getActivitySolver();
@@ -142,14 +151,13 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(activitySolver, 1000, cb);
 
 		//Vars representing robots and what panels (if any) they see
-		int numRobots = 5;
+		int numRobots = 4;
 		String[] robotTimelines = new String[numRobots];
 		for (int i = 0; i < numRobots; i++) {
-			robotTimelines[i] = "StateOfRobot"+i;
-			ROSDispatchingFunction df = new ROSDispatchingFunction(robotTimelines[i], spatioTemporalSetSolver);
+			robotTimelines[i] = "turtlebot_"+(i+1);
+			ROSDispatchingFunction df = new ROSDispatchingFunction(robotTimelines[i], spatioTemporalSetSolver, connectedNode);
 			animator.addDispatchingFunctions(activitySolver, df);
-			ROSTopicSensor sensor = new ROSTopicSensor(robotTimelines[i], "/a/topic", animator, spatioTemporalSetSolver, df);
-			sensor.registerSensorTrace("sensorTraces/robot" + i + ".st", origin);
+			ROSTopicSensor sensor = new ROSTopicSensor(robotTimelines[i], animator, spatioTemporalSetSolver, df, connectedNode);
 		}
 
 		AssignmentMetaConstraint mc1 = new AssignmentMetaConstraint(null, null);
@@ -162,10 +170,10 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 		ObservabilityMetaConstraint mc3 = new ObservabilityMetaConstraint(null, null);
 		metaSolver.addMetaConstraint(mc3);
 
-		ConstraintNetwork.draw(spatioTemporalSetSolver.getConstraintNetwork(), "SpatioTemporalSet network");
-		ConstraintNetwork.draw(activitySolver.getConstraintNetwork(),"Activity network");
-		ConstraintNetwork.draw(geometricSolver.getConstraintNetwork(),"Polygon network");
-		PolygonFrame pf = new PolygonFrame("Polygon Constraint Network", geometricSolver.getConstraintNetwork()/*,850.0f*/);
+//		ConstraintNetwork.draw(spatioTemporalSetSolver.getConstraintNetwork(), "SpatioTemporalSet network");
+//		ConstraintNetwork.draw(activitySolver.getConstraintNetwork(),"Activity network");
+//		ConstraintNetwork.draw(geometricSolver.getConstraintNetwork(),"Polygon network");
+//		PolygonFrame pf = new PolygonFrame("Polygon Constraint Network", geometricSolver.getConstraintNetwork()/*,850.0f*/);
 
 		TimelinePublisher tp = new TimelinePublisher((ActivityNetworkSolver)activitySolver, new Bounds(0,120000), true, robotTimelines);
 		TimelineVisualizer tv = new TimelineVisualizer(tp);

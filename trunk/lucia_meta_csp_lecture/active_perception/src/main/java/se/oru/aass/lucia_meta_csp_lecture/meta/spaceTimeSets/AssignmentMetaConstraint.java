@@ -104,10 +104,10 @@ public class AssignmentMetaConstraint extends MetaConstraint {
 			Variable newVar = RobotFactory.createSpatioTemporalSetVariable(var.getComponent(), new Vec2(0.0f,0.0f), 0.0f, this.getGroundSolver());
 			newVar.setMarking(LuciaMetaConstraintSolver.Markings.UNSUPPORTED);
 			newVars.add(newVar);
-			AllenIntervalConstraint before = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before);
-			before.setFrom(var);
-			before.setTo(newVar);
-			newCons.add(before);
+//			AllenIntervalConstraint before = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before);
+//			before.setFrom(var);
+//			before.setTo(newVar);
+//			newCons.add(before);
 			((SpatioTemporalSet)newVar).setTask("Observe");
 		}
 		
