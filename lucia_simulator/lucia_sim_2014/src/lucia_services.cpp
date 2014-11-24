@@ -46,16 +46,16 @@ int main(int argc, char** argv)
   image_transport::ImageTransport it_(nh_);
   image_transport::Subscriber image_sub_;
 
-  image_sub_                  = it_.subscribe("camera/rgb/image_raw", 1, &imageCb);
-  ros::ServiceServer QRserv   = nh_.advertiseService("getQR", sendQR);
-  ros::ServiceServer Goalserv = nh_.advertiseService("sendGoal", sendGoal);
-  ros::ServiceServer Locserv  = nh_.advertiseService("getLocation", getLocation);
-  ros::Subscriber    amcl_sub = nh_.subscribe("amcl_pose", 10, amclCallback);
+  image_sub_                    = it_.subscribe("camera/rgb/image_raw", 1, &imageCb);
+  ros::ServiceServer Statusserv = nh_.advertiseService("getStatus", sendStatus);
+  ros::ServiceServer QRserv     = nh_.advertiseService("getQR", sendQR);
+  ros::ServiceServer Goalserv   = nh_.advertiseService("sendGoal", sendGoal);
+  ros::ServiceServer Locserv    = nh_.advertiseService("getLocation", getLocation);
+  ros::Subscriber    amcl_sub   = nh_.subscribe("amcl_pose", 10, amclCallback);
   ros::Subscriber sub = nh_.subscribe("move_base/status", 10, goalStatus);
   ros::Publisher rotate_pub = nh_.advertise<geometry_msgs::Twist>("commands/velocity", 100);
 
   ros::Rate loop_rate(FREQUENCY);
-
 
    while (ros::ok())
    {
@@ -123,12 +123,21 @@ bool sendQR(lucia_sim_2014::getQR::Request &req, lucia_sim_2014::getQR::Response
   return true;
  }
 
+//========================================================================
+bool sendStatus(lucia_sim_2014::getStatus::Request &req, lucia_sim_2014::getStatus::Response &res)
+//========================================================================
+ {
+  res.status = statusOfMove;
+  return true;
+ }
+
 //================================================================================
 bool sendGoal(lucia_sim_2014::sendGoal::Request &req, lucia_sim_2014::sendGoal::Response &res)
 //================================================================================
  {
   MoveBaseClient ac("move_base", true);
 
+  statusOfMove = 1;
   while (!ac.waitForServer(ros::Duration(2.0)))
     {
     ROS_INFO("Waiting for the move_base action server to come up");
@@ -230,6 +239,27 @@ void rotate(ros::NodeHandle nh_, ros::Publisher rotate_pub)
        }
     rotate_pub.publish(pose);
      }
+
+  //Set status to report if asked thru getStatus service
+  if (status.status_list.empty()) {
+    statusOfMove = -1;
+    }
+  else if (!status.status_list.empty() && (int)status.status_list[0].status==SUCCEEDED  && code<0 && curr_yaw<=(2*M_PI)) {
+    statusOfMove = 1;
+  }
+  else if (!status.status_list.empty() && (int)status.status_list[0].status!=ACTIVE) {
+    statusOfMove = -1;
+    }
+  else if (!status.status_list.empty() && (int)status.status_list[0].status==ACTIVE) {
+    statusOfMove = 1;
+    }
+
+
+  /*  
+  else if (!status.status_list.empty() && (int)status.status_list[0].status!=ACTIVE) {
+    statusOfMove = -1;
+    }
+  */
 
   if(!status.status_list.empty() &&
       (int)status.status_list[0].status==ACTIVE)

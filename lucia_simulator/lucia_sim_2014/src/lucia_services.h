@@ -11,6 +11,7 @@
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
 #include <bullet/LinearMath/btMatrix3x3.h>
 #include <lucia_sim_2014/getQR.h>
+#include <lucia_sim_2014/getStatus.h>
 #include <lucia_sim_2014/sendGoal.h>
 #include <lucia_sim_2014/getLocation.h>
 #include <lucia_sim_2014/getPanel.h>
@@ -35,6 +36,9 @@
         panel3_x1, panel3_x2, panel3_y1, panel3_y2,
         panel4_x1, panel4_x2, panel4_y1, panel4_y2;
 
+//statusOfMove < 0 <=> not moving
+int statusOfMove = -1;
+
  using namespace std;
  typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
  geometry_msgs::PoseWithCovarianceStamped amcl_pos;
@@ -43,6 +47,7 @@
 
   void imageCb(const sensor_msgs::ImageConstPtr& msg);
   bool sendQR(lucia_sim_2014::getQR::Request &req, lucia_sim_2014::getQR::Response &res);
+  bool sendStatus(lucia_sim_2014::getStatus::Request &req, lucia_sim_2014::getStatus::Response &res);
   bool sendGoal(lucia_sim_2014::sendGoal::Request &req, lucia_sim_2014::sendGoal::Response &res);
   bool getLocation(lucia_sim_2014::getLocation::Request &req, lucia_sim_2014::getLocation::Response &res);
   void amclCallback(const geometry_msgs::PoseWithCovarianceStamped& msg);
