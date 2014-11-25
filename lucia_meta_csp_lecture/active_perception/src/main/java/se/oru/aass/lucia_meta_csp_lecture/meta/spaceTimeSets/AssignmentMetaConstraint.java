@@ -11,6 +11,7 @@ import org.metacsp.framework.ConstraintSolver;
 import org.metacsp.framework.ValueOrderingH;
 import org.metacsp.framework.Variable;
 import org.metacsp.framework.VariableOrderingH;
+import org.metacsp.framework.meta.FocusConstraint;
 import org.metacsp.framework.meta.MetaConstraint;
 import org.metacsp.framework.meta.MetaVariable;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
@@ -42,20 +43,18 @@ public class AssignmentMetaConstraint extends MetaConstraint {
 	@Override
 	public ConstraintNetwork[] getMetaVariables() {
 		//get unseenPanels
-		if (((LuciaMetaConstraintSolver)this.metaCS).getCurrentFocus() == null) {
-			FocusConstraint currentFocus = new FocusConstraint();
-			currentFocus.setScope(this.getGroundSolver().getVariables());
-			((LuciaMetaConstraintSolver)this.metaCS).setCurrentFocus(currentFocus);
+		if (this.metaCS.getCurrentFocus() == null) {
+			this.metaCS.setCurrentFocusVariables(this.getGroundSolver().getVariables());
 		}
 
-		Variable[] vars = ((LuciaMetaConstraintSolver)this.metaCS).getCurrentFocus().getScope();
+		Variable[] vars = this.metaCS.getCurrentFocusVariables();
 		
 		int numRobots = vars.length;
 		
 		//return "no conflict" if there aren't enough robots to cover the panels
 		//(and reset focus not null, so we do it all next time...)
 		if (numRobots < this.panels.length) {
-			((LuciaMetaConstraintSolver)this.metaCS).setCurrentFocus(null);
+			this.metaCS.setCurrentFocus(null);
 			return null;
 		}
 		
@@ -132,7 +131,7 @@ public class AssignmentMetaConstraint extends MetaConstraint {
 	      int[] a = p.next();
 	      ConstraintNetwork cn = new ConstraintNetwork(null);
 	      for (int i = 0; i < a.length; i++) {
-	    	  Variable var = newVars.elementAt(a[i]);; 
+	    	  Variable var = newVars.elementAt(a[i]);
 	    	  SymbolicValueConstraint chooseValue = new SymbolicValueConstraint(SymbolicValueConstraint.Type.VALUEEQUALS);
 	    	  chooseValue.setValue(panels[i]);
 	    	  chooseValue.setFrom(var);
@@ -148,11 +147,8 @@ public class AssignmentMetaConstraint extends MetaConstraint {
 	    }
 
 	    //Create the new current situation 
-		this.getGroundSolver().removeConstraint(((LuciaMetaConstraintSolver)this.metaCS).getCurrentFocus());
-		FocusConstraint newFocus = new FocusConstraint();
-		newFocus.setScope(newVars.toArray(new Variable[newVars.size()]));
-		this.getGroundSolver().addConstraint(newFocus);
-		((LuciaMetaConstraintSolver)this.metaCS).setCurrentFocus(newFocus);
+		this.metaCS.setCurrentFocusVariables(newVars.toArray(new Variable[newVars.size()]));
+		System.out.println("VARS IN FOCUS ARE NOW: " + this.metaCS.getCurrentFocusVariables().length);
 		
 		return metaValues.toArray(new ConstraintNetwork[metaValues.size()]);
 	}

@@ -34,8 +34,8 @@ public class ObservabilityMetaConstraint extends MetaConstraint {
 	@Override
 	public ConstraintNetwork[] getMetaVariables() {
 		//Get the focused vars first
-		if (((LuciaMetaConstraintSolver)this.metaCS).getCurrentFocus() == null) return null;
-		Variable[] observeActivities = ((LuciaMetaConstraintSolver)this.metaCS).getCurrentFocus().getScope();
+		Variable[] observeActivities = this.metaCS.getCurrentFocusVariables();
+		if (observeActivities == null) return null;
 				
 		HashMap<Variable,Variable[]> observeActivitiesToPolygons = new HashMap<Variable, Variable[]>();
 		Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();

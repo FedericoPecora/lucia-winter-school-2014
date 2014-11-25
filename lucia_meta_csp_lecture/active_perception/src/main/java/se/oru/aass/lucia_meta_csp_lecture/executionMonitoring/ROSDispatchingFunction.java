@@ -28,11 +28,13 @@ import org.ros.node.service.ServiceClient;
 import org.ros.node.service.ServiceResponseListener;
 import org.ros.node.topic.Subscriber;
 
+import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.LuciaMetaConstraintSolver;
 import se.oru.aass.lucia_meta_csp_lecture.multi.spaceTimeSets.SpatioTemporalSet;
 import se.oru.aass.lucia_meta_csp_lecture.multi.spaceTimeSets.SpatioTemporalSetNetworkSolver;
 
 public class ROSDispatchingFunction extends DispatchingFunction {
 
+	private LuciaMetaConstraintSolver metaSolver;
 	private SpatioTemporalSetNetworkSolver solver;
 	private SymbolicVariableActivity currentAct = null;
 	private boolean isExecuting = false;
@@ -40,9 +42,10 @@ public class ROSDispatchingFunction extends DispatchingFunction {
 	private String robot = null;
 	private ServiceClient<getStatusRequest, getStatusResponse> serviceClientStatus = null;
 
-	public ROSDispatchingFunction(String rob, SpatioTemporalSetNetworkSolver solver, ConnectedNode rosN) {
+	public ROSDispatchingFunction(String rob, LuciaMetaConstraintSolver metaSolver, ConnectedNode rosN) {
 		super(rob);
-		this.solver = solver;
+		this.metaSolver = metaSolver;
+		this.solver = (SpatioTemporalSetNetworkSolver)metaSolver.getConstraintSolvers()[0];
 		this.rosNode = rosN;
 		this.robot = rob;
 		
@@ -65,12 +68,14 @@ public class ROSDispatchingFunction extends DispatchingFunction {
 	
 							@Override
 							public void onSuccess(getStatusResponse arg0) {
+								//Only believe that it has stopped if we previously saw it moving
 								if ((int)arg0.getStatus() < 0) {
 									if (hasStartedMoving) {
 										finishCurrentActivity();
 										hasStartedMoving = false;
 									}
 								}
+								//We saw the robot move, now we can start checking whether it has stopped
 								else { hasStartedMoving = true; }
 							}
 						});
@@ -79,7 +84,6 @@ public class ROSDispatchingFunction extends DispatchingFunction {
 			}
 		};
 		statusMonitor.start();
-
 	}
 
 	private void sendGoal(final String robot, final String command, final Vec2 destination) {
@@ -158,6 +162,7 @@ public class ROSDispatchingFunction extends DispatchingFunction {
 
 	@Override
 	public boolean skip(SymbolicVariableActivity act) {
+		//Do not dispatch "Observe" activities
 		if (act.getSymbolicVariable().getSymbols()[0].equals("Observe")) return true;
 		return false;
 	}
