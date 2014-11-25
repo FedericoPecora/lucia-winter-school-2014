@@ -36,7 +36,6 @@ import org.ros.node.service.ServiceResponseListener;
 
 import se.oru.aass.lucia_meta_csp_lecture.executionMonitoring.ROSDispatchingFunction;
 import se.oru.aass.lucia_meta_csp_lecture.executionMonitoring.ROSTopicSensor;
-import se.oru.aass.lucia_meta_csp_lecture.executionMonitoring.ROSTopicListener;
 import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.AssignmentMetaConstraint;
 import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.LuciaMetaConstraintSolver;
 import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.ObservabilityMetaConstraint;
@@ -106,8 +105,8 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 		String[] panelNames = new String[numPanels];
 		String[] symbols = new String[numPanels+1];
 		for (int i = 0; i < numPanels; i++) {
-			panelNames[i] = "P"+i;
-			symbols[i] = "P"+i;
+			panelNames[i] = "P"+(i);
+			symbols[i] = "P"+(i);
 		}
 		//Another symbol ("None") represents the fact that a robot sees no panel
 		symbols[numPanels] = "None";
@@ -155,9 +154,9 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 		String[] robotTimelines = new String[numRobots];
 		for (int i = 0; i < numRobots; i++) {
 			robotTimelines[i] = "turtlebot_"+(i+1);
-			ROSDispatchingFunction df = new ROSDispatchingFunction(robotTimelines[i], spatioTemporalSetSolver, connectedNode);
+			ROSDispatchingFunction df = new ROSDispatchingFunction(robotTimelines[i], metaSolver, connectedNode);
 			animator.addDispatchingFunctions(activitySolver, df);
-			ROSTopicSensor sensor = new ROSTopicSensor(robotTimelines[i], animator, spatioTemporalSetSolver, df, connectedNode);
+			ROSTopicSensor sensor = new ROSTopicSensor(robotTimelines[i], animator, metaSolver, df, connectedNode);
 		}
 
 		AssignmentMetaConstraint mc1 = new AssignmentMetaConstraint(null, null);

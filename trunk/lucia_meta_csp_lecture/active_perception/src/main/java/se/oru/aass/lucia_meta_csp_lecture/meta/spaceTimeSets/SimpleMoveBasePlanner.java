@@ -38,7 +38,6 @@ public class SimpleMoveBasePlanner extends MetaConstraint {
 				ConstraintNetwork cn = new ConstraintNetwork(null);
 				cn.addVariable(var);
 				ret.add(cn);
-				System.out.println("Goal to achieve: " + var);
 			}
 		return ret.toArray(new ConstraintNetwork[ret.size()]);
 	}
