@@ -34,7 +34,7 @@ public class ObservabilityMetaConstraint extends MetaConstraint {
 	@Override
 	public ConstraintNetwork[] getMetaVariables() {
 		//Get the focused vars first
-		Variable[] observeActivities = this.metaCS.getCurrentFocusVariables();
+		Variable[] observeActivities = this.metaCS.getFocused();
 		if (observeActivities == null) return null;
 				
 		HashMap<Variable,Variable[]> observeActivitiesToPolygons = new HashMap<Variable, Variable[]>();
@@ -72,6 +72,7 @@ public class ObservabilityMetaConstraint extends MetaConstraint {
 			}
 		}
 		
+		if (ret.isEmpty()) return null;
 		return ret.toArray(new ConstraintNetwork[ret.size()]);
 	}
 

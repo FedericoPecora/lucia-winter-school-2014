@@ -14,16 +14,20 @@ import org.metacsp.framework.VariableOrderingH;
 import org.metacsp.framework.meta.FocusConstraint;
 import org.metacsp.framework.meta.MetaConstraint;
 import org.metacsp.framework.meta.MetaVariable;
+import org.metacsp.multi.activity.ActivityNetworkSolver;
+import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.symbols.SymbolicValueConstraint;
 import org.metacsp.multi.symbols.SymbolicVariable;
 import org.metacsp.multi.symbols.SymbolicValueConstraint.Type;
+import org.metacsp.multi.symbols.SymbolicVariableConstraintSolver;
 import org.metacsp.spatial.geometry.Vec2;
 import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
 import org.metacsp.utility.Permutation;
 
 import se.oru.aass.lucia_meta_csp_lecture.multi.spaceTimeSets.SpatioTemporalSet;
+import se.oru.aass.lucia_meta_csp_lecture.multi.spaceTimeSets.SpatioTemporalSetNetworkSolver;
 import se.oru.aass.lucia_meta_csp_lecture.util.RobotFactory;
 
 public class AssignmentMetaConstraint extends MetaConstraint {
@@ -42,19 +46,47 @@ public class AssignmentMetaConstraint extends MetaConstraint {
 	
 	@Override
 	public ConstraintNetwork[] getMetaVariables() {
-		//get unseenPanels
-		if (this.metaCS.getCurrentFocus() == null) {
-			this.metaCS.setCurrentFocusVariables(this.getGroundSolver().getVariables());
-		}
 
-		Variable[] vars = this.metaCS.getCurrentFocusVariables();
+		//If no focus, create one - the first time around,
+		//this should contain all variables, as the only thing that
+		//appears in the network is the initial Observes of the
+		//robots
+		if (this.metaCS.getCurrentFocusConstraint() == null) {
+			this.metaCS.setFocus(this.getGroundSolver().getVariables());
+		}
 		
-		int numRobots = vars.length;
+		//Number of variables in focus is always = number of robots
+		Variable[] varsInFocus = this.metaCS.getFocused();
+		Vector<Variable> currentVarsInFocus = new Vector<Variable>();
 		
-		//return "no conflict" if there aren't enough robots to cover the panels
+		//Get future - to see if vars in focus are connected to it
+		//If one is not, then it is not a sensor reading, and we should not
+		//include it in the current focus.
+		SpatioTemporalSetNetworkSolver spatioTemporalSetSolver = (SpatioTemporalSetNetworkSolver)this.metaCS.getConstraintSolvers()[0];
+		ActivityNetworkSolver activitySolver = spatioTemporalSetSolver.getActivitySolver();
+		Variable[] acts = activitySolver.getVariables("Time");
+		SymbolicVariableActivity future = null;
+		for (Variable var : acts) {
+			if (((SymbolicVariableActivity)var).getSymbolicVariable().getSymbols()[0].equals("Future")) {
+				future = (SymbolicVariableActivity)var;
+				break;
+			}
+		}
+		
+		//Filter vars that are in focus but not sensor readings (i.e., just expectations) 
+		for (Variable var : varsInFocus) {
+			SpatioTemporalSet act = ((SpatioTemporalSet)var);
+			Constraint[] cons = activitySolver.getConstraintNetwork().getConstraints(act.getActivity(), future);
+			if (cons != null && cons.length != 0) currentVarsInFocus.add(var);
+		}
+		
+		int numRobots = currentVarsInFocus.size();
+		
+		//Return "no conflict" if there aren't enough robots to cover the panels
 		//(and reset focus not null, so we do it all next time...)
 		if (numRobots < this.panels.length) {
-			this.metaCS.setCurrentFocus(null);
+			if (varsInFocus.length == numRobots)
+				this.metaCS.setCurrentFocusConstraint(null);
 			return null;
 		}
 		
@@ -62,7 +94,7 @@ public class AssignmentMetaConstraint extends MetaConstraint {
 		for (int i = 0; i < panels.length; i++) {
 			boolean unseen = true;
 			//System.out.println("Looking for robot that sees " + panels[i]);
-			for (Variable var : vars) {
+			for (Variable var : currentVarsInFocus) {
 				SymbolicVariable sv = ((SpatioTemporalSet)var).getSet();
 				for (String s : sv.getSymbols()) {
 					if (s.equals(panels[i])) {
@@ -74,6 +106,7 @@ public class AssignmentMetaConstraint extends MetaConstraint {
 			}
 			if (unseen) {
 				thereIsAnUnseenPanel = true;
+				System.out.println("Could not find a robot that sees " + panels[i]);
 				break;
 			}
 		}
@@ -86,7 +119,7 @@ public class AssignmentMetaConstraint extends MetaConstraint {
 		HashSet<Variable> chosenRobots = new HashSet<Variable>();
 		ConstraintNetwork ret = new ConstraintNetwork(null);
 		for (int i = 0; i < panels.length; i++)
-			while (!chosenRobots.add(vars[rand.nextInt(numRobots)])) {}
+			while (!chosenRobots.add(currentVarsInFocus.get(rand.nextInt(numRobots)))) {}
 		for (Variable var : chosenRobots) ret.addVariable(var);
 		return new ConstraintNetwork[] {ret};
 	}
@@ -147,8 +180,8 @@ public class AssignmentMetaConstraint extends MetaConstraint {
 	    }
 
 	    //Create the new current situation 
-		this.metaCS.setCurrentFocusVariables(newVars.toArray(new Variable[newVars.size()]));
-		System.out.println("VARS IN FOCUS ARE NOW: " + this.metaCS.getCurrentFocusVariables().length);
+		this.metaCS.setFocus(newVars.toArray(new Variable[newVars.size()]));
+		System.out.println("VARS IN FOCUS ARE NOW: " + this.metaCS.getFocused().length);
 		
 		return metaValues.toArray(new ConstraintNetwork[metaValues.size()]);
 	}

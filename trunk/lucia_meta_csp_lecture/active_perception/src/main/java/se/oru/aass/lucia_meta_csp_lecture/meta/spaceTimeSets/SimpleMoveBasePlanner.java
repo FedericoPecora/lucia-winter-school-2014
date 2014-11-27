@@ -39,6 +39,7 @@ public class SimpleMoveBasePlanner extends MetaConstraint {
 				cn.addVariable(var);
 				ret.add(cn);
 			}
+		if (ret.isEmpty()) return null;
 		return ret.toArray(new ConstraintNetwork[ret.size()]);
 	}
 
