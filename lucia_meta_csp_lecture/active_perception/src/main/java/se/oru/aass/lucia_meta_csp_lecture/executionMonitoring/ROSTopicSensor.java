@@ -110,31 +110,6 @@ public class ROSTopicSensor extends Sensor {
 		});
 	}
 	
-//	protected Activity createNewActivity(String value) {	
-//		//Here we need to check whether we can unify with expectation or not
-//		// -- If we can unify, return current expectation as the new sensor value
-//		// -- If we cannot, return a new SpatioTemporalSet with value "None"
-//		
-//		SpatioTemporalSet act = (SpatioTemporalSet)RobotFactory.createSpatioTemporalSetVariable(this.name, new Vec2(0.0f,0.0f), 0.0f, solver);
-//		act.setMarking(LuciaMetaConstraintSolver.Markings.SUPPORTED);
-//		((SpatioTemporalSet)act).setTask("Observe");
-//		
-//		getObservedPanel();
-//		
-//		SymbolicValueConstraint observedPanelConstraint = new SymbolicValueConstraint(SymbolicValueConstraint.Type.VALUEEQUALS);
-//		
-//		while (seenQR == -2) { try { Thread.sleep(10); } catch (InterruptedException e) { e.printStackTrace(); } }
-//		String panel = "None";
-//		if (seenQR >= 0) panel = "P"+seenQR; 
-//		observedPanelConstraint.setValue(panel);
-//		observedPanelConstraint.setFrom(act);
-//		observedPanelConstraint.setTo(act);
-//		solver.addConstraint(observedPanelConstraint);
-//
-//		System.out.println("%%%%%%%%%%%%%%%%%%%%%% MODELING " + act + " (value: " + value + ")");
-//		return act;
-//	}
-
 	private SpatioTemporalSet createPanelObservation(String panel) {
 		SpatioTemporalSet act = (SpatioTemporalSet)RobotFactory.createSpatioTemporalSetVariable(this.name, new Vec2(0.0f,0.0f), 0.0f, solver);
 		act.setMarking(LuciaMetaConstraintSolver.Markings.SUPPORTED);
@@ -161,12 +136,11 @@ public class ROSTopicSensor extends Sensor {
 		while (seenQR == -2) { try { Thread.sleep(10); } catch (InterruptedException e) { e.printStackTrace(); } }
 				
 		//See if there is an expectation
-		Variable[] vars = this.metaSolver.getCurrentFocusVariables();
+		Variable[] vars = this.metaSolver.getFocused();
 		SpatioTemporalSet expectation = null;
 
 		if (vars != null) {
 			for (Variable var : vars) {
-//				System.out.println("COMPARING " + var.getComponent() + " and " + this.robot);
 				if (var.getComponent().equals(this.robot)) {
 					expectation = (SpatioTemporalSet)var;
 					break;
@@ -188,11 +162,16 @@ public class ROSTopicSensor extends Sensor {
 
 		//If we are here, we have finished executing, thus
 		//expectation is certainly != null
+//		String expectedPanel = expectation.getSet().getSymbols()[0];
 		String newPanel = "P"+seenQR;
 		if (seenQR < 0) newPanel = "None";
 		SpatioTemporalSet ret = createPanelObservation(newPanel);
-//		this.metaSolver.removeFromCurrentFocus(expectation);
-//		this.metaSolver.addToCurrentFocus(ret);
+		
+		//Update focus:
+		// -- Remove expectation from focus
+		this.metaSolver.removeFromCurrentFocus(expectation);
+		// -- Add current observation to focus
+		this.metaSolver.focus(ret);
 		return ret;
 	}
 
