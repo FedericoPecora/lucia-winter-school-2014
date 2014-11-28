@@ -19,7 +19,7 @@
 #define FREQUENCY	100
 #define FAIL		-1
 #define ROBOT_ID	 1
-#define PIX_THRESHOLD    100000
+#define PIX_THRESHOLD    80000
 #define PIX_MIN          10
 #define PIX_MAX          100
 #define SUCCEEDED        3
