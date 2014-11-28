@@ -6,16 +6,19 @@ Panels:
       Expanded:
         - /TF1/Frames1
         - /TF1/Tree1
-        - /Global Map tb11/Costmap1
+        - /LaserScan tb11
+        - /Global Map tb11
         - /Global Map tb11/Planner1
         - /Local Map tb11/Costmap1
         - /Local Map tb11/Planner1
+        - /Axes1
       Splitter Ratio: 0.5
     Tree Height: 772
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Tool Properties
     Expanded:
+      - /2D Pose Estimate1
       - /2D Nav Goal1
     Name: Tool Properties
     Splitter Ratio: 0.588679
@@ -28,7 +31,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: LaserScan tb2
+    SyncSource: LaserScan tb1
 Visualization Manager:
   Class: ""
   Displays:
@@ -266,7 +269,7 @@ Visualization Manager:
       Size (Pixels): 3
       Size (m): 0.01
       Style: Squares
-      Topic: /scan
+      Topic: /turtlebot_1/scan
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
@@ -350,10 +353,10 @@ Visualization Manager:
     - Arrow Length: 0.2
       Class: rviz/PoseArray
       Color: 0; 192; 0
-      Enabled: true
+      Enabled: false
       Name: Amcl tb1
       Topic: /turtlebot_1/particlecloud
-      Value: true
+      Value: false
     - Class: rviz/Image
       Enabled: false
       Image Topic: /turtlebot_1/camera/rgb/image_raw
@@ -582,10 +585,10 @@ Visualization Manager:
       Class: rviz/Map
       Color Scheme: costmap
       Draw Behind: false
-      Enabled: true
+      Enabled: false
       Name: Global Map tb2
       Topic: /turtlebot_2/move_base/global_costmap/costmap
-      Value: true
+      Value: false
     - Alpha: 1
       Buffer Length: 1
       Class: rviz/Path
@@ -598,10 +601,10 @@ Visualization Manager:
       Class: rviz/Map
       Color Scheme: costmap
       Draw Behind: false
-      Enabled: true
+      Enabled: false
       Name: Local Map tb2
       Topic: /turtlebot_2/move_base/local_costmap/costmap
-      Value: true
+      Value: false
     - Alpha: 1
       Class: rviz/RobotModel
       Collision Enabled: false
@@ -819,18 +822,18 @@ Visualization Manager:
       Class: rviz/Map
       Color Scheme: costmap
       Draw Behind: false
-      Enabled: true
+      Enabled: false
       Name: Global Map tb3
       Topic: /turtlebot_3/move_base/global_costmap/costmap
-      Value: true
+      Value: false
     - Alpha: 0.7
       Class: rviz/Map
       Color Scheme: costmap
       Draw Behind: false
-      Enabled: true
+      Enabled: false
       Name: Local Map tb3
       Topic: /turtlebot_3/move_base/local_costmap/costmap
-      Value: true
+      Value: false
     - Alpha: 1
       Buffer Length: 1
       Class: rviz/Path
@@ -1056,18 +1059,18 @@ Visualization Manager:
       Class: rviz/Map
       Color Scheme: costmap
       Draw Behind: false
-      Enabled: true
+      Enabled: false
       Name: Global Map tb4
       Topic: /turtlebot_4/move_base/global_costmap/costmap
-      Value: true
+      Value: false
     - Alpha: 0.7
       Class: rviz/Map
       Color Scheme: costmap
       Draw Behind: false
-      Enabled: true
+      Enabled: false
       Name: Local Map tb4
       Topic: /turtlebot_4/move_base/local_costmap/costmap
-      Value: true
+      Value: false
     - Alpha: 1
       Buffer Length: 1
       Class: rviz/Path
@@ -1075,6 +1078,13 @@ Visualization Manager:
       Enabled: true
       Name: Path tb4
       Topic: /turtlebot_4/move_base/NavfnROS/plan
+      Value: true
+    - Class: rviz/Axes
+      Enabled: true
+      Length: 0.2
+      Name: Axes
+      Radius: 0.01
+      Reference Frame: <Fixed Frame>
       Value: true
   Enabled: true
   Global Options:
@@ -1084,22 +1094,27 @@ Visualization Manager:
   Name: root
   Tools:
     - Class: rviz/MoveCamera
-    - Class: rviz/Interact
-      Hide Inactive Objects: true
-    - Class: rviz/Select
+    - Class: rviz/Measure
+    - Class: rviz/SetInitialPose
+      Topic: /turtlebot_1/initialpose
     - Class: rviz/SetGoal
       Topic: /turtlebot_1/move_base_simple/goal
+    - Class: rviz/SetInitialPose
+      Topic: /turtlebot_2/initialpose
     - Class: rviz/SetGoal
       Topic: /turtlebot_2/move_base_simple/goal
+    - Class: rviz/SetInitialPose
+      Topic: /turtlebot_3/initialpose
     - Class: rviz/SetGoal
       Topic: /turtlebot_3/move_base_simple/goal
+    - Class: rviz/SetInitialPose
+      Topic: /turtlebot_4/initialpose
     - Class: rviz/SetGoal
       Topic: /turtlebot_4/move_base_simple/goal
-    - Class: rviz/Measure
   Value: true
   Views:
     Current:
-      Angle: 1.57
+      Angle: 6.27001
       Class: rviz/TopDownOrtho
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
@@ -1108,11 +1123,11 @@ Visualization Manager:
         Value: false
       Name: Current View
       Near Clip Distance: 0.01
-      Scale: 42.1582
+      Scale: 72.9856
       Target Frame: <Fixed Frame>
       Value: TopDownOrtho (rviz)
-      X: 0.448786
-      Y: -0.319449
+      X: -1.11257
+      Y: -3.42465
     Saved: ~
 Window Geometry:
   Displays:

@@ -87,6 +87,8 @@ void imageCb(const sensor_msgs::ImageConstPtr& msg)
   int green=0;
   int blue=0;
   int black=0;
+  int purple=0;
+  int yellow=0;
 
   for(int i=0;i<(cv_ptr->image.rows);i++)
      {
@@ -97,6 +99,10 @@ void imageCb(const sensor_msgs::ImageConstPtr& msg)
    if(intensity.val[0]<PIX_MIN && intensity.val[1]>PIX_MAX && intensity.val[2]<PIX_MIN) {green++;}
    if(intensity.val[0]<PIX_MIN && intensity.val[1]<PIX_MIN && intensity.val[2]>PIX_MAX) {blue++; }
    if(intensity.val[0]<PIX_MIN && intensity.val[1]<PIX_MIN && intensity.val[2]<PIX_MIN) {black++;}
+
+   if(intensity.val[0]>PIX_MAX && intensity.val[1]<PIX_MIN && intensity.val[2]>PIX_MAX) {purple++;}
+
+   if(intensity.val[0]>PIX_MAX && intensity.val[1]>PIX_MAX && intensity.val[2]<PIX_MIN) {yellow++;}
        }
       }
 
@@ -106,12 +112,10 @@ void imageCb(const sensor_msgs::ImageConstPtr& msg)
   if(green > PIX_THRESHOLD) {code=2;}
   if(blue  > PIX_THRESHOLD) {code=3;}
   if(black > PIX_THRESHOLD) {code=0;}
+  if(purple > PIX_THRESHOLD) {code=4;}
+  if(yellow > PIX_THRESHOLD) {code=5;}
 
- red=0;
- green=0;
- blue=0;
- black=0;
- black=0;
+ red = green = blue = black = purple = yellow = 0;
 
   }
 

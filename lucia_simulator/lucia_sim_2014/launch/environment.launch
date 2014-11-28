@@ -7,8 +7,8 @@
     <arg name="world_name" value="$(find lucia_sim_2014)/launch/worlds/lucia.world"/>
   </include>
 
-  <!-- Map server -->
-  <arg name="map_file" default="$(find lucia_sim_2014)/launch/maps/panels.yaml"/>
+
+  <arg name="map_file" default="$(find lucia_sim_2014)/launch/maps/lucia_map.yaml"/>
   <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" >
   <param name="frame_id" value="/map" />
   </node>
@@ -18,6 +18,10 @@
 
   <!-- Service for panel locations -->
   <include file="$(find lucia_sim_2014)/launch/panel_service.launch" />
+
+
+
+
 
 </launch>
 
