@@ -59,25 +59,11 @@ public class AssignmentMetaConstraint extends MetaConstraint {
 		Variable[] varsInFocus = this.metaCS.getFocused();
 		Vector<Variable> currentVarsInFocus = new Vector<Variable>();
 		
-		//Get future - to see if vars in focus are connected to it
-		//If one is not, then it is not a sensor reading, and we should not
-		//include it in the current focus.
-		SpatioTemporalSetNetworkSolver spatioTemporalSetSolver = (SpatioTemporalSetNetworkSolver)this.metaCS.getConstraintSolvers()[0];
-		ActivityNetworkSolver activitySolver = spatioTemporalSetSolver.getActivitySolver();
-		Variable[] acts = activitySolver.getVariables("Time");
-		SymbolicVariableActivity future = null;
-		for (Variable var : acts) {
-			if (((SymbolicVariableActivity)var).getSymbolicVariable().getSymbols()[0].equals("Future")) {
-				future = (SymbolicVariableActivity)var;
-				break;
-			}
-		}
-		
 		//Filter vars that are in focus but not sensor readings (i.e., just expectations) 
 		for (Variable var : varsInFocus) {
-			SpatioTemporalSet act = ((SpatioTemporalSet)var);
-			Constraint[] cons = activitySolver.getConstraintNetwork().getConstraints(act.getActivity(), future);
-			if (cons != null && cons.length != 0) currentVarsInFocus.add(var);
+			if (((LuciaMetaConstraintSolver)this.metaCS).isSensorReading((SpatioTemporalSet)var)) {
+				currentVarsInFocus.add(var);
+			}
 		}
 		
 		int numRobots = currentVarsInFocus.size();
