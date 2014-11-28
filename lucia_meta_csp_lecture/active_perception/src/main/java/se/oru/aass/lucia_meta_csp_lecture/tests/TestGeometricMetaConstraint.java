@@ -72,10 +72,8 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 			
 			@Override
 			public void onSuccess(getPanelResponse arg0) {
-				Variable[] panel1 = PanelFactory.createPolygonVariables(panelNames[0], new Vec2((float)arg0.getPanel1X1(),(float)arg0.getPanel1Y1()), new Vec2((float)arg0.getPanel1X2(),(float)arg0.getPanel1Y2()), geometricSolver);
-				Variable[] panel2 = PanelFactory.createPolygonVariables(panelNames[1], new Vec2((float)arg0.getPanel2X1(),(float)arg0.getPanel2Y1()), new Vec2((float)arg0.getPanel2X2(),(float)arg0.getPanel2Y2()), geometricSolver);
-				Variable[] panel3 = PanelFactory.createPolygonVariables(panelNames[2], new Vec2((float)arg0.getPanel3X1(),(float)arg0.getPanel3Y1()), new Vec2((float)arg0.getPanel3X2(),(float)arg0.getPanel3Y2()), geometricSolver);
-				Variable[] panel4 = PanelFactory.createPolygonVariables(panelNames[3], new Vec2((float)arg0.getPanel4X1(),(float)arg0.getPanel4Y1()), new Vec2((float)arg0.getPanel4X2(),(float)arg0.getPanel4Y2()), geometricSolver);
+				for(int i = 0; i < panelNames.length; i++)
+					PanelFactory.createPolygonVariables(panelNames[i], new Vec2((float)arg0.getPanel1X1(),(float)arg0.getPanel1Y1()), new Vec2((float)arg0.getPanel1X2(),(float)arg0.getPanel1Y2()), geometricSolver);
 			}
 			
 			@Override
@@ -101,7 +99,7 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 		log.info("Lucia CSP Node starting...");
 
 		//Make symbol names (including panels)
-		int numPanels = 4;
+		int numPanels = 2;
 		String[] panelNames = new String[numPanels];
 		String[] symbols = new String[numPanels+1];
 		for (int i = 0; i < numPanels; i++) {
@@ -150,7 +148,7 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(activitySolver, 1000, cb);
 
 		//Vars representing robots and what panels (if any) they see
-		int numRobots = 4;
+		int numRobots = 2;
 		String[] robotTimelines = new String[numRobots];
 		for (int i = 0; i < numRobots; i++) {
 			robotTimelines[i] = "turtlebot_"+(i+1);
