@@ -74,18 +74,22 @@ lucia_sim_2014::sendGoal goal_tb1,goal_tb2,goal_tb3,goal_tb4;
 goal_tb1.request.x =7.4;
 goal_tb1.request.y = 7.4;
 goal_tb1.request.theta = 3.14;
+goal_tb1.request.rotationAfter = 1;
 
 goal_tb2.request.x =-7.4;
 goal_tb2.request.y = -7.4;
 goal_tb2.request.theta = 2.0;
+goal_tb2.request.rotationAfter = 1;
 
 goal_tb3.request.x =7.4;
 goal_tb3.request.y = -7.4;
 goal_tb3.request.theta = 2.0;
+goal_tb3.request.rotationAfter = 1;
 
 goal_tb4.request.x =-7.4;
 goal_tb4.request.y = 7.4;
 goal_tb4.request.theta = 1.0;
+goal_tb4.request.rotationAfter = 1;
 
 //=====================================================
 

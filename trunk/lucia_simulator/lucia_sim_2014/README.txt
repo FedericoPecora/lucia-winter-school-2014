@@ -63,8 +63,10 @@ In the simulator, robots detect panels based on color. The following is the corr
 
 Black: 0
 Red:   1
-Blue:  2
-Green: 3
+Green: 2
+Blue:  3
+Purple:4
+Yellow:5
 None: -1
 
 In the real deployment, panel detection is done via QR code recognition. Each QR code encodes the integer associated its panel.
@@ -74,7 +76,7 @@ In the real deployment, panel detection is done via QR code recognition. Each QR
 Service description: 
 ====================
 
-In the following, "robot_name" stands for one of "turtlebot_n", where n = {1..4}. Each robot runs three services: 
+In the following, "robot_name" stands for one of "turtlebot_n", where n = {1..4}. Each robot runs four services: 
 
 1- /robot_name/getLocation : returns the current location of robot in the form of (x,y,theta)
 
@@ -86,10 +88,15 @@ Note: you can try this service by issuing the following on the command line:
 Note: you can try this service by issuing the following on the command line:
 > rosservice call /turtlebot_1/getQR "read: 0"
 
-3- /robot_name/sendGoal : requests the robot to reach a position in map expressed in the form (x,y,theta)
+3- /robot_name/sendGoal : requests the robot to reach a position in map expressed in the form (x,y,theta,rotationAfter). Set rotationAfter to 1 if searching the QR code is required after reaching to the goal otherwise set it to 0.
 
 Note: you can try this service by issuing the following on the command line:
-> rosservice call /turtlebot_1/sendGoal "x: 0.0 y: 0.0 theta: 0.0"
+> rosservice call /turtlebot_1/sendGoal "x: 0.0 y: 0.0 theta: 0.0 rotationAfter: 1"
+
+4- /robot_name/rotate : requests the robot to rotate 360 degrees to search the QR code.
+
+Note: you can try this service by issuing the following on the command line:
+> rosservice call /turtlebot_1/rotate "rotate: 1"
  
 A node called panel_serv provides the following global service:
 

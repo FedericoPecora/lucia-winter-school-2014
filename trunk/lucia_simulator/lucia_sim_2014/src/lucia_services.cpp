@@ -50,6 +50,7 @@ int main(int argc, char** argv)
   ros::ServiceServer Statusserv = nh_.advertiseService("getStatus", sendStatus);
   ros::ServiceServer QRserv     = nh_.advertiseService("getQR", sendQR);
   ros::ServiceServer Goalserv   = nh_.advertiseService("sendGoal", sendGoal);
+  ros::ServiceServer Rotateserv = nh_.advertiseService("rotate", sendRot);
   ros::ServiceServer Locserv    = nh_.advertiseService("getLocation", getLocation);
   ros::Subscriber    amcl_sub   = nh_.subscribe("amcl_pose", 10, amclCallback);
   ros::Subscriber sub = nh_.subscribe("move_base/status", 10, goalStatus);
@@ -59,7 +60,11 @@ int main(int argc, char** argv)
 
    while (ros::ok())
    {
-    rotate(nh_,rotate_pub);
+
+if(rotationAfter) //this veriable is handled by sendGoal and rotate services
+    rotation(nh_,rotate_pub);
+
+
     ros::spinOnce();
     loop_rate.sleep();
    }
@@ -135,6 +140,18 @@ bool sendStatus(lucia_sim_2014::getStatus::Request &req, lucia_sim_2014::getStat
   return true;
  }
 
+//========================================================================
+bool sendRot(lucia_sim_2014::rotate::Request &req, lucia_sim_2014::rotate::Response &res)
+//========================================================================
+ {
+  rotationAfter = req.rotate;
+    last_yaw=0;
+    curr_yaw=0;
+    init=true;
+
+  return true;
+ }
+
 //================================================================================
 bool sendGoal(lucia_sim_2014::sendGoal::Request &req, lucia_sim_2014::sendGoal::Response &res)
 //================================================================================
@@ -142,6 +159,7 @@ bool sendGoal(lucia_sim_2014::sendGoal::Request &req, lucia_sim_2014::sendGoal::
   MoveBaseClient ac("move_base", true);
 
   statusOfMove = 1;
+  rotationAfter = req.rotationAfter;
   while (!ac.waitForServer(ros::Duration(2.0)))
     {
     ROS_INFO("Waiting for the move_base action server to come up");
@@ -206,9 +224,13 @@ void goalStatus(const actionlib_msgs::GoalStatusArray& msg)
  }
 
 //==================================================
-void rotate(ros::NodeHandle nh_, ros::Publisher rotate_pub)
+void rotation(ros::NodeHandle nh_, ros::Publisher rotate_pub)
 //==================================================
  {
+
+//static double curr_yaw =0;
+//static double last_yaw =0;
+
   geometry_msgs::Twist pose;
 
   pose.linear.x = 0.0;
@@ -256,6 +278,9 @@ void rotate(ros::NodeHandle nh_, ros::Publisher rotate_pub)
     }
   else if (!status.status_list.empty() && (int)status.status_list[0].status==ACTIVE) {
     statusOfMove = 1;
+    last_yaw=0;
+    curr_yaw=0;
+    init=true;
     }
 
 
@@ -265,13 +290,13 @@ void rotate(ros::NodeHandle nh_, ros::Publisher rotate_pub)
     }
   */
 
-  if(!status.status_list.empty() &&
+ /* if(!status.status_list.empty() &&
       (int)status.status_list[0].status==ACTIVE)
     {
     last_yaw=0;
     curr_yaw=0;
     init=true;
-    } 
+    } */
 }
 
 //======================================================================================//
