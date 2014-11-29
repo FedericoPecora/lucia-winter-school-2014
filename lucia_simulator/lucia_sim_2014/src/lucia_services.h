@@ -15,6 +15,7 @@
 #include <lucia_sim_2014/sendGoal.h>
 #include <lucia_sim_2014/getLocation.h>
 #include <lucia_sim_2014/getPanel.h>
+#include <lucia_sim_2014/rotate.h>
 
 #define FREQUENCY	100
 #define FAIL		-1
@@ -28,6 +29,7 @@
  bool init = true;
  double curr_yaw =0;
  double last_yaw =0;
+ int    rotationAfter=0;
 
  int code;   // 1:red, 2:green, 3:blue, 0:black, -1:non
 
@@ -51,9 +53,10 @@ int statusOfMove = -1;
   bool sendGoal(lucia_sim_2014::sendGoal::Request &req, lucia_sim_2014::sendGoal::Response &res);
   bool getLocation(lucia_sim_2014::getLocation::Request &req, lucia_sim_2014::getLocation::Response &res);
   void amclCallback(const geometry_msgs::PoseWithCovarianceStamped& msg);
- void goalStatus(const actionlib_msgs::GoalStatusArray& msg);
- void rotate(ros::NodeHandle nh_, ros::Publisher rotate_pub);
- bool getPanel(lucia_sim_2014::getPanel::Request &req, lucia_sim_2014::getPanel::Response &res);
+  void goalStatus(const actionlib_msgs::GoalStatusArray& msg);
+  void rotation(ros::NodeHandle nh_, ros::Publisher rotate_pub);
+  bool getPanel(lucia_sim_2014::getPanel::Request &req, lucia_sim_2014::getPanel::Response &res);
+  bool sendRot(lucia_sim_2014::rotate::Request &req, lucia_sim_2014::rotate::Response &res);
 
 //======================================================================================//
 //					EOF						//

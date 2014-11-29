@@ -69,6 +69,7 @@ endif( OpenCV_FOUND )
    sendGoal.srv
    getLocation.srv
    getPanel.srv
+   rotate.srv
  )
 
 
