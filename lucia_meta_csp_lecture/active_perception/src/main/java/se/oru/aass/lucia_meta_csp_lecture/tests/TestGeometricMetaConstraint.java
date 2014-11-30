@@ -1,6 +1,13 @@
 package se.oru.aass.lucia_meta_csp_lecture.tests;
 
+import geometry_msgs.Point;
+import geometry_msgs.Pose;
+import geometry_msgs.Quaternion;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Vector;
 
 import lucia_sim_2014.getPanel;
@@ -19,20 +26,25 @@ import org.metacsp.multi.symbols.SymbolicVariableConstraintSolver;
 import org.metacsp.sensing.ConstraintNetworkAnimator;
 import org.metacsp.sensing.InferenceCallback;
 import org.metacsp.spatial.geometry.GeometricConstraintSolver;
+import org.metacsp.spatial.geometry.Polygon;
 import org.metacsp.spatial.geometry.Vec2;
 import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
 import org.metacsp.utility.UI.PolygonFrame;
 import org.metacsp.utility.timelinePlotting.TimelinePublisher;
 import org.metacsp.utility.timelinePlotting.TimelineVisualizer;
+import org.ros.concurrent.CancellableLoop;
 import org.ros.exception.RemoteException;
 import org.ros.exception.RosRuntimeException;
 import org.ros.exception.ServiceNotFoundException;
+import org.ros.message.Duration;
 import org.ros.namespace.GraphName;
 import org.ros.node.AbstractNodeMain;
 import org.ros.node.ConnectedNode;
+import org.ros.node.parameter.ParameterTree;
 import org.ros.node.service.ServiceClient;
 import org.ros.node.service.ServiceResponseListener;
+import org.ros.node.topic.Publisher;
 
 import se.oru.aass.lucia_meta_csp_lecture.executionMonitoring.ROSDispatchingFunction;
 import se.oru.aass.lucia_meta_csp_lecture.executionMonitoring.ROSTopicSensor;
@@ -43,23 +55,28 @@ import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.SimpleMoveBasePlann
 import se.oru.aass.lucia_meta_csp_lecture.multi.spaceTimeSets.SpatioTemporalSet;
 import se.oru.aass.lucia_meta_csp_lecture.multi.spaceTimeSets.SpatioTemporalSetNetworkSolver;
 import se.oru.aass.lucia_meta_csp_lecture.util.PanelFactory;
+import se.oru.aass.lucia_meta_csp_lecture.util.PanelMarkerPublisher;
 import se.oru.aass.lucia_meta_csp_lecture.util.RobotFactory;
 import se.oru.aass.lucia_meta_csp_lecture.*;
+import visualization_msgs.Marker;
+import visualization_msgs.MarkerArray;
 
 
 public class TestGeometricMetaConstraint extends AbstractNodeMain {
 
 	private ConnectedNode connectedNode;
+	private final String nodeName = "lucia_meta_csp_lecture";
 	
 	private LuciaMetaConstraintSolver metaSolver;
 	private SpatioTemporalSetNetworkSolver spatioTemporalSetSolver;
 	private ActivityNetworkSolver activitySolver;
 	private GeometricConstraintSolver geometricSolver;
 	private SymbolicVariableConstraintSolver setSolver;
+	private ParameterTree params;
 	
 	@Override
 	public GraphName getDefaultNodeName() {
-		return GraphName.of("LuciaCSPNode");
+		return GraphName.of(nodeName);
 	}
 
 	private void getPanelsFromROSService(final String[] panelNames) {
@@ -72,8 +89,27 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 			
 			@Override
 			public void onSuccess(getPanelResponse arg0) {
-				for(int i = 0; i < panelNames.length; i++)
-					PanelFactory.createPolygonVariables(panelNames[i], new Vec2((float)arg0.getPanel1X1(),(float)arg0.getPanel1Y1()), new Vec2((float)arg0.getPanel1X2(),(float)arg0.getPanel1Y2()), geometricSolver);
+				
+				//Build the panel polygons
+				final ArrayList<Polygon> polygons = new ArrayList<Polygon>();
+				final HashMap<Polygon,String> polygonsToPanelNamespaces = new HashMap<Polygon,String>();
+				for(int i = 1; i <= panelNames.length; i++) {
+					try {
+						double x1 = (Double) arg0.getClass().getMethod("getPanel" + i + "X1", new Class[]{}).invoke(arg0, new Object[]{});
+						double y1 = (Double) arg0.getClass().getMethod("getPanel" + i + "Y1", new Class[]{}).invoke(arg0, new Object[]{});
+						double x2 = (Double) arg0.getClass().getMethod("getPanel" + i + "X2", new Class[]{}).invoke(arg0, new Object[]{});
+						double y2 = (Double) arg0.getClass().getMethod("getPanel" + i + "Y2", new Class[]{}).invoke(arg0, new Object[]{});
+						Variable[] polyVars = PanelFactory.createPolygonVariables(panelNames[i-1], new Vec2((float)x1,(float)y1), new Vec2((float)x2,(float)y2), geometricSolver);
+						for (int t = 0; t < polyVars.length; t++) {
+							//if (!(params.has("/" + nodeName + "/exclude_panel_" + (i) + "_side") && params.getInteger("/" + nodeName + "/exclude_panel_" + (i) + "_side") == (t+1))) {
+								polygons.add((Polygon)polyVars[t]);
+								polygonsToPanelNamespaces.put((Polygon)polyVars[t], "Panel " + panelNames[i-1] + " FoV " + (t+1));
+							//}
+						}
+					}
+					catch (Exception e) { e.printStackTrace(); }
+				}
+				new PanelMarkerPublisher(polygons, polygonsToPanelNamespaces, connectedNode);
 			}
 			
 			@Override
@@ -98,8 +134,10 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 		final Log log = connectedNode.getLog();
 		log.info("Lucia CSP Node starting...");
 
+		params = connectedNode.getParameterTree();
+				
 		//Make symbol names (including panels)
-		int numPanels = 2;
+		int numPanels = params.getInteger("/" + nodeName + "/num_used_panels");
 		String[] panelNames = new String[numPanels];
 		String[] symbols = new String[numPanels+1];
 		for (int i = 0; i < numPanels; i++) {
@@ -145,10 +183,10 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 			}
 		};
 		
-		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(activitySolver, 1000, cb);
+		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(activitySolver, 1000, cb, true);
 
 		//Vars representing robots and what panels (if any) they see
-		int numRobots = 2;
+		int numRobots = params.getInteger("/" + nodeName + "/num_used_robots");
 		String[] robotTimelines = new String[numRobots];
 		for (int i = 0; i < numRobots; i++) {
 			robotTimelines[i] = "turtlebot_"+(i+1);

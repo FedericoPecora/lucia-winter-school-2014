@@ -41,6 +41,7 @@ dependencies {
   /* An external maven artifact dependency */
   compile 'org.ros.rosjava_core:rosjava:[0.1,)'
   compile 'org.metacsp:meta-csp-framework:0.0.0-SNAPSHOT'
+  compile 'org.ros.rosjava_messages:visualization_msgs:1.10.+'
   /* Example of a local subproject dependency */ 
   /* compile project(':sibling_gradle_project') */
   compile project(':lucia_sim_2014')
