@@ -12,9 +12,12 @@ import org.metacsp.spatial.geometry.Vec2;
 
 public class PanelFactory {
 
-	private static final float d1 = 0.4f;
-	private static final float d2 = 2f;
-	private static final float teta = 0.5236f; //30 degrees
+	//private static final float d1 = 0.4f;
+	//private static final float d2 = 2f;
+	//private static final float teta = 0.5236f; //30 degrees
+	private static final float d1 = 0.01f;
+	private static final float d2 = 1.0f;
+	private static final float teta = 0.3491f; //20 degrees
 	//radii of circle
 	private static final float r1 = (float)(d1/Math.cos(teta));
 	private static final float r2 = (float)(d2/Math.cos(teta));

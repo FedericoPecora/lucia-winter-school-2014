@@ -84,7 +84,6 @@ public class ObservabilityMetaConstraint extends MetaConstraint {
 		}
 
 		if (ret.isEmpty()) return null;
-		System.out.println("RETURNING NOT NULL: " + ret);
 		return ret.toArray(new ConstraintNetwork[ret.size()]);
 	}
 
