@@ -19,17 +19,27 @@
 
 #define FREQUENCY	100
 #define FAIL		-1
-#define ROBOT_ID	 1
 #define PIX_THRESHOLD    80000
 #define PIX_MIN          10
 #define PIX_MAX          100
+//'PENDING', 'ACTIVE', 'PREEMPTED', 'SUCCEEDED', 'ABORTED', 'REJECTED', 'PREEMPTING', 'RECALLING', 'RECALLED', 'LOST'
 #define SUCCEEDED        3
 #define ACTIVE           1
+#define PREEMPTED        2
+#define ABORTED          4
+#define REJECTED         5
+#define PENDING          0
+#define PREEMPTING       6
+#define RECALLING        7
+#define RECALLED         8
+#define LOST             9
+
 
  bool init = true;
  double curr_yaw =0;
  double last_yaw =0;
  int    rotationAfter=0;
+ std::string   robot_id;
 
  int code;   // 1:red, 2:green, 3:blue, 0:black, -1:non
 

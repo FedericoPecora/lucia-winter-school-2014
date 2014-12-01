@@ -106,6 +106,7 @@
   <!-- lucia services -->
   <node pkg="lucia_sim_2014" type="lucia_services" name="lucia_services" output="screen">
     <remap from="commands/velocity" to="$(arg robot_name)/commands/velocity"/>
+    <param name="robot_id" type="string" value="$(arg robot_name)" />
    </node>
 
 </launch>

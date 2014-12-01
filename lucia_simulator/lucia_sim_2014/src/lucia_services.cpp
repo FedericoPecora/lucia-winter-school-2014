@@ -58,6 +58,8 @@ int main(int argc, char** argv)
 
   ros::Rate loop_rate(FREQUENCY);
 
+  nh_.getParam("lucia_services/robot_id",robot_id);
+
    while (ros::ok())
    {
 
@@ -193,7 +195,7 @@ bool getLocation(lucia_sim_2014::getLocation::Request &req, lucia_sim_2014::getL
 
   btMatrix3x3(q).getEulerYPR(yaw, pitch,roll );
 
-  res.id = ROBOT_ID;
+  res.id = 1;//robot_id;
   res.x= amcl_pos.pose.pose.position.x;
   res.y= amcl_pos.pose.pose.position.y;
   res.z= amcl_pos.pose.pose.position.z;
@@ -269,34 +271,48 @@ void rotation(ros::NodeHandle nh_, ros::Publisher rotate_pub)
   //Set status to report if asked thru getStatus service
   if (status.status_list.empty()) {
     statusOfMove = -1;
-    }
-  else if (!status.status_list.empty() && (int)status.status_list[0].status==SUCCEEDED  && code<0 && curr_yaw<=(2*M_PI)) {
-    statusOfMove = 1;
+    std::cout << robot_id <<" ++ empty (-1)" << std::endl;
   }
-  else if (!status.status_list.empty() && (int)status.status_list[0].status!=ACTIVE) {
+  else if ((int)status.status_list[0].status==SUCCEEDED && code<0 && curr_yaw<=(2*M_PI)) {
+    statusOfMove = 1;
+    std::cout << robot_id <<" ++ succed but still turning (1)" << std::endl;
+  }
+  else if ((int)status.status_list[0].status==SUCCEEDED) {
     statusOfMove = -1;
-    }
-  else if (!status.status_list.empty() && (int)status.status_list[0].status==ACTIVE) {
+    curr_yaw = 2*M_PI;
+    std::cout << robot_id <<" ++ succed and finished turning or didn't need to turn (-1)" << std::endl;
+  }
+  else if ((int)status.status_list[0].status==ABORTED) {
+    statusOfMove = -1;
+    std::cout << robot_id <<" ++ aborted (-1)" << std::endl;
+  }
+  else if ((int)status.status_list[0].status==PREEMPTED) {
+    statusOfMove = -1;
+    std::cout << robot_id <<" ++ pre-empted (-1)" << std::endl;
+  }
+  else if ((int)status.status_list[0].status==REJECTED) {
+    statusOfMove = -1;
+    std::cout << robot_id <<" ++ rejected (-1)" << std::endl;
+  }
+  else if ((int)status.status_list[0].status==LOST) {
+    statusOfMove = -1;
+    std::cout << robot_id <<" ++ lost (-1)" << std::endl;
+  }
+  else if ((int)status.status_list[0].status==RECALLED) {
+    statusOfMove = -1;
+    std::cout << robot_id <<" ++ recalled (-1)" << std::endl;
+  }
+  else if ((int)status.status_list[0].status==ACTIVE) {
     statusOfMove = 1;
     last_yaw=0;
     curr_yaw=0;
     init=true;
+    std::cout << robot_id <<" ++ active (1)" << std::endl;
     }
-
-
-  /*  
-  else if (!status.status_list.empty() && (int)status.status_list[0].status!=ACTIVE) {
+  else {
     statusOfMove = -1;
+    std::cout << robot_id <<" ++ 'PENDING' 'PREEMPTING', 'RECALLING'" << std::endl;
     }
-  */
-
- /* if(!status.status_list.empty() &&
-      (int)status.status_list[0].status==ACTIVE)
-    {
-    last_yaw=0;
-    curr_yaw=0;
-    init=true;
-    } */
 }
 
 //======================================================================================//
