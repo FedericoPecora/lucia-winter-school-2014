@@ -73,12 +73,17 @@ public class ObservabilityMetaConstraint extends MetaConstraint {
 			Polygon obsPoly = ((SpatioTemporalSet)observes).getPolygon();
 			Polygon panelPoly1 = (Polygon)observeActivitiesToPolygons.get(observes)[0];
 			Polygon panelPoly2 = (Polygon)observeActivitiesToPolygons.get(observes)[1];
-			if (!(GeometricConstraintSolver.getRelation(obsPoly, panelPoly1).equals(GeometricConstraint.Type.INSIDE)
-					|| GeometricConstraintSolver.getRelation(obsPoly, panelPoly2).equals(GeometricConstraint.Type.INSIDE))) {
+			boolean inside1 = false;
+			boolean inside2 = false;
+			if (panelPoly1 != null && GeometricConstraintSolver.getRelation(obsPoly, panelPoly1).equals(GeometricConstraint.Type.INSIDE))
+				inside1 = true;
+			else if (panelPoly2 != null && GeometricConstraintSolver.getRelation(obsPoly, panelPoly2).equals(GeometricConstraint.Type.INSIDE))
+				inside2 = true;
+			if (!(inside1 || inside2)) {
 				ConstraintNetwork cn = new ConstraintNetwork(null);
 				cn.addVariable(observes);
-				cn.addVariable(panelPoly1);
-				cn.addVariable(panelPoly2);
+				if (panelPoly1 != null) cn.addVariable(panelPoly1);
+				if (panelPoly2 != null) cn.addVariable(panelPoly2);
 				ret.add(cn);
 			}
 		}
@@ -92,30 +97,25 @@ public class ObservabilityMetaConstraint extends MetaConstraint {
 		Variable[] vars = metaVariable.getConstraintNetwork().getVariables();
 		//for (Variable var : vars) System.out.println("metaVar is: " + var);
 		SpatioTemporalSet observeAction = null;
-		Polygon panel1 = null;
-		Polygon panel2 = null;
+		Polygon[] panels = new Polygon[2];
+		int polyCounter = 0;
 		for (Variable var : vars) {
 			if (var instanceof SpatioTemporalSet) observeAction = (SpatioTemporalSet)var;
-			else if (var instanceof Polygon && panel1 == null) panel1 = (Polygon)var;
-			else panel2 = (Polygon)var;
+			else if (var instanceof Polygon) panels[polyCounter++] = (Polygon)var;
 		}
 
+		Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
 		//Create metavalues (one for each possible panel)
-		ConstraintNetwork cn1 = new ConstraintNetwork(null);
-		ConstraintNetwork cn2 = new ConstraintNetwork(null);
-		GeometricConstraint inside1 = new GeometricConstraint(GeometricConstraint.Type.INSIDE);
-		inside1.setFrom(observeAction.getPolygon());
-		inside1.setTo(panel1);
-		GeometricConstraint inside2 = new GeometricConstraint(GeometricConstraint.Type.INSIDE);
-		inside2.setFrom(observeAction.getPolygon());
-		inside2.setTo(panel2);
-		cn1.addConstraint(inside1);
-		cn2.addConstraint(inside2);
-
-		cn1.setAnnotation(this);
-		cn2.setAnnotation(this);
-
-		return new ConstraintNetwork[] {cn1,cn2};
+		for (int i = 0; i < polyCounter; i++) {
+			ConstraintNetwork cn = new ConstraintNetwork(null);
+			GeometricConstraint inside = new GeometricConstraint(GeometricConstraint.Type.INSIDE);
+			inside.setFrom(observeAction.getPolygon());
+			inside.setTo(panels[i]);
+			cn.addConstraint(inside);
+			cn.setAnnotation(this);
+			ret.add(cn);
+		}
+		return ret.toArray(new ConstraintNetwork[ret.size()]);
 	}
 
 	@Override

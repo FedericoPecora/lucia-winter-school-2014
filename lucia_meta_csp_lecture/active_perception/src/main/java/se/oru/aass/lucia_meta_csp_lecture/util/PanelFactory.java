@@ -21,18 +21,30 @@ public class PanelFactory {
 	//radii of circle
 	private static final float r1 = (float)(d1/Math.cos(teta));
 	private static final float r2 = (float)(d2/Math.cos(teta));
-			
+
 	public static Variable[] createPolygonVariables(String id, Vec2 p1, Vec2 p2, ConstraintSolver cs) {
+		return createPolygonVariables(id, p1, p2, cs, false, false);
+	}
+	
+	public static Variable[] createPolygonVariables(String id, Vec2 p1, Vec2 p2, ConstraintSolver cs, boolean skipFirst, boolean skipSecond) {
 		Vector<Vec2> rights = getTrapazoid(d1, d2, p1, p2, r1, r2);        
 		Vector<Vec2> lefts = getTrapazoid(-d1, -d2, p1, p2, r1, r2);
-		Variable[] polys = cs.createVariables(2, id);
-		Polygon poly1 = (Polygon)polys[0];
-		Polygon poly2 = (Polygon)polys[1];
-		poly1.setDomain(lefts.toArray(new Vec2[lefts.size()]));
-		poly2.setDomain(rights.toArray(new Vec2[rights.size()]));
-		poly1.setMovable(false);
-		poly2.setMovable(false);
-		return polys;
+		Polygon poly1 = null;
+		Polygon poly2 = null;
+		Vector<Variable> ret = new Vector<Variable>();
+		if (!skipFirst) {
+			poly1 = (Polygon)cs.createVariable(id);
+			poly1.setDomain(lefts.toArray(new Vec2[lefts.size()]));
+			poly1.setMovable(false);
+			ret.add(poly1);
+		}
+		if (!skipSecond) {
+			poly2 = (Polygon)cs.createVariable(id);
+			poly2.setDomain(rights.toArray(new Vec2[rights.size()]));
+			poly2.setMovable(false);
+			ret.add(poly2);
+		}
+		return ret.toArray(new Variable[ret.size()]);
 	}
 
 	private static Vector<Vec2> getTrapazoid(float d1, float d2, Vec2 a1, Vec2 a2, float r1, float r2) {
