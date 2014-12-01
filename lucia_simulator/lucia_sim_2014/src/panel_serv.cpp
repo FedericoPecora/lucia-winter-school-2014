@@ -33,6 +33,16 @@ int main(int argc, char** argv)
   nh_.getParam("/panel_serv/panel4_y1",panel4_y1);
   nh_.getParam("/panel_serv/panel4_y2",panel4_y2);
 
+  nh_.getParam("/panel_serv/panel5_x1",panel5_x1);
+  nh_.getParam("/panel_serv/panel5_x2",panel5_x2);
+  nh_.getParam("/panel_serv/panel5_y1",panel5_y1);
+  nh_.getParam("/panel_serv/panel5_y2",panel5_y2);
+
+  nh_.getParam("/panel_serv/panel6_x1",panel6_x1);
+  nh_.getParam("/panel_serv/panel6_x2",panel6_x2);
+  nh_.getParam("/panel_serv/panel6_y1",panel6_y1);
+  nh_.getParam("/panel_serv/panel6_y2",panel6_y2);
+
 //=====================================================
 
   ros::Rate loop_rate(FREQUENCY);
@@ -66,6 +76,14 @@ bool getPanel(lucia_sim_2014::getPanel::Request &req, lucia_sim_2014::getPanel::
  res.panel4_x2 = panel4_x2;
  res.panel4_y1 = panel4_y1;
  res.panel4_y2 = panel4_y2;
+ res.panel5_x1 = panel5_x1;
+ res.panel5_x2 = panel5_x2;
+ res.panel5_y1 = panel5_y1;
+ res.panel5_y2 = panel5_y2;
+ res.panel6_x1 = panel6_x1;
+ res.panel6_x2 = panel6_x2;
+ res.panel6_y1 = panel6_y1;
+ res.panel6_y2 = panel6_y2;
 
   return true;
  }
