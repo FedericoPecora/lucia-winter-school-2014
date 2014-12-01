@@ -95,16 +95,34 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 				final HashMap<Polygon,String> polygonsToPanelNamespaces = new HashMap<Polygon,String>();
 				for(int i = 1; i <= panelNames.length; i++) {
 					try {
+						boolean skipFirst = false;
+						boolean skipSecond = false;
+						if (params.has("/" + nodeName + "/exclude_panel_" + (i) + "_side")) {
+							if (params.getInteger("/" + nodeName + "/exclude_panel_" + (i) + "_side") == 1) {
+								skipFirst = true;
+							}
+							else if (params.getInteger("/" + nodeName + "/exclude_panel_" + (i) + "_side") == 2) {
+								skipSecond = true;
+							}							
+						}
 						double x1 = (Double) arg0.getClass().getMethod("getPanel" + i + "X1", new Class[]{}).invoke(arg0, new Object[]{});
 						double y1 = (Double) arg0.getClass().getMethod("getPanel" + i + "Y1", new Class[]{}).invoke(arg0, new Object[]{});
 						double x2 = (Double) arg0.getClass().getMethod("getPanel" + i + "X2", new Class[]{}).invoke(arg0, new Object[]{});
 						double y2 = (Double) arg0.getClass().getMethod("getPanel" + i + "Y2", new Class[]{}).invoke(arg0, new Object[]{});
-						Variable[] polyVars = PanelFactory.createPolygonVariables(panelNames[i-1], new Vec2((float)x1,(float)y1), new Vec2((float)x2,(float)y2), geometricSolver);
-						for (int t = 0; t < polyVars.length; t++) {
-							//if (!(params.has("/" + nodeName + "/exclude_panel_" + (i) + "_side") && params.getInteger("/" + nodeName + "/exclude_panel_" + (i) + "_side") == (t+1))) {
-								polygons.add((Polygon)polyVars[t]);
-								polygonsToPanelNamespaces.put((Polygon)polyVars[t], "Panel " + panelNames[i-1] + " FoV " + (t+1));
-							//}
+						Variable[] polyVars = PanelFactory.createPolygonVariables(panelNames[i-1], new Vec2((float)x1,(float)y1), new Vec2((float)x2,(float)y2), geometricSolver, skipFirst, skipSecond);
+						polygons.add((Polygon)polyVars[0]);
+						if (skipFirst) polygonsToPanelNamespaces.put((Polygon)polyVars[0], "Panel " + panelNames[i-1] + " FoV 2");
+						else polygonsToPanelNamespaces.put((Polygon)polyVars[0], "Panel " + panelNames[i-1] + " FoV 1");
+						if (!skipSecond) {
+							if (skipFirst) {
+								polygons.add((Polygon)polyVars[0]);
+								polygonsToPanelNamespaces.put((Polygon)polyVars[0], "Panel " + panelNames[i-1] + " FoV 2");
+							}
+							else {
+								polygons.add((Polygon)polyVars[1]);
+								polygonsToPanelNamespaces.put((Polygon)polyVars[1], "Panel " + panelNames[i-1] + " FoV 2");
+							}
+							
 						}
 					}
 					catch (Exception e) { e.printStackTrace(); }
@@ -183,7 +201,8 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 			}
 		};
 		
-		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(activitySolver, 1000, cb, true);
+		//Last arg: pass true to start paused
+		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(activitySolver, 1000, cb, false);
 
 		//Vars representing robots and what panels (if any) they see
 		int numRobots = params.getInteger("/" + nodeName + "/num_used_robots");
