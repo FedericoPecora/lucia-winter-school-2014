@@ -71,8 +71,13 @@ public class AssignmentMetaConstraint extends MetaConstraint {
 		//Return "no conflict" if there aren't enough robots to cover the panels
 		//(and reset focus not null, so we do it all next time...)
 		if (numRobots < this.panels.length) {
-			if (varsInFocus.length == numRobots)
+			if (varsInFocus.length == numRobots) {
 				this.metaCS.setCurrentFocusConstraint(null);
+				System.out.println("NOT ENOUGH ROBOTS... WAITING");
+			}
+			else {
+				System.out.println("NOT ALL ROBOTS FINISHED... WAITING");
+			}
 			return null;
 		}
 		
@@ -190,7 +195,7 @@ public class AssignmentMetaConstraint extends MetaConstraint {
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return null;
+		return this.getClass().getSimpleName();
 	}
 
 	@Override

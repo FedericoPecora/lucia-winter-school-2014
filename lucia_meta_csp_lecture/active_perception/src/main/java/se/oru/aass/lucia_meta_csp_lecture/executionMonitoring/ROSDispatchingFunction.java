@@ -1,5 +1,6 @@
 package se.oru.aass.lucia_meta_csp_lecture.executionMonitoring;
 
+import java.util.Arrays;
 import java.util.List;
 
 import lucia_sim_2014.getLocation;
@@ -41,6 +42,7 @@ public class ROSDispatchingFunction extends DispatchingFunction {
 	private ConnectedNode rosNode = null;
 	private String robot = null;
 	private ServiceClient<getStatusRequest, getStatusResponse> serviceClientStatus = null;
+	private boolean hasStartedMoving = false;
 
 	public ROSDispatchingFunction(String rob, LuciaMetaConstraintSolver metaSolver, ConnectedNode rosN) {
 		super(rob);
@@ -54,7 +56,6 @@ public class ROSDispatchingFunction extends DispatchingFunction {
 		catch (ServiceNotFoundException e) { throw new RosRuntimeException(e); }
 
 		Thread statusMonitor = new Thread() {
-			boolean hasStartedMoving = false;
 			public void run() {
 				while (true) {
 					try { Thread.sleep(1000); }
@@ -63,6 +64,7 @@ public class ROSDispatchingFunction extends DispatchingFunction {
 						final getStatusRequest request = serviceClientStatus.newMessage();
 						request.setRead((byte) 0);
 						serviceClientStatus.call(request, new ServiceResponseListener<getStatusResponse>() {
+							
 							@Override
 							public void onFailure(RemoteException arg0) { }
 	
@@ -75,8 +77,8 @@ public class ROSDispatchingFunction extends DispatchingFunction {
 										hasStartedMoving = false;
 									}
 								}
-								//We saw the robot move, now we can start checking whether it has stopped
-								else { hasStartedMoving = true; }
+//								//We saw the robot move, now we can start checking whether it has stopped
+//								else { hasStartedMoving = true; }
 							}
 						});
 					}
@@ -95,6 +97,7 @@ public class ROSDispatchingFunction extends DispatchingFunction {
 		request.setX(destination.x);
 		request.setY(destination.y);
 		request.setTheta(0);
+		request.setRotationAfter((byte)1);
 		serviceClient.call(request, new ServiceResponseListener<sendGoalResponse>() {
 
 			@Override
@@ -157,6 +160,8 @@ public class ROSDispatchingFunction extends DispatchingFunction {
 		isExecuting = true;
 
 		this.sendGoal(robot, command, destination);
+		
+		hasStartedMoving = true;
 
 	}
 

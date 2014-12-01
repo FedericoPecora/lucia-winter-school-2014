@@ -121,7 +121,7 @@ public class ROSTopicSensor extends Sensor {
 		observedPanelConstraint.setTo(act);
 		solver.addConstraint(observedPanelConstraint);
 		
-		System.out.println("%%%%%%%%%%%%%%%%%%%%%% MODELING (" + robot + ") " + act);
+		System.out.println("%%%%%%%%%%%%%%%%%%%%%% MODELING (" + robot + " sees " + panel + ") " + act);
 		
 		return act;
 	}
@@ -187,6 +187,7 @@ public class ROSTopicSensor extends Sensor {
 			pose = newPose;
 			return false;
 		}
+		System.out.println("===================== SITUATION: isExec: " + proprioception.isExecuting() + " PC: " + positionChanged(newPose) + " doneOnce: " + doneOnce);
 		//If this is the first sensing since I started moving
 		if (proprioception.isExecuting() && positionChanged(newPose) && !doneOnce) {
 			System.out.println("DEBUG (" + robot + "): FIRST LOCATION DURING MOVE --> " + value);

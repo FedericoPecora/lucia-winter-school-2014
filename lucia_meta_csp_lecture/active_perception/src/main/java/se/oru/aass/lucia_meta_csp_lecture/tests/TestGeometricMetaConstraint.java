@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Vector;
+import java.util.logging.Level;
 
 import lucia_sim_2014.getPanel;
 import lucia_sim_2014.getPanelRequest;
@@ -31,6 +32,7 @@ import org.metacsp.spatial.geometry.Vec2;
 import org.metacsp.time.APSPSolver;
 import org.metacsp.time.Bounds;
 import org.metacsp.utility.UI.PolygonFrame;
+import org.metacsp.utility.logging.MetaCSPLogging;
 import org.metacsp.utility.timelinePlotting.TimelinePublisher;
 import org.metacsp.utility.timelinePlotting.TimelineVisualizer;
 import org.ros.concurrent.CancellableLoop;
@@ -138,8 +140,10 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 	}
 
 	@Override
-	public void onStart(ConnectedNode connectedNode) {
-		this.connectedNode = connectedNode;
+	public void onStart(ConnectedNode cn) {
+		this.connectedNode = cn;
+		
+		//MetaCSPLogging.setLevel(LuciaMetaConstraintSolver.class, Level.FINEST);
 		
 		while (true) {
 			try {
@@ -159,8 +163,8 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 		String[] panelNames = new String[numPanels];
 		String[] symbols = new String[numPanels+1];
 		for (int i = 0; i < numPanels; i++) {
-			panelNames[i] = "P"+(i);
-			symbols[i] = "P"+(i);
+			panelNames[i] = "P"+(i+1);
+			symbols[i] = "P"+(i+1);
 		}
 		//Another symbol ("None") represents the fact that a robot sees no panel
 		symbols[numPanels] = "None";
@@ -202,7 +206,14 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 		};
 		
 		//Last arg: pass true to start paused
-		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(activitySolver, 1000, cb, false);
+		//ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(activitySolver, 1000, cb, false);
+		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(activitySolver, 1000, cb, false) {
+			@Override
+			protected long getCurrentTimeInMillis() {
+				System.out.println("CALLING ROS TIME!!!!!!!!!!!!!!!!!!!! " + connectedNode.getCurrentTime().totalNsecs()/1000000);
+				return connectedNode.getCurrentTime().totalNsecs()/1000000;
+			}
+		};
 
 		//Vars representing robots and what panels (if any) they see
 		int numRobots = params.getInteger("/" + nodeName + "/num_used_robots");
