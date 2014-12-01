@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <launch>
   <node name="lucia_meta_csp_lecture" pkg="lucia_meta_csp_lecture" type="active_perception" args="se.oru.aass.lucia_meta_csp_lecture.tests.TestGeometricMetaConstraint" output="screen">
-     <param name="num_used_panels" type="int" value="1" />
-     <param name="num_used_robots" type="int" value="1" />
+     <param name="num_used_panels" type="int" value="2" />
+     <param name="num_used_robots" type="int" value="2" />
      <param name="exclude_panel_1_side" type="int" value="2" />
-     <!--param name="exclude_panel_2_side" type="int" value="1" /-->
+     <param name="exclude_panel_2_side" type="int" value="1" />
      
      <!--NO<param name="exclude_panel_3_side" type="int" value="1" />-->
      <!--NO<param name="exclude_panel_4_side" type="int" value="1" />-->
