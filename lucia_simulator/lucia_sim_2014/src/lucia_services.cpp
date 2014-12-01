@@ -277,9 +277,9 @@ void rotation(ros::NodeHandle nh_, ros::Publisher rotate_pub)
     statusOfMove = 1;
     std::cout << robot_id <<" ++ succed but still turning (1)" << std::endl;
   }
-  else if ((int)status.status_list[0].status==SUCCEEDED) {
+  else if ((int)status.status_list[0].status==SUCCEEDED && (code>0 || curr_yaw > (2*M_PI))) {
     statusOfMove = -1;
-    curr_yaw = 2*M_PI;
+    //curr_yaw = 2*M_PI;
     std::cout << robot_id <<" ++ succed and finished turning or didn't need to turn (-1)" << std::endl;
   }
   else if ((int)status.status_list[0].status==ABORTED) {
