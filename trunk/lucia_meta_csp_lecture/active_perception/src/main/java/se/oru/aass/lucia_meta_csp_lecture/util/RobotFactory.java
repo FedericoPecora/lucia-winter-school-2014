@@ -10,7 +10,7 @@ import se.oru.aass.lucia_meta_csp_lecture.multi.spaceTimeSets.SpatioTemporalSet;
 public class RobotFactory {
 	
 	private static final int NUM_VERTS = 6;
-	private static final float RADIUS = 0.5f;
+	private static final float RADIUS = 0.2f;
 
 	public static Variable createSpatioTemporalSetVariable(String id, Vec2 p, float theta, ConstraintSolver cs) {
 		Vec2[] verts = new Vec2[NUM_VERTS];

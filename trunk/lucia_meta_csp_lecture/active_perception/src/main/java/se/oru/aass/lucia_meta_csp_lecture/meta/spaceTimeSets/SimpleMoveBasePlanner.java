@@ -50,17 +50,19 @@ public class SimpleMoveBasePlanner extends MetaConstraint {
 		goal.setMarking(LuciaMetaConstraintSolver.Markings.SUPPORTED);
 		//System.out.println("Achieving goal " + goal);
 		//Create actions for the mini-plan
-		Variable[] moveActions = this.getActivityNetworkSolver().createVariables(1,goal.getComponent());
-		((SymbolicVariableActivity)moveActions[0]).setSymbolicDomain("move_base");
+		Variable moveAction = this.getActivityNetworkSolver().createVariable(goal.getComponent());
+		((SymbolicVariableActivity)moveAction).setSymbolicDomain("move_base");
 		
 		//Create constraints for the mini-plan
-		moveActions[0].setMarking(LuciaMetaConstraintSolver.Markings.SUPPORTED);
+		moveAction.setMarking(LuciaMetaConstraintSolver.Markings.SUPPORTED);
 		AllenIntervalConstraint durationMove = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(3000,APSPSolver.INF));
-		durationMove.setFrom(moveActions[0]);
-		durationMove.setTo(moveActions[0]);
+		durationMove.setFrom(moveAction);
+		durationMove.setTo(moveAction);
 		AllenIntervalConstraint moveMeetsGoal = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Meets);
-		moveMeetsGoal.setFrom(moveActions[0]);
+		moveMeetsGoal.setFrom(moveAction);
 		moveMeetsGoal.setTo(((SpatioTemporalSet)goal).getActivity());
+		
+		System.out.println("MoveMeetsGoal: " + moveMeetsGoal);
 		
 		//Get the previous observe from current goal
 		//Wrong: instead, make a release with timeNow, because we need to dispatch thsi action
@@ -111,7 +113,7 @@ public class SimpleMoveBasePlanner extends MetaConstraint {
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return null;
+		return this.getClass().getSimpleName();
 	}
 
 	@Override

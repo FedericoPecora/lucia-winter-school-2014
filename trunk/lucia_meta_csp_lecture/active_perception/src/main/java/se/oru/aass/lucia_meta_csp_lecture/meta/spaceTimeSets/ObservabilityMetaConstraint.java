@@ -147,7 +147,7 @@ public class ObservabilityMetaConstraint extends MetaConstraint {
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return null;
+		return this.getClass().getSimpleName();
 	}
 
 	@Override
