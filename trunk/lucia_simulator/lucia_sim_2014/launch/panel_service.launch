@@ -20,17 +20,17 @@
 		<param name="panel3_x2" type="double" value="-0.135" />
 		<param name="panel3_y2" type="double" value="0.916" />
 
-		<!-- panel_4, 2.452 1.175 | 2.285 0.836 -->
-		<param name="panel4_x1" type="double" value="2.452" />
-		<param name="panel4_y1" type="double" value="1.175" />
-		<param name="panel4_x2" type="double" value="2.285" />
-		<param name="panel4_y2" type="double" value="0.836" />
+                <!-- panel_4, -0.033 -2.105 | -0.311 -2.463 -->
+		<param name="panel4_x1" type="double" value="-0.033" />
+		<param name="panel4_y1" type="double" value="-2.105" />
+		<param name="panel4_x2" type="double" value="-0.311" />
+		<param name="panel4_y2" type="double" value="-2.463" />
 
-                <!-- panel_5, -0.033 -2.105 | -0.311 -2.463 -->
-		<param name="panel5_x1" type="double" value="-0.033" />
-		<param name="panel5_y1" type="double" value="-2.105" />
-		<param name="panel5_x2" type="double" value="-0.311" />
-		<param name="panel5_y2" type="double" value="-2.463" />
+		<!-- panel_5, 2.452 1.175 | 2.285 0.836 -->
+		<param name="panel5_x1" type="double" value="2.452" />
+		<param name="panel5_y1" type="double" value="1.175" />
+		<param name="panel5_x2" type="double" value="2.285" />
+		<param name="panel5_y2" type="double" value="0.836" />
 
 		<!-- panel_6, 2.795 -2.128 | 2.354 -2.128 -->
 		<param name="panel6_x2" type="double" value="2.795" />
