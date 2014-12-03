@@ -54,6 +54,7 @@ import se.oru.aass.lucia_meta_csp_lecture.executionMonitoring.ROSTopicSensor;
 import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.AssignmentMetaConstraint;
 import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.LuciaMetaConstraintSolver;
 import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.ObservabilityMetaConstraint;
+import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.SchedulingMetaConstraint;
 import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.SimpleMoveBasePlanner;
 import se.oru.aass.lucia_meta_csp_lecture.multi.spaceTimeSets.SpatioTemporalSet;
 import se.oru.aass.lucia_meta_csp_lecture.multi.spaceTimeSets.SpatioTemporalSetNetworkSolver;
@@ -252,6 +253,10 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 		ObservabilityMetaConstraint mc3 = new ObservabilityMetaConstraint(null, null);
 		metaSolver.addMetaConstraint(mc3);
 
+		//iran
+		SchedulingMetaConstraint mc4 = new SchedulingMetaConstraint(null, null);
+		metaSolver.addMetaConstraint(mc4);
+		
 //		ConstraintNetwork.draw(spatioTemporalSetSolver.getConstraintNetwork(), "SpatioTemporalSet network");
 //		ConstraintNetwork.draw(activitySolver.getConstraintNetwork(),"Activity network");
 //		ConstraintNetwork.draw(geometricSolver.getConstraintNetwork(),"Polygon network");

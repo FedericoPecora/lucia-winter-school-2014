@@ -22,6 +22,7 @@ import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
 import org.metacsp.multi.symbols.SymbolicValueConstraint;
 import org.metacsp.sensing.ConstraintNetworkAnimator;
 import org.metacsp.sensing.Sensor;
+import org.metacsp.spatial.geometry.Polygon;
 import org.metacsp.spatial.geometry.Vec2;
 import org.ros.exception.RemoteException;
 import org.ros.exception.RosRuntimeException;
@@ -124,7 +125,7 @@ public class ROSTopicSensor extends Sensor {
 		});
 	}
 
-	private SpatioTemporalSet createPanelObservation(String panel) {
+	private SpatioTemporalSet createPanelObservation(String panel, String positionString) {
 		SpatioTemporalSet act = (SpatioTemporalSet)RobotFactory.createSpatioTemporalSetVariable(this.name, new Vec2(0.0f,0.0f), 0.0f, solver);
 		act.setMarking(LuciaMetaConstraintSolver.Markings.SUPPORTED);
 		((SpatioTemporalSet)act).setTask("Observe");
@@ -135,13 +136,22 @@ public class ROSTopicSensor extends Sensor {
 		observedPanelConstraint.setTo(act);
 		solver.addConstraint(observedPanelConstraint);
 
-		//set the position of the polygon and orientation
+
+		//set the position of the polygon and (no) orientation
+        float[] newPose = new float[4];
+        String[] poseS = positionString.split(",");
+        for (int i = 0; i < poseS.length; i++) newPose[i] = Float.parseFloat(poseS[i]);        
+		Polygon p = act.getPolygon();
+		p.setDomain(RobotFactory.getVerticesByCenter(new Vec2(newPose[0], newPose[1])));
+
+ 
 		
 		System.out.println("%%%%%%%%%%%%%%%%%%%%%% MODELING (" + robot + " sees " + panel + ") " + act);
 
 		return act;
 	}
-
+	
+	//value is the string representing the position of the robot
 	protected Activity createNewActivity(String value) {	
 		
 		//Get currently observed panel
@@ -172,8 +182,8 @@ public class ROSTopicSensor extends Sensor {
 
 		//If we have no expectation, model a new sensor reading (initial condition)
 		if (expectation == null) {
-			if (seenQR < 0) return createPanelObservation("None");
-			else return createPanelObservation("P"+seenQR);
+			if (seenQR < 0) return createPanelObservation("None", value);
+			else return createPanelObservation("P"+seenQR, value);
 		}
 
 		//If we are here, we have finished executing, thus
@@ -185,7 +195,7 @@ public class ROSTopicSensor extends Sensor {
 		//Update focus:
 		// -- Remove expectation from focus
 		this.metaSolver.removeFromCurrentFocus(expectation);
-		SpatioTemporalSet ret = createPanelObservation(newPanel);
+		SpatioTemporalSet ret = createPanelObservation(newPanel, value);
 		
 		// -- Add current observation to focus
 		this.metaSolver.focus(ret);

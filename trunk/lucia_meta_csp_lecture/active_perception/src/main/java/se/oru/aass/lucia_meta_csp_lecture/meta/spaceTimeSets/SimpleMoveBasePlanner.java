@@ -64,24 +64,6 @@ public class SimpleMoveBasePlanner extends MetaConstraint {
 		
 		System.out.println("MoveMeetsGoal: " + moveMeetsGoal);
 		
-		//Get the previous observe from current goal
-		//Wrong: instead, make a release with timeNow, because we need to dispatch thsi action
-//		SpatioTemporalSet previousObserve = null;
-//		Constraint[] cons = getGroundSolver().getConstraintNetwork().getIngoingEdges(goal);
-//		for (Constraint con : cons) {
-//			if (con instanceof AllenIntervalConstraint) {
-//				AllenIntervalConstraint aic = (AllenIntervalConstraint)con;
-//				if (aic.getTypes()[0].equals(AllenIntervalConstraint.Type.Before)) {
-//					previousObserve = (SpatioTemporalSet)aic.getFrom();
-//					break;
-//				}
-//			}
-//		}
-//		
-//		AllenIntervalConstraint previousObserveBeforePlan = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Meets);
-//		previousObserveBeforePlan.setFrom(previousObserve.getActivity());
-//		previousObserveBeforePlan.setTo(moveActions[0]);
-		
 		ret.addConstraints(durationMove,moveMeetsGoal/*,previousObserveBeforePlan*/);
 		ret.setAnnotation(this);
 		
