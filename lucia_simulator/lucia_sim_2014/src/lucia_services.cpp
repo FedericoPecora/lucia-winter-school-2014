@@ -118,9 +118,9 @@ void imageCb(const sensor_msgs::ImageConstPtr& msg)
   if(red   > PIX_THRESHOLD) {code=1;}
   if(green > PIX_THRESHOLD) {code=2;}
   if(blue  > PIX_THRESHOLD) {code=3;}
-  if(black > PIX_THRESHOLD) {code=0;}
-  if(purple > PIX_THRESHOLD) {code=4;}
-  if(yellow > PIX_THRESHOLD) {code=5;}
+  if(black > PIX_THRESHOLD) {code=4;}
+  if(purple > PIX_THRESHOLD) {code=5;}
+  if(yellow > PIX_THRESHOLD) {code=6;}
 
  red = green = blue = black = purple = yellow = 0;
 

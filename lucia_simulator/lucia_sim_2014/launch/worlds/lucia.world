@@ -194,9 +194,9 @@
         </link>
       </model>
       <model name='panle_5'>
-        <pose>2.23281 1.0114 0.499123 1.4e-05 9e-06 -0.640242</pose>
+        <pose>2.36792 1.3452 0.499123 1.4e-05 9e-06 -0.640838</pose>
         <link name='link'>
-          <pose>2.23281 1.0114 0.499123 1.4e-05 9e-06 -0.640242</pose>
+          <pose>2.36792 1.3452 0.499123 1.4e-05 9e-06 -0.640838</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
