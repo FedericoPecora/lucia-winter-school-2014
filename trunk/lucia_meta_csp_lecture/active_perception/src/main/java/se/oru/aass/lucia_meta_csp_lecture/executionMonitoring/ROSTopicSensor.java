@@ -1,5 +1,7 @@
 package se.oru.aass.lucia_meta_csp_lecture.executionMonitoring;
 
+import geometry_msgs.PoseWithCovariance;
+
 import java.util.Arrays;
 import java.util.Vector;
 
@@ -24,9 +26,13 @@ import org.metacsp.spatial.geometry.Vec2;
 import org.ros.exception.RemoteException;
 import org.ros.exception.RosRuntimeException;
 import org.ros.exception.ServiceNotFoundException;
+import org.ros.message.MessageListener;
 import org.ros.node.ConnectedNode;
 import org.ros.node.service.ServiceClient;
 import org.ros.node.service.ServiceResponseListener;
+import org.ros.node.topic.Subscriber;
+
+import actionlib_msgs.GoalStatus;
 
 import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.LuciaMetaConstraintSolver;
 import se.oru.aass.lucia_meta_csp_lecture.multi.spaceTimeSets.SpatioTemporalSet;
@@ -41,100 +47,97 @@ public class ROSTopicSensor extends Sensor {
 	private LuciaMetaConstraintSolver metaSolver;
 	private SpatioTemporalSetNetworkSolver solver;
 	private float[] pose = null;
-	private ROSDispatchingFunction proprioception;
 	private ConnectedNode rosNode = null;
-	private ServiceClient<getLocationRequest, getLocationResponse> serviceClientLocation = null;
 	private ServiceClient<getQRRequest, getQRResponse> serviceClientQR = null;
-	private boolean doneOnce = false;
 	private int seenQR = -2;
 	private String robot;
-	
-	public ROSTopicSensor(String rob, ConstraintNetworkAnimator animator, LuciaMetaConstraintSolver metaSolver, ROSDispatchingFunction proprioception, final ConnectedNode rosNode) {
+
+	public ROSTopicSensor(String rob, ConstraintNetworkAnimator animator, LuciaMetaConstraintSolver metaSolver, final ConnectedNode rosNode) {
 		super(rob, animator);
 		this.metaSolver = metaSolver;
 		this.solver = (SpatioTemporalSetNetworkSolver)metaSolver.getConstraintSolvers()[0];
-		this.proprioception = proprioception;
 		this.rosNode = rosNode;
 		this.robot = rob;
 
-		// Call position service, and model sensor values received as response
-		try { serviceClientLocation = rosNode.newServiceClient(robot+"/getLocation", getLocation._TYPE); }
-		catch (ServiceNotFoundException e) { throw new RosRuntimeException(e); }
+//		//Subscribe to location topic
+//		Subscriber<geometry_msgs.PoseWithCovarianceStamped> poseFeedback = rosNode.newSubscriber("/" + robot + "/amcl_pose", geometry_msgs.PoseWithCovarianceStamped._TYPE);
+//		poseFeedback.addMessageListener(new MessageListener<geometry_msgs.PoseWithCovarianceStamped>() {
+//			@Override
+//			public void onNewMessage(geometry_msgs.PoseWithCovarianceStamped message) {
+//				//currentPose = message.getPose();
+//				float x = (float)message.getPose().getPose().getPosition().getX();
+//				float y = (float)message.getPose().getPose().getPosition().getY();
+//				float oZ = (float)message.getPose().getPose().getOrientation().getZ();
+//				float oW = (float)message.getPose().getPose().getOrientation().getW();
+//				String value = x + "," + y + "," + oZ + "," + oW;
+//				if (pose == null) {
+//					pose = new float[4];
+//					pose[0] = x;
+//					pose[1] = y;
+//					pose[2] = oZ;
+//					pose[3] = oW;
+//				}
+//				long timeNow = rosNode.getCurrentTime().totalNsecs()/1000000;
+//				postSensorValue(value, timeNow);
+//			}
+//		}, 10);
 		
-		Thread checkPositionThread = new Thread() {
-			
-			public void run() {
-				while (true) {
-					try { Thread.sleep(1000); }
-					catch (InterruptedException e) { e.printStackTrace(); }
-					final getLocationRequest request = serviceClientLocation.newMessage();
-					request.setRead((byte) 0);
-					serviceClientLocation.call(request, new ServiceResponseListener<getLocationResponse>() {
-						@Override
-						public void onSuccess(getLocationResponse arg0) {
-							String sensorValue = arg0.getX() + "," + arg0.getY() + "," + arg0.getTheta();
-							long timeNow = rosNode.getCurrentTime().totalNsecs()/1000000;
-							synchronized (ans) {
-								postSensorValue(sensorValue, timeNow);	
-							}
-						}
-						
-						@Override
-						public void onFailure(RemoteException arg0) {
-							throw new RosRuntimeException(arg0);				
-						}
-					});
-				}
-			}
-		};
-		checkPositionThread.start();
+		long timeNow = rosNode.getCurrentTime().totalNsecs()/1000000;
+		postSensorValue("InitialObserveQR", timeNow);
+		
 	}
-	
+
 	private void getObservedPanel() {
 		seenQR = -2;
 		try { serviceClientQR = rosNode.newServiceClient(robot+"/getQR", getQR._TYPE); }
 		catch (ServiceNotFoundException e) { throw new RosRuntimeException(e); }
 		getQRRequest request = serviceClientQR.newMessage();
-		
+
 		request.setRead((byte) 0);
 		serviceClientQR.call(request, new ServiceResponseListener<getQRResponse>() {
 			@Override
 			public void onSuccess(getQRResponse arg0) {
 				seenQR = (int)arg0.getQrcode();
 			}
-			
+
 			@Override
 			public void onFailure(RemoteException arg0) {
 				throw new RosRuntimeException(arg0);				
 			}
 		});
 	}
-	
+
 	private SpatioTemporalSet createPanelObservation(String panel) {
 		SpatioTemporalSet act = (SpatioTemporalSet)RobotFactory.createSpatioTemporalSetVariable(this.name, new Vec2(0.0f,0.0f), 0.0f, solver);
 		act.setMarking(LuciaMetaConstraintSolver.Markings.SUPPORTED);
 		((SpatioTemporalSet)act).setTask("Observe");
-		
+
 		SymbolicValueConstraint observedPanelConstraint = new SymbolicValueConstraint(SymbolicValueConstraint.Type.VALUEEQUALS);
 		observedPanelConstraint.setValue(panel);
 		observedPanelConstraint.setFrom(act);
 		observedPanelConstraint.setTo(act);
 		solver.addConstraint(observedPanelConstraint);
-		
+
 		System.out.println("%%%%%%%%%%%%%%%%%%%%%% MODELING (" + robot + " sees " + panel + ") " + act);
-		
+
 		return act;
 	}
-	
+
 	protected Activity createNewActivity(String value) {	
-		//Here we need to check whether we can unify with expectation or not
-		// -- If we can unify, return current expectation as the new sensor value
-		// -- If we cannot, return a new SpatioTemporalSet with value "None"
 		
 		//Get currently observed panel
-		getObservedPanel();
-		while (seenQR == -2) { try { Thread.sleep(10); } catch (InterruptedException e) { e.printStackTrace(); } }
-				
+		long timeStart = rosNode.getCurrentTime().totalNsecs()/1000000;
+		long timeNow = rosNode.getCurrentTime().totalNsecs()/1000000;
+		while (true) {
+			getObservedPanel();
+			try { Thread.sleep(100); } catch (InterruptedException e) { e.printStackTrace(); }
+			if (seenQR != -2) timeNow = rosNode.getCurrentTime().totalNsecs()/1000000;
+			if ((seenQR != -2) && (timeNow-timeStart < 2000)) break;
+		}
+		
+//		getObservedPanel();
+//		while (seenQR == -2) { try { Thread.sleep(10); } catch (InterruptedException e) { e.printStackTrace(); } }
+
 		//See if there is an expectation
 		Variable[] vars = this.metaSolver.getFocused();
 		SpatioTemporalSet expectation = null;
@@ -147,26 +150,20 @@ public class ROSTopicSensor extends Sensor {
 				}
 			}
 		}
-		
+
 		//If we have no expectation, model a new sensor reading (initial condition)
 		if (expectation == null) {
-			if (seenQR < 0) return createPanelObservation("None");
-			else return createPanelObservation("P"+seenQR);
-		}
-		
-		//If we are executing...
-		if (proprioception.isExecuting()) {
 			if (seenQR < 0) return createPanelObservation("None");
 			else return createPanelObservation("P"+seenQR);
 		}
 
 		//If we are here, we have finished executing, thus
 		//expectation is certainly != null
-//		String expectedPanel = expectation.getSet().getSymbols()[0];
+		//String expectedPanel = expectation.getSet().getSymbols()[0];
 		String newPanel = "P"+seenQR;
 		if (seenQR < 0) newPanel = "None";
 		SpatioTemporalSet ret = createPanelObservation(newPanel);
-		
+
 		//Update focus:
 		// -- Remove expectation from focus
 		this.metaSolver.removeFromCurrentFocus(expectation);
@@ -176,39 +173,9 @@ public class ROSTopicSensor extends Sensor {
 	}
 
 	protected boolean hasChanged(String value) {
-		//value represents position of robot
-		float[] newPose = new float[3];
-		String[] poseS = value.split(",");
-		for (int i = 0; i < poseS.length; i++) newPose[i] = Float.parseFloat(poseS[i]);
-		
-		//If pose has never been set... 
-		if (pose == null) {
-			System.out.println("DEBUG (" + robot + "): POSE HAS NEVER BEEN SET --> " + value);
-			pose = newPose;
-			return false;
-		}
-		System.out.println("===================== SITUATION: isExec: " + proprioception.isExecuting() + " PC: " + positionChanged(newPose) + " doneOnce: " + doneOnce);
-		//If this is the first sensing since I started moving
-		if (proprioception.isExecuting() && positionChanged(newPose) && !doneOnce) {
-			System.out.println("DEBUG (" + robot + "): FIRST LOCATION DURING MOVE --> " + value);
-			doneOnce = true;
-			pose = newPose;
-			return true;
-		}
-		//If this is the first sensing since I stopped moving
-		if (!proprioception.isExecuting() && doneOnce) {
-			System.out.println("DEBUG (" + robot + "): FIRST LOCATION AFTER MOVE --> " + value);
-			doneOnce = false;
-			if (positionChanged(newPose)) {
-				pose = newPose;
-				return true;
-			}
-			System.out.println("DEBUG (" + robot + "): BUT POS NOT CHANGED! --> " + value);
-			return false;
-		}
-		return false;		
+		return true;
 	}
-	
+
 	private boolean positionChanged(float[] newPose) {
 		float epsilon = 0.01f; //1cm threshold for change
 		for (int i = 0; i < pose.length; i++)

@@ -16,7 +16,7 @@ public class PanelFactory {
 	//private static final float d2 = 2f;
 	//private static final float teta = 0.5236f; //30 degrees
 	private static final float d1 = 0.01f;
-	private static final float d2 = 1.0f;
+	private static final float d2 = 0.6f;
 	private static final float teta = 0.3491f; //20 degrees
 	//radii of circle
 	private static final float r1 = (float)(d1/Math.cos(teta));
@@ -31,17 +31,20 @@ public class PanelFactory {
 		Vector<Vec2> lefts = getTrapazoid(-d1, -d2, p1, p2, r1, r2);
 		Polygon poly1 = null;
 		Polygon poly2 = null;
+		
 		Vector<Variable> ret = new Vector<Variable>();
 		if (!skipFirst) {
 			poly1 = (Polygon)cs.createVariable(id);
 			poly1.setDomain(lefts.toArray(new Vec2[lefts.size()]));
 			poly1.setMovable(false);
+			poly1.setOrientation((float)(Math.atan2(p2.y-p1.y, p2.x-p1.x)+Math.PI/2));
 			ret.add(poly1);
 		}
 		if (!skipSecond) {
 			poly2 = (Polygon)cs.createVariable(id);
 			poly2.setDomain(rights.toArray(new Vec2[rights.size()]));
 			poly2.setMovable(false);
+			poly2.setOrientation((float)(Math.atan2(p2.y-p1.y, p2.x-p1.x)-Math.PI/2));
 			ret.add(poly2);
 		}
 		return ret.toArray(new Variable[ret.size()]);

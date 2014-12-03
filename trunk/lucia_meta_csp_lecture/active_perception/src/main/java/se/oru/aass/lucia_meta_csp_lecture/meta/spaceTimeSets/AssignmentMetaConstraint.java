@@ -75,9 +75,9 @@ public class AssignmentMetaConstraint extends MetaConstraint {
 				this.metaCS.setCurrentFocusConstraint(null);
 				System.out.println("NOT ENOUGH ROBOTS... WAITING");
 			}
-			else {
-				System.out.println("NOT ALL ROBOTS FINISHED... WAITING");
-			}
+//			else {
+//				System.out.println("NOT ALL ROBOTS FINISHED... WAITING");
+//			}
 			return null;
 		}
 		
