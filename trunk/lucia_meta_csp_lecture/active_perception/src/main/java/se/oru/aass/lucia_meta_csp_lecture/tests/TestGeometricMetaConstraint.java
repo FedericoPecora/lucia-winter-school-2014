@@ -8,6 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
 
@@ -95,22 +96,20 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 				//Build the panel polygons
 				final ArrayList<Polygon> polygons = new ArrayList<Polygon>();
 				final HashMap<Polygon,String> polygonsToPanelNamespaces = new HashMap<Polygon,String>();
+				
+				List<Integer> hiddenPanelSideParam = (List<Integer>)params.getList("/" + nodeName + "/hidden_panel_sides");
 				for(int i = 1; i <= panelNames.length; i++) {
 					try {
 						boolean skipFirst = false;
 						boolean skipSecond = false;
-						if (params.has("/" + nodeName + "/exclude_panel_" + (i) + "_side")) {
-							if (params.getInteger("/" + nodeName + "/exclude_panel_" + (i) + "_side") == 1) {
-								skipFirst = true;
-							}
-							else if (params.getInteger("/" + nodeName + "/exclude_panel_" + (i) + "_side") == 2) {
-								skipSecond = true;
-							}							
-						}
-						double x1 = (Double) arg0.getClass().getMethod("getPanel" + i + "X1", new Class[]{}).invoke(arg0, new Object[]{});
-						double y1 = (Double) arg0.getClass().getMethod("getPanel" + i + "Y1", new Class[]{}).invoke(arg0, new Object[]{});
-						double x2 = (Double) arg0.getClass().getMethod("getPanel" + i + "X2", new Class[]{}).invoke(arg0, new Object[]{});
-						double y2 = (Double) arg0.getClass().getMethod("getPanel" + i + "Y2", new Class[]{}).invoke(arg0, new Object[]{});
+						String panelNumber = panelNames[i-1].substring(1);
+						int panelNumberInt = Integer.parseInt(panelNumber);
+						if (hiddenPanelSideParam.get(panelNumberInt-1) == 1) { skipFirst = true; }
+						else if (hiddenPanelSideParam.get(panelNumberInt-1) == 2) { skipSecond = true; }
+						double x1 = (Double) arg0.getClass().getMethod("getPanel" + panelNumber + "X1", new Class[]{}).invoke(arg0, new Object[]{});
+						double y1 = (Double) arg0.getClass().getMethod("getPanel" + panelNumber + "Y1", new Class[]{}).invoke(arg0, new Object[]{});
+						double x2 = (Double) arg0.getClass().getMethod("getPanel" + panelNumber + "X2", new Class[]{}).invoke(arg0, new Object[]{});
+						double y2 = (Double) arg0.getClass().getMethod("getPanel" + panelNumber + "Y2", new Class[]{}).invoke(arg0, new Object[]{});
 						Variable[] polyVars = PanelFactory.createPolygonVariables(panelNames[i-1], new Vec2((float)x1,(float)y1), new Vec2((float)x2,(float)y2), geometricSolver, skipFirst, skipSecond);
 						polygons.add((Polygon)polyVars[0]);
 						if (skipFirst) polygonsToPanelNamespaces.put((Polygon)polyVars[0], "Panel " + panelNames[i-1] + " FoV 2");
@@ -124,7 +123,6 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 								polygons.add((Polygon)polyVars[1]);
 								polygonsToPanelNamespaces.put((Polygon)polyVars[1], "Panel " + panelNames[i-1] + " FoV 2");
 							}
-							
 						}
 					}
 					catch (Exception e) { e.printStackTrace(); }
@@ -159,16 +157,16 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 		params = connectedNode.getParameterTree();
 				
 		//Make symbol names (including panels)
-		int numPanels = params.getInteger("/" + nodeName + "/num_used_panels");
-		String[] panelNames = new String[numPanels];
-		String[] symbols = new String[numPanels+1];
-		for (int i = 0; i < numPanels; i++) {
-			panelNames[i] = "P"+(i+1);
-			symbols[i] = "P"+(i+1);
+		List<Integer> panelParam = (List<Integer>)params.getList("/" + nodeName + "/used_panels");
+		String[] panelNames = new String[panelParam.size()];
+		String[] symbols = new String[panelParam.size()+1];
+		for (int i = 0; i < panelParam.size(); i++) {
+			panelNames[i] = "P"+panelParam.get(i);
+			symbols[i] = "P"+panelParam.get(i);
 		}
 		//Another symbol ("None") represents the fact that a robot sees no panel
-		symbols[numPanels] = "None";
-
+		symbols[panelParam.size()] = "None";
+		
 		long origin = connectedNode.getCurrentTime().totalNsecs()/1000000;
 		metaSolver = new LuciaMetaConstraintSolver(origin,origin+1000000,500,symbols);
 		spatioTemporalSetSolver = (SpatioTemporalSetNetworkSolver)metaSolver.getConstraintSolvers()[0];
@@ -215,10 +213,10 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 		};
 
 		//Vars representing robots and what panels (if any) they see
-		int numRobots = params.getInteger("/" + nodeName + "/num_used_robots");
-		String[] robotTimelines = new String[numRobots];
-		for (int i = 0; i < numRobots; i++) {
-			robotTimelines[i] = "turtlebot_"+(i+1);
+		List<Integer> robotParam = (List<Integer>)params.getList("/" + nodeName + "/used_robots");
+		String[] robotTimelines = new String[robotParam.size()];
+		for (int i = 0; i < robotParam.size(); i++) {
+			robotTimelines[i] = "turtlebot_"+robotParam.get(i);
 			ROSTopicSensor sensor = new ROSTopicSensor(robotTimelines[i], animator, metaSolver, connectedNode);
 			ROSDispatchingFunction df = new ROSDispatchingFunction(robotTimelines[i], metaSolver, connectedNode, sensor);
 			animator.addDispatchingFunctions(activitySolver, df);
