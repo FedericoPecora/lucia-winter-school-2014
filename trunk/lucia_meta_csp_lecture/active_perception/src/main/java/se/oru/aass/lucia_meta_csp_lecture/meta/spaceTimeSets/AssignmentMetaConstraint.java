@@ -75,22 +75,22 @@ public class AssignmentMetaConstraint extends MetaConstraint {
 				this.metaCS.setCurrentFocusConstraint(null);
 				System.out.println("NOT ENOUGH ROBOTS... WAITING");
 			}
-//			else {
-//				System.out.println("NOT ALL ROBOTS FINISHED... WAITING");
-//			}
+			else {
+				System.out.println("NOT ALL ROBOTS FINISHED... WAITING");
+			}
 			return null;
 		}
 		
 		boolean thereIsAnUnseenPanel = false;
 		for (int i = 0; i < panels.length; i++) {
 			boolean unseen = true;
-			//System.out.println("Looking for robot that sees " + panels[i]);
+			System.out.println("Looking for robot that sees " + panels[i]);
 			for (Variable var : currentVarsInFocus) {
 				SymbolicVariable sv = ((SpatioTemporalSet)var).getSet();
 				for (String s : sv.getSymbols()) {
 					if (s.equals(panels[i])) {
 						unseen = false;
-						//System.out.println("Yes: " + s + " == " + panels[i]);
+						System.out.println("Yes: " + var.getComponent() + " sees " + panels[i]);
 						break;
 					}
 				}

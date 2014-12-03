@@ -48,7 +48,7 @@ public class ROSDispatchingFunction extends DispatchingFunction {
 	private static int MIN_MESSAGES = 30;
 
 
-	public ROSDispatchingFunction(String rob, LuciaMetaConstraintSolver metaSolver, ConnectedNode rosN, ROSTopicSensor sens) {
+	public ROSDispatchingFunction(String rob, LuciaMetaConstraintSolver metaSolver, ConnectedNode rosN, final ROSTopicSensor sens) {
 		super(rob);
 		this.metaSolver = metaSolver;
 		this.solver = (SpatioTemporalSetNetworkSolver)metaSolver.getConstraintSolvers()[0];
@@ -71,7 +71,7 @@ public class ROSDispatchingFunction extends DispatchingFunction {
 							if (counter++ > MIN_MESSAGES) {
 								finishCurrentActivity();
 								long timeNow = rosNode.getCurrentTime().totalNsecs()/1000000;
-								sensor.postSensorValue("LookAtQRCode", timeNow);
+								sensor.postSensorValue(sens.getRobotCurrentPose(), timeNow);
 								counter = 0;
 							}
 						}

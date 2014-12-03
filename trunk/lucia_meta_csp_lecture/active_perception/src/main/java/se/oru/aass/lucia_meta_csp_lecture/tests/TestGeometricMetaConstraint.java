@@ -84,8 +84,28 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 
 	private void getPanelsFromROSService(final String[] panelNames) {
 		ServiceClient<getPanelRequest, getPanelResponse> serviceClient = null;
-		try { serviceClient = connectedNode.newServiceClient("getPanel", getPanel._TYPE); }
-		catch (ServiceNotFoundException e) { throw new RosRuntimeException(e); }
+		
+		boolean print = false;
+		while (true)
+		{
+			try {
+				serviceClient = connectedNode.newServiceClient("getPanel", getPanel._TYPE);			}
+			catch (org.ros.exception.ServiceNotFoundException e) {
+				System.out.println("waiting for service 'getPanel'...");
+				print = true;
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e1) {
+				}
+				continue;
+			}
+
+			break;
+		}
+		if (print)
+			System.out.println("... done waiting for getPanel service.");
+		
+
 		final getPanelRequest request = serviceClient.newMessage();
 		request.setRead((byte) 0);
 		serviceClient.call(request, new ServiceResponseListener<getPanelResponse>() {

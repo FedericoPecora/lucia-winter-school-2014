@@ -51,6 +51,7 @@ public class ROSTopicSensor extends Sensor {
 	private ServiceClient<getQRRequest, getQRResponse> serviceClientQR = null;
 	private int seenQR = -2;
 	private String robot;
+	private String robotCurrentPose = "";
 
 	public ROSTopicSensor(String rob, ConstraintNetworkAnimator animator, LuciaMetaConstraintSolver metaSolver, final ConnectedNode rosNode) {
 		super(rob, animator);
@@ -59,34 +60,50 @@ public class ROSTopicSensor extends Sensor {
 		this.rosNode = rosNode;
 		this.robot = rob;
 
-//		//Subscribe to location topic
-//		Subscriber<geometry_msgs.PoseWithCovarianceStamped> poseFeedback = rosNode.newSubscriber("/" + robot + "/amcl_pose", geometry_msgs.PoseWithCovarianceStamped._TYPE);
-//		poseFeedback.addMessageListener(new MessageListener<geometry_msgs.PoseWithCovarianceStamped>() {
-//			@Override
-//			public void onNewMessage(geometry_msgs.PoseWithCovarianceStamped message) {
-//				//currentPose = message.getPose();
-//				float x = (float)message.getPose().getPose().getPosition().getX();
-//				float y = (float)message.getPose().getPose().getPosition().getY();
-//				float oZ = (float)message.getPose().getPose().getOrientation().getZ();
-//				float oW = (float)message.getPose().getPose().getOrientation().getW();
-//				String value = x + "," + y + "," + oZ + "," + oW;
-//				if (pose == null) {
-//					pose = new float[4];
-//					pose[0] = x;
-//					pose[1] = y;
-//					pose[2] = oZ;
-//					pose[3] = oW;
-//				}
-//				long timeNow = rosNode.getCurrentTime().totalNsecs()/1000000;
-//				postSensorValue(value, timeNow);
-//			}
-//		}, 10);
+
+		monitorRobotPose();
 		
-		long timeNow = rosNode.getCurrentTime().totalNsecs()/1000000;
-		postSensorValue("InitialObserveQR", timeNow);
-		
+		//Subscribe to active topic
+		Subscriber<std_msgs.String> poseFeedback = rosNode.newSubscriber("active_sensing", std_msgs.String._TYPE);
+		poseFeedback.addMessageListener(new MessageListener<std_msgs.String>() {
+			@Override
+			public void onNewMessage(std_msgs.String message) {
+				System.out.println(message.getData());
+				if(message.getData().equals("active")){
+					long timeNow = rosNode.getCurrentTime().totalNsecs()/1000000;
+					postSensorValue(robotCurrentPose, timeNow);
+				}
+			}
+		}, 10);
 	}
 
+	public String getRobotCurrentPose(){
+		return robotCurrentPose;
+	}
+	
+	private void monitorRobotPose(){
+		//Subscribe to location topic
+		Subscriber<geometry_msgs.PoseWithCovarianceStamped> poseFeedback = rosNode.newSubscriber("/" + robot + "/amcl_pose", geometry_msgs.PoseWithCovarianceStamped._TYPE);
+		poseFeedback.addMessageListener(new MessageListener<geometry_msgs.PoseWithCovarianceStamped>() {
+			@Override
+			public void onNewMessage(geometry_msgs.PoseWithCovarianceStamped message) {
+				//currentPose = message.getPose();
+				float x = (float)message.getPose().getPose().getPosition().getX();
+				float y = (float)message.getPose().getPose().getPosition().getY();
+				float oZ = (float)message.getPose().getPose().getOrientation().getZ();
+				float oW = (float)message.getPose().getPose().getOrientation().getW();
+				robotCurrentPose = x + "," + y + "," + oZ + "," + oW;
+				if (pose == null) {
+					pose = new float[4];
+					pose[0] = x;
+					pose[1] = y;
+					pose[2] = oZ;
+					pose[3] = oW;
+				}
+			}
+		}, 10);
+	}
+	
 	private void getObservedPanel() {
 		seenQR = -2;
 		try { serviceClientQR = rosNode.newServiceClient(robot+"/getQR", getQR._TYPE); }
@@ -118,6 +135,8 @@ public class ROSTopicSensor extends Sensor {
 		observedPanelConstraint.setTo(act);
 		solver.addConstraint(observedPanelConstraint);
 
+		//set the position of the polygon and orientation
+		
 		System.out.println("%%%%%%%%%%%%%%%%%%%%%% MODELING (" + robot + " sees " + panel + ") " + act);
 
 		return act;
@@ -162,14 +181,16 @@ public class ROSTopicSensor extends Sensor {
 		//String expectedPanel = expectation.getSet().getSymbols()[0];
 		String newPanel = "P"+seenQR;
 		if (seenQR < 0) newPanel = "None";
-		SpatioTemporalSet ret = createPanelObservation(newPanel);
-
+	
 		//Update focus:
 		// -- Remove expectation from focus
 		this.metaSolver.removeFromCurrentFocus(expectation);
+		SpatioTemporalSet ret = createPanelObservation(newPanel);
+		
 		// -- Add current observation to focus
 		this.metaSolver.focus(ret);
 		return ret;
+		
 	}
 
 	protected boolean hasChanged(String value) {
