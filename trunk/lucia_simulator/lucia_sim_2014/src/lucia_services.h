@@ -40,6 +40,8 @@
  double last_yaw =0;
  int    rotationAfter=0;
  std::string   robot_id;
+ int goal_id;
+ 
 
  int code;   // 1:red, 2:green, 3:blue, 0:black, -1:non
 

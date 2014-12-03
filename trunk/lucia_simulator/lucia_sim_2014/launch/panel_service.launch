@@ -3,10 +3,10 @@
   <node pkg="lucia_sim_2014" type="panel_serv" name="panel_serv" output="screen">
 
                 <!-- panel_1, -2.245 1.197 | -2.528 1.455 -->
-		<param name="panel1_x1" type="double" value="-2.245" />
-		<param name="panel1_y1" type="double" value="1.197" />
-		<param name="panel1_x2" type="double" value="-2.528" />
-		<param name="panel1_y2" type="double" value="1.455" />
+		<param name="panel1_x2" type="double" value="-2.245" />
+		<param name="panel1_y2" type="double" value="1.197" />
+		<param name="panel1_x1" type="double" value="-2.528" />
+		<param name="panel1_y1" type="double" value="1.455" />
 
                 <!-- panel_2, -2.995 -2.353 | -2.720 -2.875 -->
 		<param name="panel2_x1" type="double" value="-2.995" />
@@ -33,10 +33,10 @@
 		<param name="panel5_y2" type="double" value="0.836" />
 
 		<!-- panel_6, 2.795 -2.128 | 2.354 -2.128 -->
-		<param name="panel6_x1" type="double" value="2.795" />
-		<param name="panel6_y1" type="double" value="-2.128" />
-		<param name="panel6_x2" type="double" value="2.354" />
+		<param name="panel6_x2" type="double" value="2.795" />
 		<param name="panel6_y2" type="double" value="-2.128" />
+		<param name="panel6_x1" type="double" value="2.354" />
+		<param name="panel6_y1" type="double" value="-2.128" />
 
    </node>
 

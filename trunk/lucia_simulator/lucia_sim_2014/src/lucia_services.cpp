@@ -158,7 +158,8 @@ bool sendRot(lucia_sim_2014::rotate::Request &req, lucia_sim_2014::rotate::Respo
 bool sendGoal(lucia_sim_2014::sendGoal::Request &req, lucia_sim_2014::sendGoal::Response &res)
 //================================================================================
  {
-  MoveBaseClient ac("move_base", true);
+   //  MoveBaseClient ac("move_base", true);
+   actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> ac("move_base", true);
 
   statusOfMove = 1;
   rotationAfter = req.rotationAfter;
@@ -279,7 +280,7 @@ void rotation(ros::NodeHandle nh_, ros::Publisher rotate_pub)
   }
   else if ((int)status.status_list[0].status==SUCCEEDED && (code>0 || curr_yaw > (2*M_PI))) {
     statusOfMove = -1;
-    //curr_yaw = 2*M_PI;
+    curr_yaw = 2.5*M_PI;
     std::cout << robot_id <<" ++ succed and finished turning or didn't need to turn (-1)" << std::endl;
   }
   else if ((int)status.status_list[0].status==ABORTED) {
