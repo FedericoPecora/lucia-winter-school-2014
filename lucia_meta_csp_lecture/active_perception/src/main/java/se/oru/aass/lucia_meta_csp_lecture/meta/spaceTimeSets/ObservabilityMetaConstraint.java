@@ -48,21 +48,22 @@ public class ObservabilityMetaConstraint extends MetaConstraint {
 		}
 		if (predictedObserveActivities.isEmpty()) return null;
 
-		HashMap<Variable,Variable[]> observeActivitiesToPolygons = new HashMap<Variable, Variable[]>();
+		HashMap<Variable,Vector<Variable>> observeActivitiesToPolygons = new HashMap<Variable, Vector<Variable>>();
 		Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
 		for (Variable fv : predictedObserveActivities) {
 			String panel = ((SpatioTemporalSet)fv).getSet().getSymbols()[0];
 			for (Variable panelPoly : this.getGeometricSolver().getVariables()) {
 				if (panelPoly.getComponent().equals(panel)) {
 					if (!observeActivitiesToPolygons.containsKey(fv)) {
-						Variable[] panels = new Variable[2];
-						panels[0] = panelPoly;
+						Vector<Variable> panels = new Vector<Variable>();
+						panels.add(panelPoly);
 						observeActivitiesToPolygons.put(fv, panels);
 					}
 					else {
-						Variable[] panels = observeActivitiesToPolygons.get(fv);
-						panels[1] = panelPoly;
+						Vector<Variable> panels = observeActivitiesToPolygons.get(fv);
+						panels.add(panelPoly);
 						observeActivitiesToPolygons.put(fv, panels);
+						//there are at most 2...
 						break;
 					}
 				}
@@ -71,19 +72,21 @@ public class ObservabilityMetaConstraint extends MetaConstraint {
 
 		for (Variable observes : observeActivitiesToPolygons.keySet()) {
 			Polygon obsPoly = ((SpatioTemporalSet)observes).getPolygon();
-			Polygon panelPoly1 = (Polygon)observeActivitiesToPolygons.get(observes)[0];
-			Polygon panelPoly2 = (Polygon)observeActivitiesToPolygons.get(observes)[1];
-			boolean inside1 = false;
-			boolean inside2 = false;
-			if (panelPoly1 != null && GeometricConstraintSolver.getRelation(obsPoly, panelPoly1).equals(GeometricConstraint.Type.INSIDE))
-				inside1 = true;
-			else if (panelPoly2 != null && GeometricConstraintSolver.getRelation(obsPoly, panelPoly2).equals(GeometricConstraint.Type.INSIDE))
-				inside2 = true;
-			if (!(inside1 || inside2)) {
+			Vector<Variable> panels = observeActivitiesToPolygons.get(observes);
+			boolean foundInside = false;
+			for (Variable panelVar : panels) {
+				if (panelVar != null && GeometricConstraintSolver.getRelation(obsPoly, (Polygon)panelVar).equals(GeometricConstraint.Type.INSIDE)) {
+					foundInside = true;
+					break;
+				}
+			}
+			
+			if (!foundInside) {
 				ConstraintNetwork cn = new ConstraintNetwork(null);
 				cn.addVariable(observes);
-				if (panelPoly1 != null) cn.addVariable(panelPoly1);
-				if (panelPoly2 != null) cn.addVariable(panelPoly2);
+				for (Variable panelVar : panels) {
+					cn.addVariable(panelVar);
+				}
 				ret.add(cn);
 			}
 		}
@@ -95,7 +98,6 @@ public class ObservabilityMetaConstraint extends MetaConstraint {
 	@Override
 	public ConstraintNetwork[] getMetaValues(MetaVariable metaVariable) {
 		Variable[] vars = metaVariable.getConstraintNetwork().getVariables();
-		//for (Variable var : vars) System.out.println("metaVar is: " + var);
 		SpatioTemporalSet observeAction = null;
 		Polygon[] panels = new Polygon[2];
 		int polyCounter = 0;
