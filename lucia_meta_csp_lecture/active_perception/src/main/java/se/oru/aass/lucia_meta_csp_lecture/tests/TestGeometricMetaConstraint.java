@@ -210,7 +210,6 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(activitySolver, 1000, cb, false) {
 			@Override
 			protected long getCurrentTimeInMillis() {
-				System.out.println("CALLING ROS TIME!!!!!!!!!!!!!!!!!!!! " + connectedNode.getCurrentTime().totalNsecs()/1000000);
 				return connectedNode.getCurrentTime().totalNsecs()/1000000;
 			}
 		};
@@ -220,9 +219,9 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 		String[] robotTimelines = new String[numRobots];
 		for (int i = 0; i < numRobots; i++) {
 			robotTimelines[i] = "turtlebot_"+(i+1);
-			ROSDispatchingFunction df = new ROSDispatchingFunction(robotTimelines[i], metaSolver, connectedNode);
+			ROSTopicSensor sensor = new ROSTopicSensor(robotTimelines[i], animator, metaSolver, connectedNode);
+			ROSDispatchingFunction df = new ROSDispatchingFunction(robotTimelines[i], metaSolver, connectedNode, sensor);
 			animator.addDispatchingFunctions(activitySolver, df);
-			ROSTopicSensor sensor = new ROSTopicSensor(robotTimelines[i], animator, metaSolver, df, connectedNode);
 		}
 
 		AssignmentMetaConstraint mc1 = new AssignmentMetaConstraint(null, null);

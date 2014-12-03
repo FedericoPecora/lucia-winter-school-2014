@@ -29,6 +29,8 @@ import org.ros.node.service.ServiceClient;
 import org.ros.node.service.ServiceResponseListener;
 import org.ros.node.topic.Subscriber;
 
+import actionlib_msgs.GoalStatus;
+
 import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.LuciaMetaConstraintSolver;
 import se.oru.aass.lucia_meta_csp_lecture.multi.spaceTimeSets.SpatioTemporalSet;
 import se.oru.aass.lucia_meta_csp_lecture.multi.spaceTimeSets.SpatioTemporalSetNetworkSolver;
@@ -41,67 +43,64 @@ public class ROSDispatchingFunction extends DispatchingFunction {
 	private boolean isExecuting = false;
 	private ConnectedNode rosNode = null;
 	private String robot = null;
-	private ServiceClient<getStatusRequest, getStatusResponse> serviceClientStatus = null;
-	private boolean hasStartedMoving = false;
+	private ROSTopicSensor sensor;
+	private int counter;
+	private static int MIN_MESSAGES = 30;
 
-	public ROSDispatchingFunction(String rob, LuciaMetaConstraintSolver metaSolver, ConnectedNode rosN) {
+
+	public ROSDispatchingFunction(String rob, LuciaMetaConstraintSolver metaSolver, ConnectedNode rosN, ROSTopicSensor sens) {
 		super(rob);
 		this.metaSolver = metaSolver;
 		this.solver = (SpatioTemporalSetNetworkSolver)metaSolver.getConstraintSolvers()[0];
 		this.rosNode = rosN;
 		this.robot = rob;
-		
-		// Call position service, and model sensor values received as response
-		try { serviceClientStatus = rosNode.newServiceClient(robot+"/getStatus", getStatus._TYPE); }
-		catch (ServiceNotFoundException e) { throw new RosRuntimeException(e); }
+		this.sensor = sens;
 
-		Thread statusMonitor = new Thread() {
-			public void run() {
-				while (true) {
-					try { Thread.sleep(1000); }
-					catch (InterruptedException e) { e.printStackTrace(); }
-					if (currentAct != null) {
-						final getStatusRequest request = serviceClientStatus.newMessage();
-						request.setRead((byte) 0);
-						serviceClientStatus.call(request, new ServiceResponseListener<getStatusResponse>() {
-							
-							@Override
-							public void onFailure(RemoteException arg0) { }
-	
-							@Override
-							public void onSuccess(getStatusResponse arg0) {
-								//Only believe that it has stopped if we previously saw it moving
-								if ((int)arg0.getStatus() < 0) {
-									if (hasStartedMoving) {
-										finishCurrentActivity();
-										hasStartedMoving = false;
-									}
-								}
-//								//We saw the robot move, now we can start checking whether it has stopped
-//								else { hasStartedMoving = true; }
+		//Subscribe to movebase feedback topic
+		Subscriber<actionlib_msgs.GoalStatusArray> actionlibFeedback = rosNode.newSubscriber("/" + robot + "/move_base/status", actionlib_msgs.GoalStatusArray._TYPE);
+		actionlibFeedback.addMessageListener(new MessageListener<actionlib_msgs.GoalStatusArray>() {
+			@Override
+			public void onNewMessage(actionlib_msgs.GoalStatusArray message) {
+				if (message.getStatusList() != null && !message.getStatusList().isEmpty()) {
+					//goalID = message.getStatusList().size()-1;	
+					GoalStatus gs = message.getStatusList().get(0);
+					//If != ACTIVE
+					if (isExecuting()) {
+						System.out.println(">>>>>>>>>>>>>>>>>> (" + robot + ") ACTIONLIB SAYS: " + gs.getStatus());
+						if (gs.getStatus() != (byte)1) {
+							if (counter++ > MIN_MESSAGES) {
+								finishCurrentActivity();
+								long timeNow = rosNode.getCurrentTime().totalNsecs()/1000000;
+								sensor.postSensorValue("LookAtQRCode", timeNow);
+								counter = 0;
 							}
-						});
+						}
+						else counter = 0;
 					}
 				}
 			}
-		};
-		statusMonitor.start();
+		}, 10);
 	}
 
-	private void sendGoal(final String robot, final String command, final Vec2 destination) {
+	private void sendGoal(final String robot, final String command, final Polygon destination) {
 		System.out.println(">>>> TO ROS: " + command + " " + destination);
 		ServiceClient<sendGoalRequest, sendGoalResponse> serviceClient = null;
 		try { serviceClient = rosNode.newServiceClient(robot+"/sendGoal", sendGoal._TYPE); }
 		catch (ServiceNotFoundException e) { throw new RosRuntimeException(e); }
 		final sendGoalRequest request = serviceClient.newMessage();
-		request.setX(destination.x);
-		request.setY(destination.y);
-		request.setTheta(0);
-		request.setRotationAfter((byte)1);
+		request.setX(destination.getPosition().x);
+		request.setY(destination.getPosition().y);
+		request.setTheta(destination.getOrientation());
+		System.out.println("GOAL ORIENTATION OF " + robot + "IS " + destination.getOrientation());
+		request.setRotationAfter((byte)0);
 		serviceClient.call(request, new ServiceResponseListener<sendGoalResponse>() {
 
 			@Override
-			public void onSuccess(sendGoalResponse arg0) { }
+			public void onSuccess(sendGoalResponse arg0) {
+				setExecuting(true);
+				//long timeNow = rosNode.getCurrentTime().totalNsecs()/1000000;
+				//sensor.postSensorValue("LookAtQRCode", timeNow);
+			}
 
 			@Override
 			public void onFailure(RemoteException arg0) { }
@@ -116,11 +115,11 @@ public class ROSDispatchingFunction extends DispatchingFunction {
 		setExecuting(false);
 	}
 
-	public boolean isExecuting() {
+	private boolean isExecuting() {
 		return isExecuting;
 	}
 
-	public void setExecuting(boolean exec) {
+	private void setExecuting(boolean exec) {
 		isExecuting = exec;
 	}
 
@@ -155,13 +154,7 @@ public class ROSDispatchingFunction extends DispatchingFunction {
 			}
 		}
 
-		Vec2 destination = destPoly.getPosition();
-
-		isExecuting = true;
-
-		this.sendGoal(robot, command, destination);
-		
-		hasStartedMoving = true;
+		this.sendGoal(robot, command, destPoly);
 
 	}
 

@@ -1,6 +1,9 @@
 package se.oru.aass.lucia_meta_csp_lecture.util;
 
 import geometry_msgs.Point;
+import geometry_msgs.Pose;
+import geometry_msgs.Quaternion;
+import geometry_msgs.Vector3;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,6 +11,7 @@ import java.util.HashMap;
 import org.metacsp.spatial.geometry.Polygon;
 import org.metacsp.spatial.geometry.Vec2;
 import org.ros.concurrent.CancellableLoop;
+import org.ros.internal.message.RawMessage;
 import org.ros.message.Duration;
 import org.ros.node.AbstractNodeMain;
 import org.ros.node.ConnectedNode;
@@ -77,6 +81,35 @@ public class PanelMarkerPublisher {
 			    	m.setType(visualization_msgs.Marker.LINE_STRIP);
 			    	m.setLifetime(new Duration(60.0));
 			    	markers.add(m);
+			    	
+			    	Marker mArrow = connectedNode.getTopicMessageFactory().newFromType(visualization_msgs.Marker._TYPE);
+			    	mArrow.setAction(visualization_msgs.Marker.ADD);
+			    	mArrow.setNs(polygonsToPanelNamespaces.get(p)+"_orientation");
+			    	mArrow.setType(visualization_msgs.Marker.ARROW);
+			    	Pose arrowPose = connectedNode.getTopicMessageFactory().newFromType(geometry_msgs.Pose._TYPE);
+			    	Point arrowPosition = connectedNode.getTopicMessageFactory().newFromType(geometry_msgs.Point._TYPE);
+			    	arrowPosition.setX(p.getPosition().x);
+			    	arrowPosition.setY(p.getPosition().y);
+			    	arrowPosition.setZ(0);
+			    	arrowPose.setPosition(arrowPosition);
+			    	float theta = p.getOrientation();
+			    	Quaternion arrowQuat = connectedNode.getTopicMessageFactory().newFromType(geometry_msgs.Quaternion._TYPE);
+			    	arrowQuat.setW(Math.cos(theta/2));
+			    	arrowQuat.setX(0);
+			    	arrowQuat.setY(0);
+			    	arrowQuat.setZ(Math.sin(theta/2));
+					arrowPose.setOrientation(arrowQuat);
+			    	mArrow.setPose(arrowPose);
+			    	mArrow.setLifetime(new Duration(60.0));
+			    	mArrow.getHeader().setFrameId("/map");
+			    	mArrow.getScale().setX(0.3);
+			    	mArrow.getScale().setY(0.1);
+			    	mArrow.getScale().setZ(0.1);
+			    	mArrow.getColor().setR(1.0f);
+			    	mArrow.getColor().setG(0.0f);
+			    	mArrow.getColor().setB(0.0f);
+			    	mArrow.getColor().setA(0.5f);
+			    	markers.add(mArrow);
 		    	}
 		    	mArray.setMarkers(markers);
 		        publisher.publish(mArray);
