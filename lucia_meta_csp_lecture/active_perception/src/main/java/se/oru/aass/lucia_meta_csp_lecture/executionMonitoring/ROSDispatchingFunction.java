@@ -71,7 +71,7 @@ public class ROSDispatchingFunction extends DispatchingFunction {
 							if (counter++ > MIN_MESSAGES) {
 								finishCurrentActivity();
 								long timeNow = rosNode.getCurrentTime().totalNsecs()/1000000;
-								sensor.postSensorValue(sens.getRobotCurrentPose(), timeNow);
+								sensor.postSensorValue(sens.getRobotCurrentPoseString(), timeNow);
 								counter = 0;
 							}
 						}
@@ -83,7 +83,7 @@ public class ROSDispatchingFunction extends DispatchingFunction {
 	}
 
 	private void sendGoal(final String robot, final String command, final Polygon destination) {
-		System.out.println(">>>> TO ROS: " + command + " " + destination);
+//		System.out.println(">>>> TO ROS: " + command + " " + destination);
 		ServiceClient<sendGoalRequest, sendGoalResponse> serviceClient = null;
 		try { serviceClient = rosNode.newServiceClient(robot+"/sendGoal", sendGoal._TYPE); }
 		catch (ServiceNotFoundException e) { throw new RosRuntimeException(e); }
@@ -91,7 +91,7 @@ public class ROSDispatchingFunction extends DispatchingFunction {
 		request.setX(destination.getPosition().x);
 		request.setY(destination.getPosition().y);
 		request.setTheta(destination.getOrientation());
-		System.out.println("GOAL ORIENTATION OF " + robot + "IS " + destination.getOrientation());
+//		System.out.println("GOAL ORIENTATION OF " + robot + "IS " + destination.getOrientation());
 		request.setRotationAfter((byte)0);
 		serviceClient.call(request, new ServiceResponseListener<sendGoalResponse>() {
 
@@ -125,7 +125,7 @@ public class ROSDispatchingFunction extends DispatchingFunction {
 
 	@Override
 	public void dispatch(SymbolicVariableActivity act) {
-		System.out.println("????????????????????? DISPATCHING " + act.getSymbolicVariable().getSymbols()[0]);
+		
 		currentAct = act;
 		String robot = act.getComponent();
 		String command = act.getSymbolicVariable().getSymbols()[0];
@@ -143,13 +143,15 @@ public class ROSDispatchingFunction extends DispatchingFunction {
 				break;
 			}
 		}
-
+		
 		//Find polygon from which to compute destination
 		Polygon destPoly = null;
 		for (Variable var : spatioTemporalSetNetwork.getVariables()) {
 			SpatioTemporalSet sts = (SpatioTemporalSet)var;
 			if (sts.getActivity().equals(observeAct)) {
 				destPoly = sts.getPolygon();
+				System.out.println("????????????????????? DISPATCHING " + act.getSymbolicVariable().getSymbols()[0] +
+						" for " + act.getComponent() +" to see "+ sts.getSet().getSymbols()[0] + " at polygon " + destPoly);
 				break;
 			}
 		}

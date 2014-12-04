@@ -1,8 +1,6 @@
 package se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets;
 
-
 import java.util.Vector;
-
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;

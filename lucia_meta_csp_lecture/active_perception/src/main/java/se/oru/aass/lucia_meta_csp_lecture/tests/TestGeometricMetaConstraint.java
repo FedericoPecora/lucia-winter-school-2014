@@ -20,6 +20,7 @@ import org.apache.commons.logging.Log;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.Variable;
+import org.metacsp.framework.meta.MetaVariable;
 import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.multi.allenInterval.AllenIntervalConstraint;
@@ -53,6 +54,7 @@ import se.oru.aass.lucia_meta_csp_lecture.executionMonitoring.ROSDispatchingFunc
 import se.oru.aass.lucia_meta_csp_lecture.executionMonitoring.ROSTopicSensor;
 import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.AssignmentMetaConstraint;
 import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.LuciaMetaConstraintSolver;
+import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.MinMaxDistanceValOH;
 import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.ObservabilityMetaConstraint;
 import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.SchedulingMetaConstraint;
 import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.SimpleMoveBasePlanner;
@@ -162,7 +164,7 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 	public void onStart(ConnectedNode cn) {
 		this.connectedNode = cn;
 		
-		//MetaCSPLogging.setLevel(LuciaMetaConstraintSolver.class, Level.FINEST);
+//		MetaCSPLogging.setLevel(LuciaMetaConstraintSolver.class, Level.FINEST);
 		
 		while (true) {
 			try {
@@ -195,9 +197,14 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 		geometricSolver = spatioTemporalSetSolver.getGeometricSolver();
 		setSolver = spatioTemporalSetSolver.getSetSolver();
 		
-		getPanelsFromROSService(panelNames);
+		//heuristic 
+		final MinMaxDistanceValOH minMaxDistanceValueOH = new MinMaxDistanceValOH();
 		
+		
+		
+		getPanelsFromROSService(panelNames);
 		InferenceCallback cb = new InferenceCallback() {
+			
 			@Override
 			public void doInference(long timeNow) {
 				metaSolver.clearResolvers();
@@ -205,6 +212,8 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 				Vector<SymbolicVariableActivity> moveBaseActivities = new Vector<SymbolicVariableActivity>();
 				ConstraintNetwork[] cns = metaSolver.getAddedResolvers();
 				if (cns != null && cns.length > 0) {
+					
+					//Find activities to dispatch and current assignment
 					for (ConstraintNetwork cn : cns) {
 						if (cn.getAnnotation() instanceof SimpleMoveBasePlanner) {
 							for (Variable var : cn.getVariables()) {
@@ -213,13 +222,22 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 									moveBaseActivities.add(act);
 							}
 						}
+						
+						if (cn.getAnnotation() instanceof AssignmentMetaConstraint) {
+							minMaxDistanceValueOH.setNoGoodSolution(cn);
+						}
 					}
+					//Anchor activities to dispatch to current time
 					for (Variable act : moveBaseActivities) {
 						AllenIntervalConstraint release = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(timeNow,APSPSolver.INF));
 						release.setFrom(act);
 						release.setTo(act);
 						activitySolver.addConstraint(release);
 					}
+					
+					//Signal current assignment as "nogood" for heuristic
+					
+					
 				}
 			}
 		};
@@ -236,14 +254,18 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 		//Vars representing robots and what panels (if any) they see
 		List<Integer> robotParam = (List<Integer>)params.getList("/" + nodeName + "/used_robots");
 		String[] robotTimelines = new String[robotParam.size()];
+		Vector<ROSTopicSensor> sensors = new Vector<ROSTopicSensor>();
 		for (int i = 0; i < robotParam.size(); i++) {
 			robotTimelines[i] = "turtlebot_"+robotParam.get(i);
 			ROSTopicSensor sensor = new ROSTopicSensor(robotTimelines[i], animator, metaSolver, connectedNode);
 			ROSDispatchingFunction df = new ROSDispatchingFunction(robotTimelines[i], metaSolver, connectedNode, sensor);
 			animator.addDispatchingFunctions(activitySolver, df);
+			sensors.add(sensor);
 		}
-
-		AssignmentMetaConstraint mc1 = new AssignmentMetaConstraint(null, null);
+		
+		minMaxDistanceValueOH.setSensors(sensors);
+		
+		AssignmentMetaConstraint mc1 = new AssignmentMetaConstraint(null, minMaxDistanceValueOH);
 		mc1.setPanels(panelNames);
 		metaSolver.addMetaConstraint(mc1);
 
@@ -253,10 +275,14 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 		ObservabilityMetaConstraint mc3 = new ObservabilityMetaConstraint(null, null);
 		metaSolver.addMetaConstraint(mc3);
 
-		//iran
-		SchedulingMetaConstraint mc4 = new SchedulingMetaConstraint(null, null);
-		metaSolver.addMetaConstraint(mc4);
 		
+//		SchedulingMetaConstraint mc4 = new SchedulingMetaConstraint(null, null);
+//		metaSolver.addMetaConstraint(mc4);
+		
+		
+		//#################################################################################
+		//visualize
+		//#################################################################################
 //		ConstraintNetwork.draw(spatioTemporalSetSolver.getConstraintNetwork(), "SpatioTemporalSet network");
 //		ConstraintNetwork.draw(activitySolver.getConstraintNetwork(),"Activity network");
 //		ConstraintNetwork.draw(geometricSolver.getConstraintNetwork(),"Polygon network");
