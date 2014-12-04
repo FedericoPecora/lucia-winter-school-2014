@@ -119,18 +119,12 @@ public class AssignmentMetaConstraint extends MetaConstraint {
 	public ConstraintNetwork[] getMetaValues(MetaVariable metaVariable) {
 		// Input: SpatioTemporaSet[] selectedRobots
 		// create new SpatioTemporaSet[] selectedRobotsFuture
-		// for (int i = 0; i < selectedRobots.length; i++)
-		//		cons = selectedRobots[i] BEFORE selectedRobotsFuture[i]
 		Vector<Variable> newVars = new Vector<Variable>();
 		Vector<Constraint> newCons = new Vector<Constraint>();
 		for (Variable var : metaVariable.getConstraintNetwork().getVariables()) {
 			Variable newVar = RobotFactory.createSpatioTemporalSetVariable(var.getComponent(), new Vec2(0.0f,0.0f), 0.0f, this.getGroundSolver());
 			newVar.setMarking(LuciaMetaConstraintSolver.Markings.UNSUPPORTED);
 			newVars.add(newVar);
-//			AllenIntervalConstraint before = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before);
-//			before.setFrom(var);
-//			before.setTo(newVar);
-//			newCons.add(before);
 			((SpatioTemporalSet)newVar).setTask("Observe");
 		}
 		
@@ -172,8 +166,7 @@ public class AssignmentMetaConstraint extends MetaConstraint {
 
 	    //Create the new current situation 
 		this.metaCS.setFocus(newVars.toArray(new Variable[newVars.size()]));
-		System.out.println("VARS IN FOCUS ARE NOW: " + this.metaCS.getFocused().length);
-		
+//		System.out.println("VARS IN FOCUS ARE NOW: " + this.metaCS.getFocused().length);
 		return metaValues.toArray(new ConstraintNetwork[metaValues.size()]);
 	}
 

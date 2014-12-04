@@ -53,7 +53,7 @@ public class ROSTopicSensor extends Sensor {
 	private int seenQR = -2;
 	private String robot;
 	private String robotCurrentPose = "";
-
+	
 	public ROSTopicSensor(String rob, ConstraintNetworkAnimator animator, LuciaMetaConstraintSolver metaSolver, final ConnectedNode rosNode) {
 		super(rob, animator);
 		this.metaSolver = metaSolver;
@@ -78,8 +78,21 @@ public class ROSTopicSensor extends Sensor {
 		}, 10);
 	}
 
-	public String getRobotCurrentPose(){
+
+	
+	public String getRobotCurrentPoseString(){
 		return robotCurrentPose;
+	}
+	
+	public Vec2 getRobotCurrentPose(){
+	    float[] newPose = new float[4];
+	    String[] poseS = robotCurrentPose.split(",");
+	    for (int i = 0; i < poseS.length; i++) newPose[i] = Float.parseFloat(poseS[i]);        
+		return new Vec2(newPose[0], newPose[1]);
+	}
+	
+	public String getRobotName(){
+		return this.robot;
 	}
 	
 	private void monitorRobotPose(){

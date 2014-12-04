@@ -2,6 +2,7 @@ package se.oru.aass.lucia_meta_csp_lecture.util;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
@@ -21,9 +22,15 @@ public class PanelFactory {
 	//radii of circle
 	private static final float r1 = (float)(d1/Math.cos(teta));
 	private static final float r2 = (float)(d2/Math.cos(teta));
+	private static HashMap<String, Vec2> panelCenters = new HashMap<String, Vec2>();
+	
 
 	public static Variable[] createPolygonVariables(String id, Vec2 p1, Vec2 p2, ConstraintSolver cs) {
 		return createPolygonVariables(id, p1, p2, cs, false, false);
+	}
+	
+	public static Vec2 getPanelCenterById(String id){
+		return panelCenters.get(id);
 	}
 	
 	public static Variable[] createPolygonVariables(String id, Vec2 p1, Vec2 p2, ConstraintSolver cs, boolean skipFirst, boolean skipSecond) {
@@ -31,6 +38,8 @@ public class PanelFactory {
 		Vector<Vec2> lefts = getTrapazoid(-d1, -d2, p1, p2, r1, r2);
 		Polygon poly1 = null;
 		Polygon poly2 = null;
+		
+		panelCenters.put(id, new Vec2((p1.x + (p2.x - p1.x)),(p1.y + (p2.y - p1.y)))); 
 		
 		Vector<Variable> ret = new Vector<Variable>();
 		if (!skipFirst) {
