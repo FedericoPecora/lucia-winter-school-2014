@@ -1,0 +1,47 @@
+<launch>
+
+  <arg name="robot_name" default=""/>
+  <!-- Bring up robot1 -->
+<!-- param name="tf_prefix" value="turtlebot_5"-->
+  <include file="$(find lucia_services)/launch/navigation_launch/3dsensor.launch">
+    <arg name="rgb_processing" value="false" />
+    <arg name="depth_registration" value="false" />
+    <arg name="depth_processing" value="false" />
+    <arg name="robot_name" value="$(arg robot_name)"/>
+    
+    <!-- We must specify an absolute topic name because if not it will be prefixed by "$(arg camera)".
+         Probably is a bug in the nodelet manager: https://github.com/ros/nodelet_core/issues/7 --> 
+    <arg name="scan_topic" value="scan" />
+    <param name="output_frame_id" value="turtlebot_5/$(arg camera)_depth_frame"/>
+  </include>
+
+  <remap from="map" to="/map" />
+  <arg name="initial_pose_x" default="0.0"/> <!-- Use 17.0 for willow's map in simulation -->
+  <arg name="initial_pose_y" default="0.0"/> <!-- Use 17.0 for willow's map in simulation -->
+  <arg name="initial_pose_a" default="0.0"/>
+  <include file="$(find lucia_services)/launch/navigation_launch/amcl.launch.xml">
+    <arg name="initial_pose_x" value="$(arg initial_pose_x)"/>
+    <arg name="initial_pose_y" value="$(arg initial_pose_y)"/>
+    <arg name="initial_pose_a" value="$(arg initial_pose_a)"/>
+    <arg name="robot_name" value="$(arg robot_name)"/>
+
+  </include>
+
+  <include file="$(find turtlebot_navigation)/launch/includes/velocity_smoother.launch.xml"/>
+  <include file="$(find turtlebot_navigation)/launch/includes/safety_controller.launch.xml"/>
+
+  <arg name="odom_topic" default="odom" />s
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+    <rosparam file="$(find lucia_services)/launch/param/costmap_common_params.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find lucia_services)/launch/param/costmap_common_params.yaml" command="load" ns="local_costmap" />
+    <rosparam file="$(find lucia_services)/launch/param/local_costmap_params.yaml" command="load" />
+    <rosparam file="$(find lucia_services)/launch/param/global_costmap_params.yaml" command="load" />
+    <rosparam file="$(find lucia_services)/launch/param/base_local_planner_params.yaml" command="load" />
+    <rosparam file="$(find lucia_services)/launch/param/move_base_params.yaml" command="load" />
+
+    <param name="robot_base_frame" value="$(arg robot_name)/base_footprint"/>
+    <remap from="cmd_vel" to="$(arg robot_name)/mobile_base/commands/velocity"/>
+    <remap from="odom" to="$(arg odom_topic)"/>
+  </node>
+
+</launch>
