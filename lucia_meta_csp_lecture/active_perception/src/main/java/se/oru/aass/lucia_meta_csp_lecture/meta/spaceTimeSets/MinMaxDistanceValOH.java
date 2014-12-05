@@ -36,8 +36,8 @@ public class MinMaxDistanceValOH extends ValueOrderingH{
 		
 		if(noGoodCN != null){
 			getMinDist(noGoodCN.getConstraints(), robotToPanelnoGoodCN);
-			if(robotToPanelnoGoodCN.equals(robotToPanelarg0)) maxDis0 = 10000.0;
-			if(robotToPanelnoGoodCN.equals(robotToPanelarg1)) maxDis1 = 10000.0;
+			if(robotToPanelnoGoodCN.equals(robotToPanelarg0)) return 1;
+			if(robotToPanelnoGoodCN.equals(robotToPanelarg1)) return -1;
 		}
 		
 		if(maxDis0 < maxDis1) return -1;
