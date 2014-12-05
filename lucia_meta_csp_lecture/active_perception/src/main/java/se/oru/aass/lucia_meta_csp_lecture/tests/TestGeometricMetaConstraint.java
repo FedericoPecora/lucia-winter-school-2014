@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
 
-import lucia_sim_2014.getPanel;
-import lucia_sim_2014.getPanelRequest;
-import lucia_sim_2014.getPanelResponse;
+import services.getPanel;
+import services.getPanelRequest;
+import services.getPanelResponse;
 
 import org.apache.commons.logging.Log;
 import org.metacsp.framework.Constraint;
@@ -265,7 +265,9 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 		
 		minMaxDistanceValueOH.setSensors(sensors);
 		
-		AssignmentMetaConstraint mc1 = new AssignmentMetaConstraint(null, minMaxDistanceValueOH);
+//		AssignmentMetaConstraint mc1 = new AssignmentMetaConstraint(null, minMaxDistanceValueOH);
+		AssignmentMetaConstraint mc1 = new AssignmentMetaConstraint(null, null);
+
 		mc1.setPanels(panelNames);
 		metaSolver.addMetaConstraint(mc1);
 

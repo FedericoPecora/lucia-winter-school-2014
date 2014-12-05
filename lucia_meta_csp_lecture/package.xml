@@ -41,6 +41,7 @@
   <!--   <test_depend>gtest</test_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>lucia_sim_2014</build_depend>
+  <build_depend>services</build_depend>
   <build_depend>rosjava_bootstrap</build_depend>
   <build_depend>rosjava_build_tools</build_depend>
   <build_depend>rosjava_messages</build_depend>
@@ -54,4 +55,5 @@
 
   </export>
 <build_depend>lucia_sim_2014</build_depend>
+<build_depend>services</build_depend>
 </package>

@@ -5,15 +5,15 @@ import geometry_msgs.PoseWithCovariance;
 import java.util.Arrays;
 import java.util.Vector;
 
-import lucia_sim_2014.getLocation;
-import lucia_sim_2014.getLocationRequest;
-import lucia_sim_2014.getLocationResponse;
-import lucia_sim_2014.getPanel;
-import lucia_sim_2014.getPanelRequest;
-import lucia_sim_2014.getPanelResponse;
-import lucia_sim_2014.getQR;
-import lucia_sim_2014.getQRRequest;
-import lucia_sim_2014.getQRResponse;
+import services.getLocation;
+import services.getLocationRequest;
+import services.getLocationResponse;
+import services.getPanel;
+import services.getPanelRequest;
+import services.getPanelResponse;
+import services.getQR;
+import services.getQRRequest;
+import services.getQRResponse;
 
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.Variable;
