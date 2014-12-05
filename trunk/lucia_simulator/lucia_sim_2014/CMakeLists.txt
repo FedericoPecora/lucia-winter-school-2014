@@ -61,18 +61,6 @@ endif( OpenCV_FOUND )
 #   Message2.msg
 # )
 
-## Generate services in the 'srv' folder
- add_service_files(
-   FILES
-   getQR.srv
-   getStatus.srv
-   sendGoal.srv
-   getLocation.srv
-   getPanel.srv
-   rotate.srv
- )
-
-
 ## Generate actions in the 'action' folder
 # add_action_files(
 #   FILES

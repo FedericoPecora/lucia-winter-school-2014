@@ -10,12 +10,12 @@
 #include <actionlib_msgs/GoalStatusArray.h>
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
 #include <bullet/LinearMath/btMatrix3x3.h>
-#include <lucia_sim_2014/getQR.h>
-#include <lucia_sim_2014/getStatus.h>
-#include <lucia_sim_2014/sendGoal.h>
-#include <lucia_sim_2014/getLocation.h>
-#include <lucia_sim_2014/getPanel.h>
-#include <lucia_sim_2014/rotate.h>
+#include <services/getQR.h>
+#include <services/getStatus.h>
+#include <services/sendGoal.h>
+#include <services/getLocation.h>
+#include <services/getPanel.h>
+#include <services/rotate.h>
 
 #define FREQUENCY	100
 #define FAIL		-1
@@ -62,15 +62,15 @@ int statusOfMove = -1;
 
 
   void imageCb(const sensor_msgs::ImageConstPtr& msg);
-  bool sendQR(lucia_sim_2014::getQR::Request &req, lucia_sim_2014::getQR::Response &res);
-  bool sendStatus(lucia_sim_2014::getStatus::Request &req, lucia_sim_2014::getStatus::Response &res);
-  bool sendGoal(lucia_sim_2014::sendGoal::Request &req, lucia_sim_2014::sendGoal::Response &res);
-  bool getLocation(lucia_sim_2014::getLocation::Request &req, lucia_sim_2014::getLocation::Response &res);
+  bool sendQR(services::getQR::Request &req, services::getQR::Response &res);
+  bool sendStatus(services::getStatus::Request &req, services::getStatus::Response &res);
+  bool sendGoal(services::sendGoal::Request &req, services::sendGoal::Response &res);
+  bool getLocation(services::getLocation::Request &req, services::getLocation::Response &res);
   void amclCallback(const geometry_msgs::PoseWithCovarianceStamped& msg);
   void goalStatus(const actionlib_msgs::GoalStatusArray& msg);
   void rotation(ros::NodeHandle nh_, ros::Publisher rotate_pub);
-  bool getPanel(lucia_sim_2014::getPanel::Request &req, lucia_sim_2014::getPanel::Response &res);
-  bool sendRot(lucia_sim_2014::rotate::Request &req, lucia_sim_2014::rotate::Response &res);
+  bool getPanel(services::getPanel::Request &req, services::getPanel::Response &res);
+  bool sendRot(services::rotate::Request &req, services::rotate::Response &res);
 
 //======================================================================================//
 //					EOF						//

@@ -47,30 +47,30 @@ int main(int argc, char** argv)
 //=====================================================
 
 //QR code:
-  ros::ServiceClient getQR_tb1 = n.serviceClient<lucia_sim_2014::getQR>("turtlebot_1/getQR");
-  ros::ServiceClient getQR_tb2 = n.serviceClient<lucia_sim_2014::getQR>("turtlebot_2/getQR");
-  ros::ServiceClient getQR_tb3 = n.serviceClient<lucia_sim_2014::getQR>("turtlebot_3/getQR");
-  ros::ServiceClient getQR_tb4 = n.serviceClient<lucia_sim_2014::getQR>("turtlebot_4/getQR");
+  ros::ServiceClient getQR_tb1 = n.serviceClient<services::getQR>("turtlebot_1/getQR");
+  ros::ServiceClient getQR_tb2 = n.serviceClient<services::getQR>("turtlebot_2/getQR");
+  ros::ServiceClient getQR_tb3 = n.serviceClient<services::getQR>("turtlebot_3/getQR");
+  ros::ServiceClient getQR_tb4 = n.serviceClient<services::getQR>("turtlebot_4/getQR");
 
 //send goal:
-  ros::ServiceClient sendGoal_tb1 = n.serviceClient<lucia_sim_2014::sendGoal>("turtlebot_1/sendGoal");
-  ros::ServiceClient sendGoal_tb2 = n.serviceClient<lucia_sim_2014::sendGoal>("turtlebot_2/sendGoal");
-  ros::ServiceClient sendGoal_tb3 = n.serviceClient<lucia_sim_2014::sendGoal>("turtlebot_3/sendGoal");
-  ros::ServiceClient sendGoal_tb4 = n.serviceClient<lucia_sim_2014::sendGoal>("turtlebot_4/sendGoal");
+  ros::ServiceClient sendGoal_tb1 = n.serviceClient<services::sendGoal>("turtlebot_1/sendGoal");
+  ros::ServiceClient sendGoal_tb2 = n.serviceClient<services::sendGoal>("turtlebot_2/sendGoal");
+  ros::ServiceClient sendGoal_tb3 = n.serviceClient<services::sendGoal>("turtlebot_3/sendGoal");
+  ros::ServiceClient sendGoal_tb4 = n.serviceClient<services::sendGoal>("turtlebot_4/sendGoal");
 
 //get location:
-  ros::ServiceClient getLoc_tb1 = n.serviceClient<lucia_sim_2014::getLocation>("turtlebot_1/getLocation");
-  ros::ServiceClient getLoc_tb2 = n.serviceClient<lucia_sim_2014::getLocation>("turtlebot_2/getLocation");
-  ros::ServiceClient getLoc_tb3 = n.serviceClient<lucia_sim_2014::getLocation>("turtlebot_3/getLocation");
-  ros::ServiceClient getLoc_tb4 = n.serviceClient<lucia_sim_2014::getLocation>("turtlebot_4/getLocation");
+  ros::ServiceClient getLoc_tb1 = n.serviceClient<services::getLocation>("turtlebot_1/getLocation");
+  ros::ServiceClient getLoc_tb2 = n.serviceClient<services::getLocation>("turtlebot_2/getLocation");
+  ros::ServiceClient getLoc_tb3 = n.serviceClient<services::getLocation>("turtlebot_3/getLocation");
+  ros::ServiceClient getLoc_tb4 = n.serviceClient<services::getLocation>("turtlebot_4/getLocation");
 
 //get panle location:
-  ros::ServiceClient getPanelLoc = n.serviceClient<lucia_sim_2014::getPanel>("/getPanel");
+  ros::ServiceClient getPanelLoc = n.serviceClient<services::getPanel>("/getPanel");
 
 //=====================================================
 
 //Goal positions:
-lucia_sim_2014::sendGoal goal_tb1,goal_tb2,goal_tb3,goal_tb4;
+services::sendGoal goal_tb1,goal_tb2,goal_tb3,goal_tb4;
 goal_tb1.request.x =7.4;
 goal_tb1.request.y = 7.4;
 goal_tb1.request.theta = 3.14;
@@ -94,7 +94,7 @@ goal_tb4.request.rotationAfter = 1;
 //=====================================================
 
 //QR code:
-lucia_sim_2014::getQR QR_tb1,QR_tb2,QR_tb3,QR_tb4;
+services::getQR QR_tb1,QR_tb2,QR_tb3,QR_tb4;
 QR_tb1.request.read=READ;
 QR_tb2.request.read=READ;
 QR_tb3.request.read=READ;
@@ -103,7 +103,7 @@ QR_tb4.request.read=READ;
 //=====================================================
 
 // Robot locations:
-lucia_sim_2014::getLocation Loc_tb1,Loc_tb2,Loc_tb3,Loc_tb4;
+services::getLocation Loc_tb1,Loc_tb2,Loc_tb3,Loc_tb4;
 Loc_tb1.request.read=READ;
 Loc_tb2.request.read=READ;
 Loc_tb3.request.read=READ;
@@ -112,7 +112,7 @@ Loc_tb4.request.read=READ;
 //=====================================================
 
 // Panel locations:
-lucia_sim_2014::getPanel Panel;
+services::getPanel Panel;
 Panel.request.read=READ;
 
 //=====================================================

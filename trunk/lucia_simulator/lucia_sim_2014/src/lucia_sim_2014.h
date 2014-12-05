@@ -4,10 +4,10 @@
 #include <move_base_msgs/MoveBaseAction.h>
 #include <actionlib/client/simple_action_client.h>
 
-#include <lucia_sim_2014/getQR.h>
-#include <lucia_sim_2014/sendGoal.h>
-#include <lucia_sim_2014/getLocation.h>
-#include <lucia_sim_2014/getPanel.h>
+#include <services/getQR.h>
+#include <services/sendGoal.h>
+#include <services/getLocation.h>
+#include <services/getPanel.h>
 
 #define FREQUENCY	10
 #define READ 1

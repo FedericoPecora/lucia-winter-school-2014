@@ -127,7 +127,7 @@ void imageCb(const sensor_msgs::ImageConstPtr& msg)
   }
 
 //========================================================================
-bool sendQR(lucia_sim_2014::getQR::Request &req, lucia_sim_2014::getQR::Response &res)
+bool sendQR(services::getQR::Request &req, services::getQR::Response &res)
 //========================================================================
  {
   res.qrcode= code;
@@ -135,7 +135,7 @@ bool sendQR(lucia_sim_2014::getQR::Request &req, lucia_sim_2014::getQR::Response
  }
 
 //========================================================================
-bool sendStatus(lucia_sim_2014::getStatus::Request &req, lucia_sim_2014::getStatus::Response &res)
+bool sendStatus(services::getStatus::Request &req, services::getStatus::Response &res)
 //========================================================================
  {
   res.status = statusOfMove;
@@ -143,7 +143,7 @@ bool sendStatus(lucia_sim_2014::getStatus::Request &req, lucia_sim_2014::getStat
  }
 
 //========================================================================
-bool sendRot(lucia_sim_2014::rotate::Request &req, lucia_sim_2014::rotate::Response &res)
+bool sendRot(services::rotate::Request &req, services::rotate::Response &res)
 //========================================================================
  {
   rotationAfter = req.rotate;
@@ -155,7 +155,7 @@ bool sendRot(lucia_sim_2014::rotate::Request &req, lucia_sim_2014::rotate::Respo
  }
 
 //================================================================================
-bool sendGoal(lucia_sim_2014::sendGoal::Request &req, lucia_sim_2014::sendGoal::Response &res)
+bool sendGoal(services::sendGoal::Request &req, services::sendGoal::Response &res)
 //================================================================================
  {
    //  MoveBaseClient ac("move_base", true);
@@ -185,7 +185,7 @@ bool sendGoal(lucia_sim_2014::sendGoal::Request &req, lucia_sim_2014::sendGoal::
  }
 
 //=========================================================================================
-bool getLocation(lucia_sim_2014::getLocation::Request &req, lucia_sim_2014::getLocation::Response &res)
+bool getLocation(services::getLocation::Request &req, services::getLocation::Response &res)
 //=========================================================================================
  {
   btScalar roll, pitch, yaw;

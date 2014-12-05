@@ -57,7 +57,7 @@ int main(int argc, char** argv)
 }
 
 //================================================================================
-bool getPanel(lucia_sim_2014::getPanel::Request &req, lucia_sim_2014::getPanel::Response &res)
+bool getPanel(services::getPanel::Request &req, services::getPanel::Response &res)
 //================================================================================
  {
  res.panel1_x1 = panel1_x1;
