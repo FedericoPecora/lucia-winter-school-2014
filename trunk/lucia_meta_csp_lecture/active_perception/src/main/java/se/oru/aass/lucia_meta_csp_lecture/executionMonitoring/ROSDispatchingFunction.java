@@ -17,6 +17,7 @@ import org.metacsp.dispatching.DispatchingFunction;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.Variable;
+import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.activity.SymbolicVariableActivity;
 import org.metacsp.spatial.geometry.Polygon;
 import org.metacsp.spatial.geometry.Vec2;
@@ -39,19 +40,26 @@ public class ROSDispatchingFunction extends DispatchingFunction {
 
 	private LuciaMetaConstraintSolver metaSolver;
 	private SpatioTemporalSetNetworkSolver solver;
+	private ActivityNetworkSolver activityNetworkSolver;
 	private SymbolicVariableActivity currentAct = null;
 	private boolean isExecuting = false;
 	private ConnectedNode rosNode = null;
-	private String robot = null;
+	protected String robot = null;
 	private ROSTopicSensor sensor;
 	private int counter;
 	private static int MIN_MESSAGES = 30;
 
-
+	public ROSDispatchingFunction(String rob,  ActivityNetworkSolver activitySolver, ConnectedNode rosN) {
+		super(rob);
+		this.activityNetworkSolver = activitySolver;
+		this.rosNode = rosN;
+		
+	}
 	public ROSDispatchingFunction(String rob, LuciaMetaConstraintSolver metaSolver, ConnectedNode rosN, final ROSTopicSensor sens) {
 		super(rob);
 		this.metaSolver = metaSolver;
 		this.solver = (SpatioTemporalSetNetworkSolver)metaSolver.getConstraintSolvers()[0];
+		this.activityNetworkSolver = ((SpatioTemporalSetNetworkSolver)metaSolver.getConstraintSolvers()[0]).getActivitySolver();
 		this.rosNode = rosN;
 		this.robot = rob;
 		this.sensor = sens;
