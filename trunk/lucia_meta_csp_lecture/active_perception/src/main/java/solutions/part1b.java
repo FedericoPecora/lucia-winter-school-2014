@@ -2,9 +2,9 @@ package solutions;
 
 import java.util.Vector;
 
-import lucia_sim_2014.sendGoal;
-import lucia_sim_2014.sendGoalRequest;
-import lucia_sim_2014.sendGoalResponse;
+import services.sendGoal;
+import services.sendGoalRequest;
+import services.sendGoalResponse;
 
 import org.metacsp.dispatching.DispatchingFunction;
 import org.metacsp.framework.ConstraintNetwork;
@@ -93,8 +93,8 @@ public class part1b  extends AbstractNodeMain {
 				try { serviceClient = connectedNode.newServiceClient(robot+"/sendGoal", sendGoal._TYPE); }
 				catch (ServiceNotFoundException e) { throw new RosRuntimeException(e); }
 				final sendGoalRequest request = serviceClient.newMessage();
-				request.setX(0.3);
-				request.setY(0.3);
+				request.setX(0.0);
+				request.setY(0.0);
 				request.setTheta(0.0);
 				request.setRotationAfter((byte)0);
 				serviceClient.call(request, new ServiceResponseListener<sendGoalResponse>() {
@@ -114,7 +114,6 @@ public class part1b  extends AbstractNodeMain {
 		dispatches.add(robotDispatchingFunction1);
 		
 		ROSDispatchingFunction robotDispatchingFunction2 = new ROSDispatchingFunction("turtlebot_2", ans, this.connectedNode) {
-			
 			@Override
 			public boolean skip(SymbolicVariableActivity act) {
 				// TODO Auto-generated method stub
@@ -123,8 +122,26 @@ public class part1b  extends AbstractNodeMain {
 			
 			@Override
 			public void dispatch(SymbolicVariableActivity act) {
-				// TODO Auto-generated method stub
-				
+
+				ServiceClient<sendGoalRequest, sendGoalResponse> serviceClient = null;
+				try { serviceClient = connectedNode.newServiceClient(robot+"/sendGoal", sendGoal._TYPE); }
+				catch (ServiceNotFoundException e) { throw new RosRuntimeException(e); }
+				final sendGoalRequest request = serviceClient.newMessage();
+				request.setX(0.3);
+				request.setY(0.3);
+				request.setTheta(0.3);
+				request.setRotationAfter((byte)0);
+				serviceClient.call(request, new ServiceResponseListener<sendGoalResponse>() {
+
+					@Override
+					public void onSuccess(sendGoalResponse arg0) {
+						System.out.println("Goal sent");
+
+					}
+
+					@Override
+					public void onFailure(RemoteException arg0) { }
+				});
 			}
 		};
 		dispatches.add(robotDispatchingFunction2);

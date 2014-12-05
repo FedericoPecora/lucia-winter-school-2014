@@ -16,3 +16,4 @@
 
 include 'active_perception'
 include 'lucia_sim_2014'
+include 'services'

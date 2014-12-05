@@ -3,15 +3,15 @@ package se.oru.aass.lucia_meta_csp_lecture.executionMonitoring;
 import java.util.Arrays;
 import java.util.List;
 
-import lucia_sim_2014.getLocation;
-import lucia_sim_2014.getLocationRequest;
-import lucia_sim_2014.getLocationResponse;
-import lucia_sim_2014.getStatus;
-import lucia_sim_2014.getStatusRequest;
-import lucia_sim_2014.getStatusResponse;
-import lucia_sim_2014.sendGoal;
-import lucia_sim_2014.sendGoalRequest;
-import lucia_sim_2014.sendGoalResponse;
+import services.getLocation;
+import services.getLocationRequest;
+import services.getLocationResponse;
+import services.getStatus;
+import services.getStatusRequest;
+import services.getStatusResponse;
+import services.sendGoal;
+import services.sendGoalRequest;
+import services.sendGoalResponse;
 
 import org.metacsp.dispatching.DispatchingFunction;
 import org.metacsp.framework.Constraint;

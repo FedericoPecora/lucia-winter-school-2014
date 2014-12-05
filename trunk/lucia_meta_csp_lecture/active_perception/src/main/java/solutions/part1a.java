@@ -2,9 +2,9 @@ package solutions;
 
 import java.util.Vector;
 
-import lucia_sim_2014.sendGoal;
-import lucia_sim_2014.sendGoalRequest;
-import lucia_sim_2014.sendGoalResponse;
+import services.sendGoal;
+import services.sendGoalRequest;
+import services.sendGoalResponse;
 
 import org.metacsp.dispatching.DispatchingFunction;
 import org.metacsp.framework.ConstraintNetwork;
