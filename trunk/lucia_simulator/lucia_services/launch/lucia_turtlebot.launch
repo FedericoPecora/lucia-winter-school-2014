@@ -1,0 +1,22 @@
+<launch>
+  <arg name="robot_name" default=""/>
+  <arg name="init_x" default="0.0"/>
+  <arg name="init_y" default="0.0"/>
+  <arg name="init_a" default="0.0"/>
+
+
+  <include file="$(find lucia_services)/launch/minimal_launch/minimal.launch">
+    <arg name="robot_name" value="$(arg robot_name)" />
+  </include>
+
+  <node pkg="lucia_services" type="lucia_services_node" name="lucia_services_node" output ="screen"/>
+
+  <include file="$(find lucia_services)/launch/navigation_launch/navigation.launch">
+    <arg name="robot_name" value="$(arg robot_name)" />
+    <arg name="initial_pose_x" value="$(arg init_x)"/>
+    <arg name="initial_pose_y" value="$(arg init_y)"/>
+    <arg name="initial_pose_a" value="$(arg init_a)"/>
+  </include>
+
+
+</launch>
