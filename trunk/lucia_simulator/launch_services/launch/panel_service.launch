@@ -1,6 +1,6 @@
 <launch>
   <!-- Service for panel locations -->
-  <node pkg="lucia_sim_2014" type="panel_serv" name="panel_serv" output="screen">
+  <node pkg="launch_services" type="panel_serv_node" name="panel_serv_node" output="screen">
 
                 <!-- panel_1, -2.245 1.197 | -2.528 1.455 -->
 		<param name="panel1_x2" type="double" value="-2.245" />
