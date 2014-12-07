@@ -41,7 +41,7 @@ public class ROSDispatchingFunction extends DispatchingFunction {
 	private LuciaMetaConstraintSolver metaSolver;
 	private SpatioTemporalSetNetworkSolver solver;
 	private ActivityNetworkSolver activityNetworkSolver;
-	private SymbolicVariableActivity currentAct = null;
+	protected SymbolicVariableActivity currentAct = null;
 	private boolean isExecuting = false;
 	private ConnectedNode rosNode = null;
 	protected String robot = null;
@@ -53,6 +53,21 @@ public class ROSDispatchingFunction extends DispatchingFunction {
 		super(rob);
 		this.activityNetworkSolver = activitySolver;
 		this.rosNode = rosN;
+		this.robot = rob;
+		//Subscribe to movebase feedback topic
+		Subscriber<actionlib_msgs.GoalStatusArray> actionlibFeedback = rosNode.newSubscriber("/" + robot + "/move_base/status", actionlib_msgs.GoalStatusArray._TYPE);
+		actionlibFeedback.addMessageListener(new MessageListener<actionlib_msgs.GoalStatusArray>() {
+			@Override
+			public void onNewMessage(actionlib_msgs.GoalStatusArray message) {
+				if (message.getStatusList() != null && !message.getStatusList().isEmpty()) {	
+					GoalStatus gs = message.getStatusList().get(0);
+					System.out.println(">>>>>>>>>>>>>>>>>> (" + robot + ") ACTIONLIB SAYS: " + gs.getStatus());
+					if(gs.getStatus() == (byte)3){
+						finishCurrentActivity();
+					}
+				}
+			}
+		}, 10);
 		
 	}
 	public ROSDispatchingFunction(String rob, LuciaMetaConstraintSolver metaSolver, ConnectedNode rosN, final ROSTopicSensor sens) {

@@ -1,4 +1,4 @@
-package solutions;
+package se.oru.aass.lucia_meta_csp_lecture.solutions;
 
 import java.util.Vector;
 
@@ -6,6 +6,7 @@ import services.sendGoal;
 import services.sendGoalRequest;
 import services.sendGoalResponse;
 
+import org.apache.commons.logging.Log;
 import org.metacsp.dispatching.DispatchingFunction;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.Variable;
@@ -29,11 +30,11 @@ import org.ros.node.service.ServiceResponseListener;
 
 import se.oru.aass.lucia_meta_csp_lecture.executionMonitoring.ROSDispatchingFunction;
 
-public class part1b  extends AbstractNodeMain {
+public class Part1c  extends AbstractNodeMain {
 
 
 	private ConnectedNode connectedNode;
-	private final String nodeName = "lucia_meta_csp_lecture";
+	private final String nodeName = "Part1c";
 	
 	@Override
 	public GraphName getDefaultNodeName() {
@@ -44,30 +45,42 @@ public class part1b  extends AbstractNodeMain {
 	public void onStart(ConnectedNode cn) {
 		
 		this.connectedNode = cn;
-		ActivityNetworkSolver ans = new  ActivityNetworkSolver(0, 100000000);
+		
+		while (true) {
+			try {
+				this.connectedNode.getCurrentTime();
+				break;
+			}
+			catch(NullPointerException e) { }
+		}
+		
+		final Log log = connectedNode.getLog();
+		log.info("Lucia CSP Node starting...");
+		
+		
+		long timeNow = connectedNode.getCurrentTime().totalNsecs()/1000000;
+		System.out.println("timeNow: " + timeNow);
+		ActivityNetworkSolver ans = new  ActivityNetworkSolver(timeNow, 100000000);
 		
 		Variable var1 = (SymbolicVariableActivity)ans.createVariable("turtlebot_1");
-		((SymbolicVariableActivity)var1).setSymbolicDomain("move_to");
+		((SymbolicVariableActivity)var1).setSymbolicDomain("move_base");
 		
 		Variable var2 = (SymbolicVariableActivity)ans.createVariable("turtlebot_2");
-		((SymbolicVariableActivity)var2).setSymbolicDomain("move_to");
+		((SymbolicVariableActivity)var2).setSymbolicDomain("move_base");
 		
-		
-		AllenIntervalConstraint release = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(3000,APSPSolver.INF));
+		//adding temporal constraint
+		AllenIntervalConstraint release = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(timeNow + 5000,APSPSolver.INF));
 		release.setFrom(var1);
 		release.setTo(var1);
 		ans.addConstraint(release);
 		
-		//adding constraint
-		AllenIntervalConstraint overlaps = new AllenIntervalConstraint(AllenIntervalConstraint.Type.OverlappedBy);
+		
+		AllenIntervalConstraint overlaps = new AllenIntervalConstraint(AllenIntervalConstraint.Type.OverlappedBy, new Bounds(5000,APSPSolver.INF), new Bounds(1,APSPSolver.INF), new Bounds(1,APSPSolver.INF));
 		overlaps.setFrom(var2);
 		overlaps.setTo(var1);
 		ans.addConstraint(overlaps);
 		
-		
-		
 		InferenceCallback cb = new InferenceCallback() {
-			
 			@Override
 			public void doInference(long timeNow) {
 				// TODO Auto-generated method stub
@@ -81,75 +94,24 @@ public class part1b  extends AbstractNodeMain {
 		ROSDispatchingFunction robotDispatchingFunction1 = new ROSDispatchingFunction("turtlebot_1", ans, this.connectedNode) {
 			
 			@Override
-			public boolean skip(SymbolicVariableActivity act) {
-				// TODO Auto-generated method stub
-				return false;
-			}
+			public boolean skip(SymbolicVariableActivity act) { return false; }
 			
 			@Override
-			public void dispatch(SymbolicVariableActivity act) {
+			public void dispatch(SymbolicVariableActivity act) { sendGoal(robot, 3.0f, -1.0f, 0.3f);}
 
-				ServiceClient<sendGoalRequest, sendGoalResponse> serviceClient = null;
-				try { serviceClient = connectedNode.newServiceClient(robot+"/sendGoal", sendGoal._TYPE); }
-				catch (ServiceNotFoundException e) { throw new RosRuntimeException(e); }
-				final sendGoalRequest request = serviceClient.newMessage();
-				request.setX(0.0);
-				request.setY(0.0);
-				request.setTheta(0.0);
-				request.setRotationAfter((byte)0);
-				serviceClient.call(request, new ServiceResponseListener<sendGoalResponse>() {
-
-					@Override
-					public void onSuccess(sendGoalResponse arg0) {
-						System.out.println("Goal sent");
-
-					}
-
-					@Override
-					public void onFailure(RemoteException arg0) { }
-				});
- 
-			}
 		};
 		dispatches.add(robotDispatchingFunction1);
 		
 		ROSDispatchingFunction robotDispatchingFunction2 = new ROSDispatchingFunction("turtlebot_2", ans, this.connectedNode) {
 			@Override
-			public boolean skip(SymbolicVariableActivity act) {
-				// TODO Auto-generated method stub
-				return false;
-			}
+			public boolean skip(SymbolicVariableActivity act) { return false;}
 			
 			@Override
-			public void dispatch(SymbolicVariableActivity act) {
-
-				ServiceClient<sendGoalRequest, sendGoalResponse> serviceClient = null;
-				try { serviceClient = connectedNode.newServiceClient(robot+"/sendGoal", sendGoal._TYPE); }
-				catch (ServiceNotFoundException e) { throw new RosRuntimeException(e); }
-				final sendGoalRequest request = serviceClient.newMessage();
-				request.setX(0.3);
-				request.setY(0.3);
-				request.setTheta(0.3);
-				request.setRotationAfter((byte)0);
-				serviceClient.call(request, new ServiceResponseListener<sendGoalResponse>() {
-
-					@Override
-					public void onSuccess(sendGoalResponse arg0) {
-						System.out.println("Goal sent");
-
-					}
-
-					@Override
-					public void onFailure(RemoteException arg0) { }
-				});
-			}
+			public void dispatch(SymbolicVariableActivity act) { sendGoal(robot, -2.0f, -2.0f, 0.0f); }
+			
 		};
 		dispatches.add(robotDispatchingFunction2);
-		
-		animator.addDispatchingFunctions(ans, dispatches.toArray(new DispatchingFunction[dispatches.size()]));
-		
-		
-		
+		animator.addDispatchingFunctions(ans, robotDispatchingFunction1 ,robotDispatchingFunction2);
 		//#################################################################################
 		//visualize
 		//#################################################################################
@@ -159,6 +121,24 @@ public class part1b  extends AbstractNodeMain {
 		TimelineVisualizer tv = new TimelineVisualizer(tp);
 		tv.startAutomaticUpdate(1000);
 		
+	}
+	
+	private void sendGoal(String robot, float x, float y, float theta) {
+		ServiceClient<sendGoalRequest, sendGoalResponse> serviceClient = null;
+		try { serviceClient = connectedNode.newServiceClient("/"+robot+"/sendGoal", sendGoal._TYPE); }
+		catch (ServiceNotFoundException e) { throw new RosRuntimeException(e); }
+		final sendGoalRequest request = serviceClient.newMessage();
+		request.setX(x);
+		request.setY(y);
+		request.setTheta(theta);
+		request.setRotationAfter((byte)0);
+		serviceClient.call(request, new ServiceResponseListener<sendGoalResponse>() {
+
+			@Override
+			public void onSuccess(sendGoalResponse arg0) {System.out.println("Goal sent");}
+			@Override
+			public void onFailure(RemoteException arg0) { }
+		});		
 	}
 
 }
