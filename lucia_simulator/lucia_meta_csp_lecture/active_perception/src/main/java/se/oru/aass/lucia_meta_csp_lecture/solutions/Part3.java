@@ -46,8 +46,8 @@ public class Part3  extends AbstractNodeMain {
 	private final String nodeName = "Part3";
 	
 	private SpatioTemporalSetNetworkSolver spatioTemporalSetSolver;
-	private ActivityNetworkSolver activitySolver;
-	private GeometricConstraintSolver geometricSolver;
+	private ActivityNetworkSolver temporalSolver;
+	private GeometricConstraintSolver spatialSolver;
 	
 	@Override
 	public GraphName getDefaultNodeName() {
@@ -73,13 +73,13 @@ public class Part3  extends AbstractNodeMain {
 		
 		long origin = connectedNode.getCurrentTime().totalNsecs()/1000000;
 		spatioTemporalSetSolver = new SpatioTemporalSetNetworkSolver(origin,origin+1000000,500,new String[]{}); 
-		activitySolver = spatioTemporalSetSolver.getActivitySolver();
-		geometricSolver = spatioTemporalSetSolver.getGeometricSolver();
+		temporalSolver = spatioTemporalSetSolver.getActivitySolver();
+		spatialSolver = spatioTemporalSetSolver.getGeometricSolver();
 		
 		//create panel polygon
 		Vec2 p1 = new Vec2(-0.129f, 1.284f);
 		Vec2 p2 = new Vec2(-0.135f, 0.916f);
-		Variable[] panelVars = PanelFactory.createPolygonVariables("panel1", p1, p2, geometricSolver);
+		Variable[] panelVars = PanelFactory.createPolygonVariables("panel1", p1, p2, spatialSolver);
 
 		Vec2 robot1_center = new Vec2(0.0f, 0.0f);
 		SpatioTemporalSet turtlebot_1 = (SpatioTemporalSet)RobotFactory.createSpatioTemporalSetVariable("turtlebot_1", robot1_center, 0.0f, spatioTemporalSetSolver);
@@ -88,8 +88,8 @@ public class Part3  extends AbstractNodeMain {
 		Vec2 robot2_center = new Vec2(-2.0f, -1.0f);
 		SpatioTemporalSet turtlebot_2 = (SpatioTemporalSet)RobotFactory.createSpatioTemporalSetVariable("turtlebot_2", robot2_center, 0.0f, spatioTemporalSetSolver);
 		turtlebot_2.getActivity().setSymbolicDomain("move_base");
-		
-		
+
+		//TODO: students do this
 		//add spatial constraint
 		//robots should be inside each polygon on the sides of panels
 		GeometricConstraint inside1 = new GeometricConstraint(GeometricConstraint.Type.INSIDE);
@@ -107,10 +107,9 @@ public class Part3  extends AbstractNodeMain {
 			public void doInference(long timeNow) { }
 		};
 		
-		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(activitySolver, 1000, cb);
-		Vector<DispatchingFunction> dispatches = new Vector<DispatchingFunction>();
+		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(temporalSolver, 1000, cb);
 		
-		ROSDispatchingFunction robotDispatchingFunction1 = new ROSDispatchingFunction("turtlebot_1", activitySolver, this.connectedNode) {
+		ROSDispatchingFunction robotDispatchingFunction1 = new ROSDispatchingFunction("turtlebot_1", temporalSolver, this.connectedNode) {
 			
 			@Override
 			public boolean skip(SymbolicVariableActivity act) {
@@ -119,19 +118,14 @@ public class Part3  extends AbstractNodeMain {
 			}
 			
 			@Override
-			public void dispatch(SymbolicVariableActivity act) {
-				
-				SpatioTemporalSet currentVar = null;
-				for (Variable var : spatioTemporalSetSolver.getVariables()) {
-					if(((SpatioTemporalSet)var).getActivity().equals(act))
-						currentVar = (SpatioTemporalSet)var;
-				}
-				sendGoal(robot, currentVar.getPolygon().getPosition().x, currentVar.getPolygon().getPosition().y, currentVar.getPolygon().getOrientation());
+			public void dispatch(SymbolicVariableActivity act) {	
+				Polygon currentPoly = spatioTemporalSetSolver.getPolygonByActivity(act);
+				//TODO: students do this
+				sendGoal(robot, currentPoly.getPosition().x, currentPoly.getPosition().y, currentPoly.getOrientation());
 			}
 		};
-		dispatches.add(robotDispatchingFunction1);
 		
-		ROSDispatchingFunction robotDispatchingFunction2 = new ROSDispatchingFunction("turtlebot_2", activitySolver, this.connectedNode) {
+		ROSDispatchingFunction robotDispatchingFunction2 = new ROSDispatchingFunction("turtlebot_2", temporalSolver, this.connectedNode) {
 			@Override
 			public boolean skip(SymbolicVariableActivity act) {
 				// TODO Auto-generated method stub
@@ -140,22 +134,17 @@ public class Part3  extends AbstractNodeMain {
 			
 			@Override
 			public void dispatch(SymbolicVariableActivity act) {
-				
-				SpatioTemporalSet currentVar = null;
-				for (Variable var : spatioTemporalSetSolver.getVariables()) {
-					if(((SpatioTemporalSet)var).getActivity().equals(act))
-						currentVar = (SpatioTemporalSet)var;
-				}
-				sendGoal(robot, currentVar.getPolygon().getPosition().x, currentVar.getPolygon().getPosition().y, currentVar.getPolygon().getOrientation());
+				Polygon currentPoly = spatioTemporalSetSolver.getPolygonByActivity(act);
+				//TODO: students do this
+				sendGoal(robot, currentPoly.getPosition().x, currentPoly.getPosition().y, currentPoly.getOrientation());
 			}
 		};
-		dispatches.add(robotDispatchingFunction2);
-		animator.addDispatchingFunctions(activitySolver, robotDispatchingFunction1, robotDispatchingFunction2);
+		animator.addDispatchingFunctions(temporalSolver, robotDispatchingFunction1, robotDispatchingFunction2);
 		//#################################################################################
 		//visualize
 		//#################################################################################
-		ConstraintNetwork.draw(activitySolver.getConstraintNetwork(),"Activity network");
-		TimelinePublisher tp = new TimelinePublisher((ActivityNetworkSolver)activitySolver, new Bounds(0,120000), true, "turtlebot_1", "turtlebot_2");
+		ConstraintNetwork.draw(temporalSolver.getConstraintNetwork(),"Activity network");
+		TimelinePublisher tp = new TimelinePublisher((ActivityNetworkSolver)temporalSolver, new Bounds(0,120000), true, "turtlebot_1", "turtlebot_2");
 		TimelineVisualizer tv = new TimelineVisualizer(tp);
 		tv.startAutomaticUpdate(1000);
 		

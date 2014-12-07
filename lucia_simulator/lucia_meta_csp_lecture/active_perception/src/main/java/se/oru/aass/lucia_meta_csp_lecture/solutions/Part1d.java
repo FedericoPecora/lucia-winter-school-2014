@@ -66,16 +66,17 @@ public class Part1d  extends AbstractNodeMain {
 		
 		
 		long origin = connectedNode.getCurrentTime().totalNsecs()/1000000;
+		//TODO: explain what a meta-solver is (briefly)
 		metaSolver = new Part1dMetaConstraintSolver(origin,origin+1000000,500);
-		ActivityNetworkSolver ans = (ActivityNetworkSolver)metaSolver.getConstraintSolvers()[0];
+		ActivityNetworkSolver temporalSolver = (ActivityNetworkSolver)metaSolver.getConstraintSolvers()[0];
 		
-		Variable var1 = (SymbolicVariableActivity)ans.createVariable("turtlebot_1");
+		Variable var1 = (SymbolicVariableActivity)temporalSolver.createVariable("turtlebot_1");
 		((SymbolicVariableActivity)var1).setSymbolicDomain("move_base");
 		
-		Variable var2 = (SymbolicVariableActivity)ans.createVariable("turtlebot_2");
+		Variable var2 = (SymbolicVariableActivity)temporalSolver.createVariable("turtlebot_2");
 		((SymbolicVariableActivity)var2).setSymbolicDomain("move_base");
 		
-		//adding MetaConstraint
+		//TODO: Copy SchedulingMetaConstraint to RobotSchedulingMetaConstraint, in exercises
 		SchedulingMetaConstraint schedlingMetaConstraint = new SchedulingMetaConstraint(null, null);
 		metaSolver.addMetaConstraint(schedlingMetaConstraint);
 		
@@ -83,30 +84,31 @@ public class Part1d  extends AbstractNodeMain {
 		AllenIntervalConstraint minDuration1 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(1000, APSPSolver.INF));
 		minDuration1.setFrom(var1);
 		minDuration1.setTo(var1);
-		ans.addConstraint(minDuration1);
+		temporalSolver.addConstraint(minDuration1);
 
 		AllenIntervalConstraint minDuration2 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Duration, new Bounds(1000, APSPSolver.INF));
 		minDuration2.setFrom(var2);
 		minDuration2.setTo(var2);
-		ans.addConstraint(minDuration2);
+		temporalSolver.addConstraint(minDuration2);
 	
 		
 		InferenceCallback cb = new InferenceCallback() {
 			@Override
 			public void doInference(long timeNow) {
+				//TODO: explain what this is
 				metaSolver.clearResolvers();
 				metaSolver.backtrack();
 			}
 		};
 		
-		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(ans, 1000, cb){
+		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(temporalSolver, 1000, cb){
 			@Override
 			protected long getCurrentTimeInMillis() {
 				return connectedNode.getCurrentTime().totalNsecs()/1000000;
 			}
 		};
 		
-		ROSDispatchingFunction robotDispatchingFunction1 = new ROSDispatchingFunction("turtlebot_1", ans, this.connectedNode) {		
+		ROSDispatchingFunction robotDispatchingFunction1 = new ROSDispatchingFunction("turtlebot_1", temporalSolver, this.connectedNode) {		
 			@Override
 			public boolean skip(SymbolicVariableActivity act) { return false; }
 			
@@ -117,7 +119,7 @@ public class Part1d  extends AbstractNodeMain {
 			}
 		};
 		
-		ROSDispatchingFunction robotDispatchingFunction2 = new ROSDispatchingFunction("turtlebot_2", ans, this.connectedNode) {
+		ROSDispatchingFunction robotDispatchingFunction2 = new ROSDispatchingFunction("turtlebot_2", temporalSolver, this.connectedNode) {
 			@Override
 			public boolean skip(SymbolicVariableActivity act) { return false; }
 			
@@ -128,12 +130,12 @@ public class Part1d  extends AbstractNodeMain {
 			}
 		};
 
-		animator.addDispatchingFunctions(ans, robotDispatchingFunction1, robotDispatchingFunction2);
+		animator.addDispatchingFunctions(temporalSolver, robotDispatchingFunction1, robotDispatchingFunction2);
 		//#################################################################################
 		//visualize
 		//#################################################################################
-		ConstraintNetwork.draw(ans.getConstraintNetwork(),"Activity network");
-		TimelinePublisher tp = new TimelinePublisher((ActivityNetworkSolver)ans, new Bounds(0,120000), true, "turtlebot_1", "turtlebot_2");
+		ConstraintNetwork.draw(temporalSolver.getConstraintNetwork(),"Activity network");
+		TimelinePublisher tp = new TimelinePublisher((ActivityNetworkSolver)temporalSolver, new Bounds(0,120000), true, "turtlebot_1", "turtlebot_2");
 		TimelineVisualizer tv = new TimelineVisualizer(tp);
 		tv.startAutomaticUpdate(1000);
 		
@@ -149,7 +151,6 @@ public class Part1d  extends AbstractNodeMain {
 		request.setTheta(theta);
 		request.setRotationAfter((byte)0);
 		serviceClient.call(request, new ServiceResponseListener<sendGoalResponse>() {
-
 			@Override
 			public void onSuccess(sendGoalResponse arg0) {System.out.println("Goal sent");}
 			@Override
