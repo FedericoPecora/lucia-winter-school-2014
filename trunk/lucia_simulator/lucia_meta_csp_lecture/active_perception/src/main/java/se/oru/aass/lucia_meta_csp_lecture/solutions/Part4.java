@@ -32,15 +32,15 @@ public class Part4 {
 		
 		//We make a constraint network to hold variables representing
 		// robots and what they see
-		ActivityNetworkSolver solver = new ActivityNetworkSolver(0, 1000000, symbols);
-		SymbolicVariableConstraintSolver groundSolver = ((SymbolicVariableConstraintSolver)solver.getConstraintSolvers()[1]);
-		groundSolver.setSingleValue(false);
-		groundSolver.setEnumerateSets(false);
+		//ActivityNetworkSolver solver = new ActivityNetworkSolver(0, 1000000, symbols);
+		SymbolicVariableConstraintSolver setSolver = new SymbolicVariableConstraintSolver(symbols, 100);
+		setSolver.setSingleValue(false);
+		setSolver.setEnumerateSets(false);
 		
 		//Vars representing robots and what panels (if any) they see
 		int numRobots = 5;
 		Variable[] robots = new Variable[numRobots];
-		for (int i = 0; i < numRobots; i++) robots[i] = solver.createVariable("Robot"+i+" sees");
+		for (int i = 0; i < numRobots; i++) robots[i] = setSolver.createVariable("Robot"+i+" sees");
 
 		//Randomly choose robots (as many as there are panels)
 		Random rand = new Random(1234431);
@@ -63,9 +63,9 @@ public class Part4 {
 		con.setScope(chosenRobots.toArray(new Variable[chosenRobots.size()]));
 		cons.add(con);
 		
-		ConstraintNetwork.draw(solver.getConstraintNetwork());
+		ConstraintNetwork.draw(setSolver.getConstraintNetwork());
 		
-		System.out.println("Added constraints? " + solver.addConstraints(cons.toArray(new Constraint[cons.size()])));
+		System.out.println("Added constraints? " + setSolver.addConstraints(cons.toArray(new Constraint[cons.size()])));
 		System.out.println("Done.");
 		
 		SymbolicValueConstraint aRobotSeesPanel3 = new SymbolicValueConstraint(Type.VALUEEQUALS);
@@ -73,7 +73,7 @@ public class Part4 {
 		aRobotSeesPanel3.setValue(panels[2]);
 		aRobotSeesPanel3.setFrom(aRobot);
 		aRobotSeesPanel3.setTo(aRobot);
-		solver.addConstraint(aRobotSeesPanel3);
+		setSolver.addConstraint(aRobotSeesPanel3);
 
 		
 //		System.out.println(solver.getDescription());

@@ -25,6 +25,7 @@ public class SchedulingMetaConstraint extends MetaConstraint {
 
 	@Override
 	public ConstraintNetwork[] getMetaVariables() {
+		//TODO: comment this code, explain what it does
 		Variable[] acts = this.getActivityNetworkSolver().getVariables();
 		Vector<SymbolicVariableActivity> moveTos = new Vector<SymbolicVariableActivity>(); 
 		for (Variable var : acts) {
@@ -57,27 +58,31 @@ public class SchedulingMetaConstraint extends MetaConstraint {
 	public ConstraintNetwork[] getMetaValues(MetaVariable metaVariable) {
 		ConstraintNetwork conflict = metaVariable.getConstraintNetwork();
 		Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
+		Variable var1 = conflict.getVariables()[0];
+		Variable var2 = conflict.getVariables()[1];
 		
+		//TODO: erase from here...
+		//TODO: provide incomme
 		AllenIntervalConstraint before01 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before);
-		before01.setFrom(conflict.getVariables()[0]);			
-		before01.setTo(conflict.getVariables()[1]);
+		before01.setFrom(var1);			
+		before01.setTo(var2);
 		ConstraintNetwork resolver0 = new ConstraintNetwork(null);
 		resolver0.addConstraint(before01);
 		ret.add(resolver0);
 	
 		AllenIntervalConstraint before10 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before);
-		before10.setFrom(conflict.getVariables()[1]);			
-		before10.setTo(conflict.getVariables()[0]);
+		before10.setFrom(var2);			
+		before10.setTo(var1);
 		ConstraintNetwork resolver = new ConstraintNetwork(null);
 		resolver.addConstraint(before10);
 		ret.add(resolver);
+		//TODO: ... to here.
 		
 		return ret.toArray(new ConstraintNetwork[ret.size()]);
 	}
 
 	@Override
-	public void markResolvedSub(MetaVariable metaVariable,
-			ConstraintNetwork metaValue) {
+	public void markResolvedSub(MetaVariable metaVariable, ConstraintNetwork metaValue) {
 	}
 
 	@Override

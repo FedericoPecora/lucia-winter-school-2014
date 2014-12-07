@@ -24,18 +24,21 @@ public class MinMaxDistanceValOH extends ValueOrderingH{
 
 	@Override
 	public int compare(ConstraintNetwork arg0, ConstraintNetwork arg1) {
+		//TODO: explain contents of arg0 and arg1, example in comment
 		Constraint[] cons0 = arg0.getConstraints();
 		Constraint[] cons1 = arg1.getConstraints();
 		
+		//E.g., Robot1 -> P3, Robot2 -> P1
 		HashMap<String, String> robotToPanelarg0 = new HashMap<String, String>();
 		HashMap<String, String> robotToPanelarg1 = new HashMap<String, String>();
 		HashMap<String, String> robotToPanelnoGoodCN = new HashMap<String, String>();
 
-		double maxDis0 = getMinDist(cons0, robotToPanelarg0);
-		double maxDis1 = getMinDist(cons1, robotToPanelarg1);
+		double maxDis0 = getMaxDist(cons0, robotToPanelarg0);
+		double maxDis1 = getMaxDist(cons1, robotToPanelarg1);
 		
+		//TODO: separate the two functionalities of getMaxDist
 		if(noGoodCN != null){
-			getMinDist(noGoodCN.getConstraints(), robotToPanelnoGoodCN);
+			getMaxDist(noGoodCN.getConstraints(), robotToPanelnoGoodCN);
 			if(robotToPanelnoGoodCN.equals(robotToPanelarg0)) return 1;
 			if(robotToPanelnoGoodCN.equals(robotToPanelarg1)) return -1;
 		}
@@ -45,7 +48,7 @@ public class MinMaxDistanceValOH extends ValueOrderingH{
 		return 0;
 	}
 	
-	private double getMinDist(Constraint[] cons0, HashMap<String, String> robotToPanel){
+	private double getMaxDist(Constraint[] cons0, HashMap<String, String> robotToPanel){
 		Vector<Double> maxDis0 = new Vector<Double>();
 
 		for (int i = 0; i < cons0.length; i++) {

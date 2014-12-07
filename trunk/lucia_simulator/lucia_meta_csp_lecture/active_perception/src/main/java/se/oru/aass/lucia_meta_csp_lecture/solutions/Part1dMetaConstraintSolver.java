@@ -18,10 +18,10 @@ public class Part1dMetaConstraintSolver extends MetaConstraintSolver{
 		super(constraintTypes, animationTime, internalSolvers);
 	}
 
-	
 	public Part1dMetaConstraintSolver(long origin, long horizon, int numActivities) {
 		super(new Class[] {AllenIntervalConstraint.class, SymbolicValueConstraint.class}, 0, new ActivityNetworkSolver(origin, horizon, 500));
 	}
+	
 	@Override
 	protected boolean addResolverSub(ConstraintNetwork arg0,
 			ConstraintNetwork arg1) {

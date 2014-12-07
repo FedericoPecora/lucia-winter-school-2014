@@ -75,8 +75,8 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 	
 	private LuciaMetaConstraintSolver metaSolver;
 	private SpatioTemporalSetNetworkSolver spatioTemporalSetSolver;
-	private ActivityNetworkSolver activitySolver;
-	private GeometricConstraintSolver geometricSolver;
+	private ActivityNetworkSolver temporalSolver;
+	private GeometricConstraintSolver spatialSolver;
 	private SymbolicVariableConstraintSolver setSolver;
 	private ParameterTree params;
 	
@@ -133,7 +133,7 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 						double y1 = (Double) arg0.getClass().getMethod("getPanel" + panelNumber + "Y1", new Class[]{}).invoke(arg0, new Object[]{});
 						double x2 = (Double) arg0.getClass().getMethod("getPanel" + panelNumber + "X2", new Class[]{}).invoke(arg0, new Object[]{});
 						double y2 = (Double) arg0.getClass().getMethod("getPanel" + panelNumber + "Y2", new Class[]{}).invoke(arg0, new Object[]{});
-						Variable[] polyVars = PanelFactory.createPolygonVariables(panelNames[i-1], new Vec2((float)x1,(float)y1), new Vec2((float)x2,(float)y2), geometricSolver, skipFirst, skipSecond);
+						Variable[] polyVars = PanelFactory.createPolygonVariables(panelNames[i-1], new Vec2((float)x1,(float)y1), new Vec2((float)x2,(float)y2), spatialSolver, skipFirst, skipSecond);
 						polygons.add((Polygon)polyVars[0]);
 						if (skipFirst) polygonsToPanelNamespaces.put((Polygon)polyVars[0], "Panel " + panelNames[i-1] + " FoV 2");
 						else polygonsToPanelNamespaces.put((Polygon)polyVars[0], "Panel " + panelNames[i-1] + " FoV 1");
@@ -193,14 +193,13 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 		long origin = connectedNode.getCurrentTime().totalNsecs()/1000000;
 		metaSolver = new LuciaMetaConstraintSolver(origin,origin+1000000,500,symbols);
 		spatioTemporalSetSolver = (SpatioTemporalSetNetworkSolver)metaSolver.getConstraintSolvers()[0];
-		activitySolver = spatioTemporalSetSolver.getActivitySolver();
-		geometricSolver = spatioTemporalSetSolver.getGeometricSolver();
+		temporalSolver = spatioTemporalSetSolver.getActivitySolver();
+		spatialSolver = spatioTemporalSetSolver.getGeometricSolver();
 		setSolver = spatioTemporalSetSolver.getSetSolver();
 		
+		//TODO: ORDER: scheduling, heur, nogood, open-ended (sum dist, observability heur)
 		//heuristic 
 		final MinMaxDistanceValOH minMaxDistanceValueOH = new MinMaxDistanceValOH();
-		
-		
 		
 		getPanelsFromROSService(panelNames);
 		InferenceCallback cb = new InferenceCallback() {
@@ -222,7 +221,8 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 									moveBaseActivities.add(act);
 							}
 						}
-						
+					
+						//Signal current assignment as "nogood" for heuristic
 						if (cn.getAnnotation() instanceof AssignmentMetaConstraint) {
 							minMaxDistanceValueOH.setNoGoodSolution(cn);
 						}
@@ -232,19 +232,15 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 						AllenIntervalConstraint release = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(timeNow,APSPSolver.INF));
 						release.setFrom(act);
 						release.setTo(act);
-						activitySolver.addConstraint(release);
-					}
-					
-					//Signal current assignment as "nogood" for heuristic
-					
-					
+						temporalSolver.addConstraint(release);
+					}					
 				}
 			}
 		};
 		
 		//Last arg: pass true to start paused
 		//ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(activitySolver, 1000, cb, false);
-		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(activitySolver, 1000, cb, false) {
+		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(temporalSolver, 1000, cb, false) {
 			@Override
 			protected long getCurrentTimeInMillis() {
 				return connectedNode.getCurrentTime().totalNsecs()/1000000;
@@ -259,12 +255,13 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 			robotTimelines[i] = "turtlebot_"+robotParam.get(i);
 			ROSTopicSensor sensor = new ROSTopicSensor(robotTimelines[i], animator, metaSolver, connectedNode);
 			ROSDispatchingFunction df = new ROSDispatchingFunction(robotTimelines[i], metaSolver, connectedNode, sensor);
-			animator.addDispatchingFunctions(activitySolver, df);
+			animator.addDispatchingFunctions(temporalSolver, df);
 			sensors.add(sensor);
 		}
 		
 		minMaxDistanceValueOH.setSensors(sensors);
-		
+
+		//TODO: Remove (they know how to add a metacon)
 //		AssignmentMetaConstraint mc1 = new AssignmentMetaConstraint(null, minMaxDistanceValueOH);
 		AssignmentMetaConstraint mc1 = new AssignmentMetaConstraint(null, null);
 
@@ -277,7 +274,7 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 		ObservabilityMetaConstraint mc3 = new ObservabilityMetaConstraint(null, null);
 		metaSolver.addMetaConstraint(mc3);
 
-		
+		//TODO: remove, this is the result of ex ?.
 //		SchedulingMetaConstraint mc4 = new SchedulingMetaConstraint(null, null);
 //		metaSolver.addMetaConstraint(mc4);
 		
@@ -290,7 +287,7 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 //		ConstraintNetwork.draw(geometricSolver.getConstraintNetwork(),"Polygon network");
 //		PolygonFrame pf = new PolygonFrame("Polygon Constraint Network", geometricSolver.getConstraintNetwork()/*,850.0f*/);
 
-		TimelinePublisher tp = new TimelinePublisher((ActivityNetworkSolver)activitySolver, new Bounds(0,120000), true, robotTimelines);
+		TimelinePublisher tp = new TimelinePublisher((ActivityNetworkSolver)temporalSolver, new Bounds(0,120000), true, robotTimelines);
 		TimelineVisualizer tv = new TimelineVisualizer(tp);
 		tv.startAutomaticUpdate(1000);
 	}

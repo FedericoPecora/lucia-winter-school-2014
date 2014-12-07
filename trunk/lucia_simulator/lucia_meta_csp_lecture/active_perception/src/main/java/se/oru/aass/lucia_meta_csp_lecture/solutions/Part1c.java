@@ -60,25 +60,27 @@ public class Part1c  extends AbstractNodeMain {
 		
 		long timeNow = connectedNode.getCurrentTime().totalNsecs()/1000000;
 		System.out.println("timeNow: " + timeNow);
-		ActivityNetworkSolver ans = new  ActivityNetworkSolver(timeNow, 100000000);
+		ActivityNetworkSolver temporalSolver = new  ActivityNetworkSolver(timeNow, 100000000);
 		
-		Variable var1 = (SymbolicVariableActivity)ans.createVariable("turtlebot_1");
+		Variable var1 = (SymbolicVariableActivity)temporalSolver.createVariable("turtlebot_1");
 		((SymbolicVariableActivity)var1).setSymbolicDomain("move_base");
 		
-		Variable var2 = (SymbolicVariableActivity)ans.createVariable("turtlebot_2");
+		Variable var2 = (SymbolicVariableActivity)temporalSolver.createVariable("turtlebot_2");
 		((SymbolicVariableActivity)var2).setSymbolicDomain("move_base");
 		
-		//adding temporal constraint
+		//TODO: remove all temporal constraints
+		//TODO: tell students to make robots not start together
 		AllenIntervalConstraint release = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(timeNow + 5000,APSPSolver.INF));
 		release.setFrom(var1);
 		release.setTo(var1);
-		ans.addConstraint(release);
+		temporalSolver.addConstraint(release);
 		
-		
-		AllenIntervalConstraint overlaps = new AllenIntervalConstraint(AllenIntervalConstraint.Type.OverlappedBy, new Bounds(5000,APSPSolver.INF), new Bounds(1,APSPSolver.INF), new Bounds(1,APSPSolver.INF));
-		overlaps.setFrom(var2);
-		overlaps.setTo(var1);
-		ans.addConstraint(overlaps);
+		//TODO: remove all temporal constraints
+		//TODO: tell students to make robots not start together
+		AllenIntervalConstraint overlaps = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Overlaps, new Bounds(5000,APSPSolver.INF), new Bounds(1,APSPSolver.INF), new Bounds(1,APSPSolver.INF));
+		overlaps.setTo(var2);
+		overlaps.setFrom(var1);
+		temporalSolver.addConstraint(overlaps);
 		
 		InferenceCallback cb = new InferenceCallback() {
 			@Override
@@ -88,21 +90,24 @@ public class Part1c  extends AbstractNodeMain {
 			}
 		};
 		
-		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(ans, 1000, cb);
+		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(temporalSolver, 1000, cb);
 		Vector<DispatchingFunction> dispatches = new Vector<DispatchingFunction>();
 		
-		ROSDispatchingFunction robotDispatchingFunction1 = new ROSDispatchingFunction("turtlebot_1", ans, this.connectedNode) {
+		ROSDispatchingFunction robotDispatchingFunction1 = new ROSDispatchingFunction("turtlebot_1", temporalSolver, this.connectedNode) {
 			
 			@Override
 			public boolean skip(SymbolicVariableActivity act) { return false; }
 			
+			//TODO: remove sendGoal call
+			//TODO: tell them to pick locations from rviz
+			//TODO: add comment saying that they have private sendGoal
 			@Override
-			public void dispatch(SymbolicVariableActivity act) { sendGoal(robot, 3.0f, -1.0f, 0.3f);}
+			public void dispatch(SymbolicVariableActivity act) { sendGoal(robot, 3.0f, -1.0f, 0.3f); }
 
 		};
 		dispatches.add(robotDispatchingFunction1);
 		
-		ROSDispatchingFunction robotDispatchingFunction2 = new ROSDispatchingFunction("turtlebot_2", ans, this.connectedNode) {
+		ROSDispatchingFunction robotDispatchingFunction2 = new ROSDispatchingFunction("turtlebot_2", temporalSolver, this.connectedNode) {
 			@Override
 			public boolean skip(SymbolicVariableActivity act) { return false;}
 			
@@ -111,13 +116,13 @@ public class Part1c  extends AbstractNodeMain {
 			
 		};
 		dispatches.add(robotDispatchingFunction2);
-		animator.addDispatchingFunctions(ans, robotDispatchingFunction1 ,robotDispatchingFunction2);
+		animator.addDispatchingFunctions(temporalSolver, robotDispatchingFunction1 ,robotDispatchingFunction2);
 		//#################################################################################
 		//visualize
 		//#################################################################################
-		ConstraintNetwork.draw(ans.getConstraintNetwork(),"Activity network");
+		ConstraintNetwork.draw(temporalSolver.getConstraintNetwork(),"Activity network");
 
-		TimelinePublisher tp = new TimelinePublisher((ActivityNetworkSolver)ans, new Bounds(0,120000), true, "turtlebot_1", "turtlebot_2");
+		TimelinePublisher tp = new TimelinePublisher((ActivityNetworkSolver)temporalSolver, new Bounds(0,120000), true, "turtlebot_1", "turtlebot_2");
 		TimelineVisualizer tv = new TimelineVisualizer(tp);
 		tv.startAutomaticUpdate(1000);
 		
@@ -133,7 +138,6 @@ public class Part1c  extends AbstractNodeMain {
 		request.setTheta(theta);
 		request.setRotationAfter((byte)0);
 		serviceClient.call(request, new ServiceResponseListener<sendGoalResponse>() {
-
 			@Override
 			public void onSuccess(sendGoalResponse arg0) {System.out.println("Goal sent");}
 			@Override
