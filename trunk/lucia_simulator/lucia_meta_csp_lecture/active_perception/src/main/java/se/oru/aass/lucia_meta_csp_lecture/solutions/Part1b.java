@@ -1,4 +1,4 @@
-package solutions;
+package se.oru.aass.lucia_meta_csp_lecture.solutions;
 
 import java.util.Vector;
 
@@ -25,7 +25,7 @@ import org.ros.node.ConnectedNode;
 import org.ros.node.service.ServiceClient;
 import org.ros.node.service.ServiceResponseListener;
 
-public class part1a  {
+public class Part1b  {
 
 
 	
@@ -34,19 +34,18 @@ public class part1a  {
 		ActivityNetworkSolver ans = new  ActivityNetworkSolver(0, 100000000);
 		
 		Variable var1 = (SymbolicVariableActivity)ans.createVariable("turtlebot_1");
-		((SymbolicVariableActivity)var1).setSymbolicDomain("move_to");
+		((SymbolicVariableActivity)var1).setSymbolicDomain("move_base");
 		
 		Variable var2 = (SymbolicVariableActivity)ans.createVariable("turtlebot_2");
-		((SymbolicVariableActivity)var2).setSymbolicDomain("move_to");
+		((SymbolicVariableActivity)var2).setSymbolicDomain("move_base");
 		
-		
+		//adding constraint
 		AllenIntervalConstraint release = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Release, new Bounds(3000,APSPSolver.INF));
 		release.setFrom(var1);
 		release.setTo(var1);
 		ans.addConstraint(release);
 		
-		//adding constraint
-		AllenIntervalConstraint overlaps = new AllenIntervalConstraint(AllenIntervalConstraint.Type.OverlappedBy);
+		AllenIntervalConstraint overlaps = new AllenIntervalConstraint(AllenIntervalConstraint.Type.OverlappedBy, new Bounds(5000,APSPSolver.INF), new Bounds(1,APSPSolver.INF), new Bounds(1,APSPSolver.INF));
 		overlaps.setFrom(var2);
 		overlaps.setTo(var1);
 		ans.addConstraint(overlaps);
@@ -72,7 +71,6 @@ public class part1a  {
 				// TODO Auto-generated method stub
 				return false;
 			}
-			
 			@Override
 			public void dispatch(SymbolicVariableActivity act) {
 			}
@@ -86,7 +84,6 @@ public class part1a  {
 				// TODO Auto-generated method stub
 				return false;
 			}
-			
 			@Override
 			public void dispatch(SymbolicVariableActivity act) {
 				// TODO Auto-generated method stub
@@ -96,9 +93,7 @@ public class part1a  {
 		dispatches.add(robot2DispatchingFunction);
 		
 		animator.addDispatchingFunctions(ans, dispatches.toArray(new DispatchingFunction[dispatches.size()]));
-		
-		
-		
+
 		//#################################################################################
 		//visualize
 		//#################################################################################

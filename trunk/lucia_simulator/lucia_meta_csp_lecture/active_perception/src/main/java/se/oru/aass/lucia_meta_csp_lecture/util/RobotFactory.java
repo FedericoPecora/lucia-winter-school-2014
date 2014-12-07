@@ -23,6 +23,17 @@ public class RobotFactory {
 		return ret;
 	}
 	
+	public static Variable createPolygonVariable(String id, Vec2 p, float theta, ConstraintSolver cs) {
+		Vec2[] verts = new Vec2[NUM_VERTS];
+		for (int i = 0; i < NUM_VERTS; i++) {
+			verts[i] = new Vec2((float)(RADIUS*Math.cos(2*Math.PI*i/NUM_VERTS+theta)+p.x), (float)(RADIUS*Math.sin(2*Math.PI*i/NUM_VERTS+theta)+p.y));
+		}
+		Variable ret = (Polygon)cs.createVariable(id);
+		((Polygon)ret).setDomain(verts);
+		((Polygon)ret).setMovable(true);
+		return ret;
+	}
+	
 	public static Vec2[] getVerticesByCenter(Vec2 p){
 		float theta = 0.0f;
 		Vec2[] verts = new Vec2[NUM_VERTS];

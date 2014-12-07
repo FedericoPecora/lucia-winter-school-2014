@@ -58,21 +58,17 @@ public class SchedulingMetaConstraint extends MetaConstraint {
 		ConstraintNetwork conflict = metaVariable.getConstraintNetwork();
 		Vector<ConstraintNetwork> ret = new Vector<ConstraintNetwork>();
 		
-		AllenIntervalConstraint before01 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, AllenIntervalConstraint.Type.Before.getDefaultBounds());
-		before01.setFrom((SymbolicVariableActivity) conflict.getVariables()[0]);			
-		before01.setTo((SymbolicVariableActivity) conflict.getVariables()[1]);
+		AllenIntervalConstraint before01 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before);
+		before01.setFrom(conflict.getVariables()[0]);			
+		before01.setTo(conflict.getVariables()[1]);
 		ConstraintNetwork resolver0 = new ConstraintNetwork(null);
-		resolver0.addVariable((SymbolicVariableActivity) conflict.getVariables()[0]);
-		resolver0.addVariable((SymbolicVariableActivity) conflict.getVariables()[1]);
 		resolver0.addConstraint(before01);
 		ret.add(resolver0);
 	
-		AllenIntervalConstraint before10 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before, AllenIntervalConstraint.Type.Before.getDefaultBounds());
-		before10.setFrom((SymbolicVariableActivity) conflict.getVariables()[1]);			
-		before10.setTo((SymbolicVariableActivity) conflict.getVariables()[0]);
+		AllenIntervalConstraint before10 = new AllenIntervalConstraint(AllenIntervalConstraint.Type.Before);
+		before10.setFrom(conflict.getVariables()[1]);			
+		before10.setTo(conflict.getVariables()[0]);
 		ConstraintNetwork resolver = new ConstraintNetwork(null);
-		resolver.addVariable((SymbolicVariableActivity) conflict.getVariables()[1]);
-		resolver.addVariable((SymbolicVariableActivity) conflict.getVariables()[0]);
 		resolver.addConstraint(before10);
 		ret.add(resolver);
 		
@@ -82,14 +78,10 @@ public class SchedulingMetaConstraint extends MetaConstraint {
 	@Override
 	public void markResolvedSub(MetaVariable metaVariable,
 			ConstraintNetwork metaValue) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void draw(ConstraintNetwork network) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override

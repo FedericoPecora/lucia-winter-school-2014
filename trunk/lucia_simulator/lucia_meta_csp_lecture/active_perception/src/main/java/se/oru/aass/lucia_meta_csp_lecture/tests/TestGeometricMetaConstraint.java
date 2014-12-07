@@ -164,7 +164,7 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 	public void onStart(ConnectedNode cn) {
 		this.connectedNode = cn;
 		
-//		MetaCSPLogging.setLevel(LuciaMetaConstraintSolver.class, Level.FINEST);
+		MetaCSPLogging.setLevel(LuciaMetaConstraintSolver.class, Level.FINE);
 		
 		while (true) {
 			try {

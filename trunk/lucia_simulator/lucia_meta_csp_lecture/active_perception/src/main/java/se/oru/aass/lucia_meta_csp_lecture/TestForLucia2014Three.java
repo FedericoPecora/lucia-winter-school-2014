@@ -42,7 +42,7 @@ public class TestForLucia2014Three {
 		MetaCSPLogging.setLevel(Level.INFO);
 		
 		//Symbols represent panels seen by robots
-		int numPanels = 15;
+		int numPanels = 4;
 		String[] panels = new String[numPanels];
 		String[] symbols = new String[numPanels+1];
 		for (int i = 0; i < numPanels; i++) {
@@ -60,7 +60,7 @@ public class TestForLucia2014Three {
 		groundSolver.setEnumerateSets(false);
 		
 		//Vars representing robots and what panels (if any) they see
-		int numRobots = 20;
+		int numRobots = 5;
 		Variable[] robots = new Variable[numRobots];
 		for (int i = 0; i < numRobots; i++) robots[i] = solver.createVariable("Robot"+i+" sees");
 
@@ -69,9 +69,6 @@ public class TestForLucia2014Three {
 		HashSet<Variable> chosenRobots = new HashSet<Variable>();
 		for (int i = 0; i < panels.length; i++)
 			while (!chosenRobots.add(robots[rand.nextInt(numRobots)])) {}
-		
-		//This does not work because of the masking (must solve masked constraints separately)
-		//((Activity)chosenRobots.iterator().next()).setSymbolicDomain("P1");
 		
 		//Force every chosen robot to see one of the panels (w/o deciding which panel)		
 		Vector<Constraint> cons = new Vector<Constraint>();
@@ -90,15 +87,16 @@ public class TestForLucia2014Three {
 		
 		ConstraintNetwork.draw(solver.getConstraintNetwork());
 		
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
 		System.out.println("Added constraints? " + solver.addConstraints(cons.toArray(new Constraint[cons.size()])));
 		System.out.println("Done.");
+		
+		SymbolicValueConstraint aRobotSeesPanel3 = new SymbolicValueConstraint(Type.VALUEEQUALS);
+		Variable aRobot = chosenRobots.iterator().next();
+		aRobotSeesPanel3.setValue(panels[2]);
+		aRobotSeesPanel3.setFrom(aRobot);
+		aRobotSeesPanel3.setTo(aRobot);
+		solver.addConstraint(aRobotSeesPanel3);
+
 		
 //		System.out.println(solver.getDescription());
 
