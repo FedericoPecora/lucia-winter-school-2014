@@ -54,7 +54,6 @@ import se.oru.aass.lucia_meta_csp_lecture.executionMonitoring.ROSDispatchingFunc
 import se.oru.aass.lucia_meta_csp_lecture.executionMonitoring.ROSTopicSensor;
 import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.AssignmentMetaConstraint;
 import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.LuciaMetaConstraintSolver;
-import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.MinMaxDistanceValOH;
 import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.ObservabilityMetaConstraint;
 import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.SimpleMoveBasePlanner;
 import se.oru.aass.lucia_meta_csp_lecture.multi.spaceTimeSets.SpatioTemporalSet;
@@ -66,7 +65,7 @@ import se.oru.aass.lucia_meta_csp_lecture.util.RobotFactory;
 import se.oru.aass.lucia_meta_csp_lecture.*;
 import visualization_msgs.Marker;
 import visualization_msgs.MarkerArray;
-
+//import se.oru.aass.lucia_meta_csp_lecture.solutions.MinMaxDistanceValOH;
 
 public class TestGeometricMetaConstraint extends AbstractNodeMain {
 
@@ -199,7 +198,7 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 		
 		//TODO: ORDER: scheduling, heur, nogood, open-ended (sum dist, observability heur)
 		//heuristic 
-		final MinMaxDistanceValOH minMaxDistanceValueOH = new MinMaxDistanceValOH();
+//		final MinMaxDistanceValOH minMaxDistanceValueOH = new MinMaxDistanceValOH();
 		
 		getPanelsFromROSService(panelNames);
 		InferenceCallback cb = new InferenceCallback() {
@@ -224,7 +223,7 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 					
 						//Signal current assignment as "nogood" for heuristic
 						if (cn.getAnnotation() instanceof AssignmentMetaConstraint) {
-							minMaxDistanceValueOH.setNoGoodSolution(cn);
+//							minMaxDistanceValueOH.setNoGoodSolution(cn);
 						}
 					}
 					//Anchor activities to dispatch to current time
@@ -259,11 +258,11 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 			sensors.add(sensor);
 		}
 		
-		minMaxDistanceValueOH.setSensors(sensors);
+//		minMaxDistanceValueOH.setSensors(sensors);
 
 		//TODO: Remove (they know how to add a metacon)
-		AssignmentMetaConstraint mc1 = new AssignmentMetaConstraint(null, minMaxDistanceValueOH);
-//		AssignmentMetaConstraint mc1 = new AssignmentMetaConstraint(null, null);
+//		AssignmentMetaConstraint mc1 = new AssignmentMetaConstraint(null, minMaxDistanceValueOH);
+		AssignmentMetaConstraint mc1 = new AssignmentMetaConstraint(null, null);
 
 		mc1.setPanels(panelNames);
 		metaSolver.addMetaConstraint(mc1);

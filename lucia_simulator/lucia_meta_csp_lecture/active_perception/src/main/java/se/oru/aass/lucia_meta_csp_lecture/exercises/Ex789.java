@@ -4,7 +4,6 @@ import geometry_msgs.Point;
 import geometry_msgs.Pose;
 import geometry_msgs.Quaternion;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -50,7 +49,6 @@ import se.oru.aass.lucia_meta_csp_lecture.executionMonitoring.ROSDispatchingFunc
 import se.oru.aass.lucia_meta_csp_lecture.executionMonitoring.ROSTopicSensor;
 import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.AssignmentMetaConstraint;
 import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.LuciaMetaConstraintSolver;
-import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.MinMaxDistanceValOH;
 import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.ObservabilityMetaConstraint;
 import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.SimpleMoveBasePlanner;
 import se.oru.aass.lucia_meta_csp_lecture.multi.spaceTimeSets.SpatioTemporalSet;

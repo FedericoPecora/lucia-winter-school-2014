@@ -1,4 +1,4 @@
-package se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets;
+package se.oru.aass.lucia_meta_csp_lecture.solutions;
 
 import java.awt.geom.Point2D;
 import java.util.Collections;
