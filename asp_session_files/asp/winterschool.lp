@@ -47,9 +47,6 @@ goal(t) :- not holds(request(_,_),t).
 %%% cancel actions %%%
 % receiving an external event canceling a request CEASES the need to fulfill the request
 
-%%% get content from opposite QR-Code %%%
-% WHEN the content of a QR-Code is known AND there is an other QR-Code opposite to that THEN the content of the other is the same
-
 %%% scan action %%%
 % possible: WHEN a robot is at a location AND the location has a QR-Code AND the content of the QR-Code was not known in the previous time point THEN it is possible for the robot to execute a scan action
 
