@@ -80,6 +80,7 @@ public class Ex3  extends AbstractNodeMain {
 		
 		//#################################################################################
 		//adding RobotSchedulingMetaConstraint Meta Constraint to Meta SOlver
+		//TODO navigate through RobotSchedulingMetaConstraint meta-constraint and complete the implementation
 		//#################################################################################
 		RobotSchedulingMetaConstraint schedlingMetaConstraint = new RobotSchedulingMetaConstraint(null, null);
 		metaSolver.addMetaConstraint(schedlingMetaConstraint);

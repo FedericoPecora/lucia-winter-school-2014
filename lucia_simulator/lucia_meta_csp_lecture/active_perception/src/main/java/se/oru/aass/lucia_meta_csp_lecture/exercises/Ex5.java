@@ -131,7 +131,7 @@ public class Ex5  extends AbstractNodeMain {
 				//TODO: compute a destination for the robot from the component Polygons of the variables
 				//getPosition() method of the Polygon class gives the center of the polygon
 				Polygon destinationPoly = spatioTemporalSetSolver.getPolygonByActivity(act);				
-
+		
 			}
 		};
 		
