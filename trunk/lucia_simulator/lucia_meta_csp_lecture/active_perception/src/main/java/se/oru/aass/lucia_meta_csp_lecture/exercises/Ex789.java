@@ -119,10 +119,47 @@ public class Ex789 extends AbstractNodeMain {
 						int panelNumberInt = Integer.parseInt(panelNumber);
 						if (hiddenPanelSideParam.get(panelNumberInt-1) == 1) { skipFirst = true; }
 						else if (hiddenPanelSideParam.get(panelNumberInt-1) == 2) { skipSecond = true; }
-						double x1 = (Double) arg0.getClass().getMethod("getPanel" + panelNumber + "X1", new Class[]{}).invoke(arg0, new Object[]{});
-						double y1 = (Double) arg0.getClass().getMethod("getPanel" + panelNumber + "Y1", new Class[]{}).invoke(arg0, new Object[]{});
-						double x2 = (Double) arg0.getClass().getMethod("getPanel" + panelNumber + "X2", new Class[]{}).invoke(arg0, new Object[]{});
-						double y2 = (Double) arg0.getClass().getMethod("getPanel" + panelNumber + "Y2", new Class[]{}).invoke(arg0, new Object[]{});
+						double x1 = 0, y1 = 0, x2 = 0, y2 = 0;
+						if (panelNumberInt == 1) {
+							x1 = arg0.getPanel1X1();
+							y1 = arg0.getPanel1Y1();
+							x2 = arg0.getPanel1X2();
+							y2 = arg0.getPanel1Y2();
+						}
+						else if (panelNumberInt == 2) {
+							x1 = arg0.getPanel2X1();
+							y1 = arg0.getPanel2Y1();
+							x2 = arg0.getPanel2X2();
+							y2 = arg0.getPanel2Y2();
+						}
+						else if (panelNumberInt == 3) {
+							x1 = arg0.getPanel3X1();
+							y1 = arg0.getPanel3Y1();
+							x2 = arg0.getPanel3X2();
+							y2 = arg0.getPanel3Y2();
+						}
+						else if (panelNumberInt == 4) {
+							x1 = arg0.getPanel4X1();
+							y1 = arg0.getPanel4Y1();
+							x2 = arg0.getPanel4X2();
+							y2 = arg0.getPanel4Y2();
+						}
+						else if (panelNumberInt == 5) {
+							x1 = arg0.getPanel5X1();
+							y1 = arg0.getPanel5Y1();
+							x2 = arg0.getPanel5X2();
+							y2 = arg0.getPanel5Y2();
+						}
+						else if (panelNumberInt == 6) {
+							x1 = arg0.getPanel6X1();
+							y1 = arg0.getPanel6Y1();
+							x2 = arg0.getPanel6X2();
+							y2 = arg0.getPanel6Y2();
+						}
+//						double x1 = (Double) arg0.getClass().getMethod("getPanel" + panelNumber + "X1", new Class[]{}).invoke(arg0, new Object[]{});
+//						double y1 = (Double) arg0.getClass().getMethod("getPanel" + panelNumber + "Y1", new Class[]{}).invoke(arg0, new Object[]{});
+//						double x2 = (Double) arg0.getClass().getMethod("getPanel" + panelNumber + "X2", new Class[]{}).invoke(arg0, new Object[]{});
+//						double y2 = (Double) arg0.getClass().getMethod("getPanel" + panelNumber + "Y2", new Class[]{}).invoke(arg0, new Object[]{});
 						Variable[] polyVars = PanelFactory.createPolygonVariables(panelNames[i-1], new Vec2((float)x1,(float)y1), new Vec2((float)x2,(float)y2), spatialSolver, skipFirst, skipSecond);
 						polygons.add((Polygon)polyVars[0]);
 						if (skipFirst) polygonsToPanelNamespaces.put((Polygon)polyVars[0], "Panel " + panelNames[i-1] + " FoV 2");
