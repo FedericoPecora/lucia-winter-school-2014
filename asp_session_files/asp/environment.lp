@@ -37,8 +37,6 @@ location( 8).
 location( 9).
 location(10).
 location(11).
-location(12).
-location(13).
 
 % connections between locations
 connection( 1, 2).
@@ -46,23 +44,12 @@ connection( 2, 3).
 connection( 2, 4).
 connection( 2, 5).
 connection( 2, 6).
-connection( 2,12).
-connection( 5, 6).
+connection( 5, 7).
 connection( 5, 8).
 connection( 5, 9).
-connection( 5,13).
+connection( 5,10).
 connection( 9,11).
-connection( 9,13).
-connection(10,13).
 connection(X,Y) :- connection(Y,X).
-
-% initial situation of of the scenario
-init(at(turtlebot_1,5)).
-init(at(turtlebot_2,12)).
-init(content( 1,1)).
-init(content( 3,2)).
-init(content(10,5)).
-init(content(11,6)).
 
 % robots able to execute actions
 robot(turtlebot_1).
@@ -71,6 +58,13 @@ robot(turtlebot_1).
 potential(move(Location)) :- location(Location).
 potential(scan).
 potential(beep).
+
+% initial situation of of the scenario
+init(at(turtlebot_1,5)).
+init(content( 1,1)).
+init(content( 3,2)).
+init(content(10,5)).
+init(content(11,6)).
 
 % request IDs, each request needs a unique ID
 id(1..10).
