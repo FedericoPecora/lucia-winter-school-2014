@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <launch>
   <node name="Ex789" pkg="lucia_meta_csp_lecture" type="active_perception" args="se.oru.aass.lucia_meta_csp_lecture.exercises.Ex789" output="screen">
-     <rosparam param="used_panels">[3]</rosparam>     
-     <rosparam param="used_robots">[1]</rosparam>     
+     <rosparam param="used_panels">[3,5]</rosparam>     
+     <rosparam param="used_robots">[1,2]</rosparam>     
      <rosparam param="hidden_panel_sides">[2, 1, 0, 0, 1, 0]</rosparam>
   </node>
 </launch>

@@ -51,7 +51,7 @@ public class Ex6 {
 		for (int i = 0; i < panels.length; i++)
 			while (!chosenRobots.add(robots[rand.nextInt(numRobots)])) {}
 		
-		//Force every chosen robot to see one of the panels (w/o deciding which panel)		
+		//adding VALUESUBSET constraint		
 		Vector<Constraint> cons = new Vector<Constraint>();
 		for (Variable robot : chosenRobots) {
 			SymbolicValueConstraint con = new SymbolicValueConstraint(Type.VALUESUBSET);
@@ -61,7 +61,7 @@ public class Ex6 {
 			cons.add(con);
 		}
 		
-		//Force all chosen robots to see a different panel
+		//adding DIFFERENT constraint
 		SymbolicValueConstraint con = new SymbolicValueConstraint(Type.DIFFERENT);
 		con.setScope(chosenRobots.toArray(new Variable[chosenRobots.size()]));
 		cons.add(con);
