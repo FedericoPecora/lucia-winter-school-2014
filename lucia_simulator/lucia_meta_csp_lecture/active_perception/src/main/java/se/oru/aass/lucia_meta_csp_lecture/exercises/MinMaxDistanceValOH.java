@@ -26,6 +26,7 @@ public class MinMaxDistanceValOH extends ValueOrderingH{
 	@Override
 	public int compare(ConstraintNetwork arg0, ConstraintNetwork arg1) {		
 		//arg0 and arg1 are constraints networks representing meta-values of the assignment meta-constraint 
+		//meta-values of an assignment meta-constraint are all sets of expected future observations s.t. all set variables in each set are Equal to a different panel
 		Constraint[] cons0 = arg0.getConstraints();
 		Constraint[] cons1 = arg1.getConstraints();
 		
@@ -67,6 +68,8 @@ public class MinMaxDistanceValOH extends ValueOrderingH{
 		return Collections.max(maxDis0);
 	}
 	
+	//gives you a hash map of robots to their associated panels given an array of constraints  
+	//E.g., Robot1 -> P3, Robot2 -> P1, Robot3 -> P2 
 	private HashMap<String, String> getAssignments(Constraint[] cons){
 		HashMap<String, String> robotToPanel = new HashMap<String, String>();
 		for (int i = 0; i < cons.length; i++) {
