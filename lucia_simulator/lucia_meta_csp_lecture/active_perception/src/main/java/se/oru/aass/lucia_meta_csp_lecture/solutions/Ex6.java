@@ -8,13 +8,14 @@ import java.util.logging.Level;
 import org.metacsp.framework.Constraint;
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.Variable;
-import org.metacsp.multi.activity.ActivityNetworkSolver;
 import org.metacsp.multi.symbols.SymbolicValueConstraint;
 import org.metacsp.multi.symbols.SymbolicValueConstraint.Type;
 import org.metacsp.multi.symbols.SymbolicVariableConstraintSolver;
 import org.metacsp.utility.logging.MetaCSPLogging;
 
-public class Part4 {
+import se.oru.aass.lucia_meta_csp_lecture.multi.spaceTimeSets.SpatioTemporalSetNetworkSolver;
+
+public class Ex6 {
 	
 	public static void main(String[] args) {
 		MetaCSPLogging.setLevel(Level.INFO);
@@ -33,14 +34,16 @@ public class Part4 {
 		//We make a constraint network to hold variables representing
 		// robots and what they see
 		//ActivityNetworkSolver solver = new ActivityNetworkSolver(0, 1000000, symbols);
-		SymbolicVariableConstraintSolver setSolver = new SymbolicVariableConstraintSolver(symbols, 100);
+		SpatioTemporalSetNetworkSolver spatioTemporalSetSolver = new SpatioTemporalSetNetworkSolver(0, 1000, 500, symbols);
+		SymbolicVariableConstraintSolver setSolver = spatioTemporalSetSolver.getSetSolver();
 		setSolver.setSingleValue(false);
 		setSolver.setEnumerateSets(false);
 		
 		//Vars representing robots and what panels (if any) they see
 		int numRobots = 5;
 		Variable[] robots = new Variable[numRobots];
-		for (int i = 0; i < numRobots; i++) robots[i] = setSolver.createVariable("Robot"+i+" sees");
+		//for (int i = 0; i < numRobots; i++) robots[i] = setSolver.createVariable("Robot"+i+" sees");
+		for (int i = 0; i < numRobots; i++) robots[i] = spatioTemporalSetSolver.createVariable("Robot"+i+" sees");
 
 		//Randomly choose robots (as many as there are panels)
 		Random rand = new Random(1234431);
@@ -65,18 +68,8 @@ public class Part4 {
 		
 		ConstraintNetwork.draw(setSolver.getConstraintNetwork());
 		
-		System.out.println("Added constraints? " + setSolver.addConstraints(cons.toArray(new Constraint[cons.size()])));
+		System.out.println("Added constraints? " + spatioTemporalSetSolver.addConstraints(cons.toArray(new Constraint[cons.size()])));
 		System.out.println("Done.");
-		
-		SymbolicValueConstraint aRobotSeesPanel3 = new SymbolicValueConstraint(Type.VALUEEQUALS);
-		Variable aRobot = chosenRobots.iterator().next();
-		aRobotSeesPanel3.setValue(panels[2]);
-		aRobotSeesPanel3.setFrom(aRobot);
-		aRobotSeesPanel3.setTo(aRobot);
-		setSolver.addConstraint(aRobotSeesPanel3);
-
-		
-//		System.out.println(solver.getDescription());
 
 	}
 

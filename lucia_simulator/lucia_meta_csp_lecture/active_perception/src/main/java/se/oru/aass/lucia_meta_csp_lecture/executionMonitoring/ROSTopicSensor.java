@@ -176,9 +176,6 @@ public class ROSTopicSensor extends Sensor {
 			if (seenQR != -2) timeNow = rosNode.getCurrentTime().totalNsecs()/1000000;
 			if ((seenQR != -2) && (timeNow-timeStart < 2000)) break;
 		}
-		
-//		getObservedPanel();
-//		while (seenQR == -2) { try { Thread.sleep(10); } catch (InterruptedException e) { e.printStackTrace(); } }
 
 		//See if there is an expectation
 		Variable[] vars = this.metaSolver.getFocused();

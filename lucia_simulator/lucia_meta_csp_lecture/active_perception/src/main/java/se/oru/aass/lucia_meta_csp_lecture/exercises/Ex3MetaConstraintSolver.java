@@ -1,4 +1,4 @@
-package se.oru.aass.lucia_meta_csp_lecture.solutions;
+package se.oru.aass.lucia_meta_csp_lecture.exercises;
 
 import org.metacsp.framework.ConstraintNetwork;
 import org.metacsp.framework.ConstraintSolver;
@@ -11,14 +11,14 @@ import org.metacsp.multi.symbols.SymbolicValueConstraint;
 
 
 
-public class Part1dMetaConstraintSolver extends MetaConstraintSolver{
+public class Ex3MetaConstraintSolver extends MetaConstraintSolver{
 
-	protected Part1dMetaConstraintSolver(Class<?>[] constraintTypes,
+	protected Ex3MetaConstraintSolver(Class<?>[] constraintTypes,
 			long animationTime, ConstraintSolver[] internalSolvers) {
 		super(constraintTypes, animationTime, internalSolvers);
 	}
 
-	public Part1dMetaConstraintSolver(long origin, long horizon, int numActivities) {
+	public Ex3MetaConstraintSolver(long origin, long horizon, int numActivities) {
 		super(new Class[] {AllenIntervalConstraint.class, SymbolicValueConstraint.class}, 0, new ActivityNetworkSolver(origin, horizon, 500));
 	}
 	
@@ -85,3 +85,4 @@ public class Part1dMetaConstraintSolver extends MetaConstraintSolver{
 	}
 
 }
+
