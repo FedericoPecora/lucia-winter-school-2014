@@ -58,14 +58,13 @@ import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.ObservabilityMetaCo
 import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.SimpleMoveBasePlanner;
 import se.oru.aass.lucia_meta_csp_lecture.multi.spaceTimeSets.SpatioTemporalSet;
 import se.oru.aass.lucia_meta_csp_lecture.multi.spaceTimeSets.SpatioTemporalSetNetworkSolver;
-import se.oru.aass.lucia_meta_csp_lecture.solutions.SchedulingMetaConstraint;
 import se.oru.aass.lucia_meta_csp_lecture.util.PanelFactory;
 import se.oru.aass.lucia_meta_csp_lecture.util.PanelMarkerPublisher;
 import se.oru.aass.lucia_meta_csp_lecture.util.RobotFactory;
 import se.oru.aass.lucia_meta_csp_lecture.*;
 import visualization_msgs.Marker;
 import visualization_msgs.MarkerArray;
-//import se.oru.aass.lucia_meta_csp_lecture.solutions.MinMaxDistanceValOH;
+
 
 public class TestGeometricMetaConstraint extends AbstractNodeMain {
 
