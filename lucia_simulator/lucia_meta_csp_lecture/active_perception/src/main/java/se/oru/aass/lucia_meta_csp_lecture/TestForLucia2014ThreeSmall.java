@@ -43,29 +43,32 @@ public class TestForLucia2014ThreeSmall {
 		SymbolicVariableConstraintSolver groundSolver = ((SymbolicVariableConstraintSolver)solver.getConstraintSolvers()[1]);
 		groundSolver.setSingleValue(false);
 		
-		SymbolicVariableActivity one = (SymbolicVariableActivity)solver.createVariable("aComponent");
-		SymbolicVariableActivity oneA = (SymbolicVariableActivity)solver.createVariable("aComponent");
+		SymbolicVariableActivity one = (SymbolicVariableActivity)solver.createVariable("one");
+		SymbolicVariableActivity oneA = (SymbolicVariableActivity)solver.createVariable("oneA");
 		one.setSymbolicDomain("A","C");
 		
 		SymbolicValueConstraint conDiff = new SymbolicValueConstraint(Type.DIFFERENT);
 		conDiff.setFrom(one);
-		conDiff.setTo(oneA);	
+		conDiff.setTo(oneA);
+		solver.addConstraint(conDiff);
 
-		SymbolicVariableActivity two = (SymbolicVariableActivity)solver.createVariable("anotherComponent");
+		SymbolicVariableActivity two = (SymbolicVariableActivity)solver.createVariable("two");
 		two.setSymbolicDomain("B","C");
-
+		
 		SymbolicValueConstraint conContains1 = new SymbolicValueConstraint(Type.CONTAINS);
 		conContains1.setFrom(two);
 		conContains1.setTo(one);		
+		solver.addConstraint(conContains1);
 		
 		SymbolicValueConstraint conContains2 = new SymbolicValueConstraint(Type.CONTAINS);
 		conContains2.setFrom(two);
 		conContains2.setTo(oneA);	
+		solver.addConstraint(conContains2);		
 		
 		ConstraintNetwork.draw(solver.getConstraintNetwork());
 		
-		System.out.println("Added constraint? " + solver.addConstraints(conContains1,conContains2,conDiff));
-		System.out.println("Done");
+		//System.out.println("Added constraint? " + solver.addConstraints(conContains1,conContains2,conDiff));
+		//System.out.println("Done");
 
 	}
 
