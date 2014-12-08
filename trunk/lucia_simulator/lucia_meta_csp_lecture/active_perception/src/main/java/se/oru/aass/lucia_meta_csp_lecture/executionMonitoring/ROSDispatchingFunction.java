@@ -1,14 +1,6 @@
 package se.oru.aass.lucia_meta_csp_lecture.executionMonitoring;
 
-import java.util.Arrays;
-import java.util.List;
 
-import services.getLocation;
-import services.getLocationRequest;
-import services.getLocationResponse;
-import services.getStatus;
-import services.getStatusRequest;
-import services.getStatusResponse;
 import services.sendGoal;
 import services.sendGoalRequest;
 import services.sendGoalResponse;
@@ -61,7 +53,7 @@ public class ROSDispatchingFunction extends DispatchingFunction {
 			public void onNewMessage(actionlib_msgs.GoalStatusArray message) {
 				if (message.getStatusList() != null && !message.getStatusList().isEmpty()) {	
 					GoalStatus gs = message.getStatusList().get(0);
-					System.out.println(">>>>>>>>>>>>>>>>>> (" + robot + ") ACTIONLIB SAYS: " + gs.getStatus());
+					System.out.println(">>>>>>>>>>>>>>>>>> (" + robot + ") ACTIONLIB SAYS: " + printStatus(gs.getStatus()));
 					if(gs.getStatus() == (byte)3){
 						finishCurrentActivity();
 					}
@@ -70,6 +62,17 @@ public class ROSDispatchingFunction extends DispatchingFunction {
 		}, 10);
 		
 	}
+	
+	private String printStatus(byte n){
+		if(n == (byte)3)
+			return "Success";
+		if(n == (byte)1)
+			return "Active";
+		if(n == (byte)4)
+			return "Reject";
+		return Byte.toString(n);
+	}
+	
 	public ROSDispatchingFunction(String rob, LuciaMetaConstraintSolver metaSolver, ConnectedNode rosN, final ROSTopicSensor sens) {
 		super(rob);
 		this.metaSolver = metaSolver;
@@ -89,7 +92,7 @@ public class ROSDispatchingFunction extends DispatchingFunction {
 					GoalStatus gs = message.getStatusList().get(0);
 					//If != ACTIVE
 					if (isExecuting()) {
-						System.out.println(">>>>>>>>>>>>>>>>>> (" + robot + ") ACTIONLIB SAYS: " + gs.getStatus());
+						System.out.println(">>>>>>>>>>>>>>>>>> (" + robot + ") ACTIONLIB SAYS: " + printStatus(gs.getStatus()));
 						if (gs.getStatus() != (byte)1) {
 							if (counter++ > MIN_MESSAGES) {
 								finishCurrentActivity();
@@ -173,7 +176,8 @@ public class ROSDispatchingFunction extends DispatchingFunction {
 			SpatioTemporalSet sts = (SpatioTemporalSet)var;
 			if (sts.getActivity().equals(observeAct)) {
 				destPoly = sts.getPolygon();
-				System.out.println("????????????????????? DISPATCHING " + act.getSymbolicVariable().getSymbols()[0] +
+				System.out.println("-----------------------------------------------------------------------------");
+				System.out.println("----------> DISPATCHING " + act.getSymbolicVariable().getSymbols()[0] +
 						" for " + act.getComponent() +" to see "+ sts.getSet().getSymbols()[0] + " at polygon " + destPoly);
 				break;
 			}

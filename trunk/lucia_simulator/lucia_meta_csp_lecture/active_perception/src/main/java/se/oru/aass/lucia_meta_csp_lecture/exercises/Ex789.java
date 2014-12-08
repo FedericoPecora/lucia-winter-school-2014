@@ -1,4 +1,4 @@
-package se.oru.aass.lucia_meta_csp_lecture.tests;
+package se.oru.aass.lucia_meta_csp_lecture.exercises;
 
 import geometry_msgs.Point;
 import geometry_msgs.Pose;
@@ -37,18 +37,14 @@ import org.metacsp.utility.UI.PolygonFrame;
 import org.metacsp.utility.logging.MetaCSPLogging;
 import org.metacsp.utility.timelinePlotting.TimelinePublisher;
 import org.metacsp.utility.timelinePlotting.TimelineVisualizer;
-import org.ros.concurrent.CancellableLoop;
 import org.ros.exception.RemoteException;
 import org.ros.exception.RosRuntimeException;
-import org.ros.exception.ServiceNotFoundException;
-import org.ros.message.Duration;
 import org.ros.namespace.GraphName;
 import org.ros.node.AbstractNodeMain;
 import org.ros.node.ConnectedNode;
 import org.ros.node.parameter.ParameterTree;
 import org.ros.node.service.ServiceClient;
 import org.ros.node.service.ServiceResponseListener;
-import org.ros.node.topic.Publisher;
 
 import se.oru.aass.lucia_meta_csp_lecture.executionMonitoring.ROSDispatchingFunction;
 import se.oru.aass.lucia_meta_csp_lecture.executionMonitoring.ROSTopicSensor;
@@ -59,19 +55,15 @@ import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.ObservabilityMetaCo
 import se.oru.aass.lucia_meta_csp_lecture.meta.spaceTimeSets.SimpleMoveBasePlanner;
 import se.oru.aass.lucia_meta_csp_lecture.multi.spaceTimeSets.SpatioTemporalSet;
 import se.oru.aass.lucia_meta_csp_lecture.multi.spaceTimeSets.SpatioTemporalSetNetworkSolver;
-import se.oru.aass.lucia_meta_csp_lecture.solutions.SchedulingMetaConstraint;
 import se.oru.aass.lucia_meta_csp_lecture.util.PanelFactory;
 import se.oru.aass.lucia_meta_csp_lecture.util.PanelMarkerPublisher;
-import se.oru.aass.lucia_meta_csp_lecture.util.RobotFactory;
-import se.oru.aass.lucia_meta_csp_lecture.*;
-import visualization_msgs.Marker;
-import visualization_msgs.MarkerArray;
 
 
-public class TestGeometricMetaConstraint extends AbstractNodeMain {
+
+public class Ex789 extends AbstractNodeMain {
 
 	private ConnectedNode connectedNode;
-	private final String nodeName = "lucia_meta_csp_lecture";
+	private final String nodeName = "Ex789";
 	
 	private LuciaMetaConstraintSolver metaSolver;
 	private SpatioTemporalSetNetworkSolver spatioTemporalSetSolver;
@@ -108,7 +100,7 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 		if (print)
 			System.out.println("... done waiting for getPanel service.");
 		
-
+		//get the panel polygons form panel service
 		final getPanelRequest request = serviceClient.newMessage();
 		request.setRead((byte) 0);
 		serviceClient.call(request, new ServiceResponseListener<getPanelResponse>() {
@@ -179,7 +171,7 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 
 		params = connectedNode.getParameterTree();
 				
-		//Make symbol names (including panels)
+		//Make symbol names (panels) from rosparams in launch file
 		List<Integer> panelParam = (List<Integer>)params.getList("/" + nodeName + "/used_panels");
 		String[] panelNames = new String[panelParam.size()];
 		String[] symbols = new String[panelParam.size()+1];
@@ -189,8 +181,11 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 		}
 		//Another symbol ("None") represents the fact that a robot sees no panel
 		symbols[panelParam.size()] = "None";
-		
 		long origin = connectedNode.getCurrentTime().totalNsecs()/1000000;
+		
+		//#################################################################################
+		//creating solvers
+		//#################################################################################
 		metaSolver = new LuciaMetaConstraintSolver(origin,origin+1000000,500,symbols);
 		spatioTemporalSetSolver = (SpatioTemporalSetNetworkSolver)metaSolver.getConstraintSolvers()[0];
 		temporalSolver = spatioTemporalSetSolver.getActivitySolver();
@@ -201,13 +196,18 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 		//heuristic 
 		final MinMaxDistanceValOH minMaxDistanceValueOH = new MinMaxDistanceValOH();
 		
+		//creating panel
 		getPanelsFromROSService(panelNames);
 		InferenceCallback cb = new InferenceCallback() {
 			
 			@Override
 			public void doInference(long timeNow) {
+				//Robots have goldfish memory...
 				metaSolver.clearResolvers();
+				
+				//Call the meta-solver
 				metaSolver.backtrack();
+				
 				Vector<SymbolicVariableActivity> moveBaseActivities = new Vector<SymbolicVariableActivity>();
 				ConstraintNetwork[] cns = metaSolver.getAddedResolvers();
 				if (cns != null && cns.length > 0) {
@@ -238,8 +238,8 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 			}
 		};
 		
+		//Start execution monitoring
 		//Last arg: pass true to start paused
-		//ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(activitySolver, 1000, cb, false);
 		ConstraintNetworkAnimator animator = new ConstraintNetworkAnimator(temporalSolver, 1000, cb, false) {
 			@Override
 			protected long getCurrentTimeInMillis() {
@@ -247,7 +247,7 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 			}
 		};
 
-		//Vars representing robots and what panels (if any) they see
+		//Vars representing robot observe actions
 		List<Integer> robotParam = (List<Integer>)params.getList("/" + nodeName + "/used_robots");
 		String[] robotTimelines = new String[robotParam.size()];
 		Vector<ROSTopicSensor> sensors = new Vector<ROSTopicSensor>();
@@ -258,13 +258,10 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 			animator.addDispatchingFunctions(temporalSolver, df);
 			sensors.add(sensor);
 		}
-		
 		minMaxDistanceValueOH.setSensors(sensors);
-
-		//TODO: Remove (they know how to add a metacon)
-		AssignmentMetaConstraint mc1 = new AssignmentMetaConstraint(null, minMaxDistanceValueOH);
-//		AssignmentMetaConstraint mc1 = new AssignmentMetaConstraint(null, null);
-
+		
+		//Add the meta-constraints
+		AssignmentMetaConstraint mc1 = new AssignmentMetaConstraint(null, null);
 		mc1.setPanels(panelNames);
 		metaSolver.addMetaConstraint(mc1);
 
@@ -274,22 +271,23 @@ public class TestGeometricMetaConstraint extends AbstractNodeMain {
 		ObservabilityMetaConstraint mc3 = new ObservabilityMetaConstraint(null, null);
 		metaSolver.addMetaConstraint(mc3);
 
-//		//TODO: remove, this is the result of ex ?.
-//		SchedulingMetaConstraint mc4 = new SchedulingMetaConstraint(null, null);
-//		metaSolver.addMetaConstraint(mc4);
-		
 		
 		//#################################################################################
-		//visualize
+		//TODO: Ex8 add RobotSchedulingMetaConstraint meta-constraint
 		//#################################################################################
-//		ConstraintNetwork.draw(spatioTemporalSetSolver.getConstraintNetwork(), "SpatioTemporalSet network");
-//		ConstraintNetwork.draw(activitySolver.getConstraintNetwork(),"Activity network");
-//		ConstraintNetwork.draw(geometricSolver.getConstraintNetwork(),"Polygon network");
-//		PolygonFrame pf = new PolygonFrame("Polygon Constraint Network", geometricSolver.getConstraintNetwork()/*,850.0f*/);
 
+		//#################################################################################
+		//TODO: Ex9 implement a value ordering heuristic e.g., minMaxDistanceValueOH
+		//#################################################################################
+		//Example: minMaxDistanceValueOH value ordering heuristic added to  AssignmentMetaConstraint as follows:
+		//AssignmentMetaConstraint mc1 = new AssignmentMetaConstraint(null, minMaxDistanceValueOH);
+		//partial implementation of minMaxDistanceValueOH is provided
+
+		//visualize
 		TimelinePublisher tp = new TimelinePublisher((ActivityNetworkSolver)temporalSolver, new Bounds(0,120000), true, robotTimelines);
 		TimelineVisualizer tv = new TimelineVisualizer(tp);
 		tv.startAutomaticUpdate(1000);
 	}
 
 }
+
