@@ -118,6 +118,7 @@ catkin_package(
 ## in contrast to setup.py, you can choose the destination
  install(PROGRAMS
 client/winterschool_manual.py
+client/winterschool_1.py
 interface/interface_winterschool.py
 interface/interface_winterschool_simulator.py
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
