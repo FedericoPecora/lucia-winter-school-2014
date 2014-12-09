@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-import roslib; roslib.load_manifest('rosoclingo_examples')
+import roslib; roslib.load_manifest('asp_session_files'')
 from rosoclingo.msg import *
 import rospy
 import actionlib
@@ -32,7 +32,6 @@ def example():
 if __name__ == '__main__':
  try:
   rospy.init_node('winterschool_manual')
-  print "this is a test"
   example()
  except rospy.ROSInterruptException:
   print "program interrupted before completion"
