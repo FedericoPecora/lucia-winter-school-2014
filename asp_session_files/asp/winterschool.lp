@@ -47,6 +47,9 @@ goal(t) :- not holds(request(_,_),t).
 %%% cancel actions %%%
 % receiving an external event canceling a request CEASES the need to fulfill the request
 
+%%% Indirect Knowledge %%%
+% WHENEVER I know the content of a QR-Code THEN I know the content of it's counterpart
+
 %%% scan action %%%
 % possible: WHEN a robot is at a location AND the location has a QR-Code AND the content of the QR-Code was not known in the previous time point THEN it is possible for the robot to execute a scan action
 
