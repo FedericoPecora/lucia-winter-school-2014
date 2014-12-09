@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-import roslib; roslib.load_manifest('asp_session_files'')
+import roslib; roslib.load_manifest('asp_session_files')
 import rospy
 from rosoclingo.msg import ROSoClingoOut, ROSoClingoIn
 
