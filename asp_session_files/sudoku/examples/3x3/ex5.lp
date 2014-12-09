@@ -1,3 +1,4 @@
+sub_size(3).
 initial(3,4,1).
 initial(4,4,6).
 initial(5,4,9).
