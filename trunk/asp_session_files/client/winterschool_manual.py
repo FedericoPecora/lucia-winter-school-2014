@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-import roslib; roslib.load_manifest('asp_session_files'')
+import roslib; roslib.load_manifest('asp_session_files')
 from rosoclingo.msg import *
 import rospy
 import actionlib
