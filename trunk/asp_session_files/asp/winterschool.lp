@@ -1,7 +1,7 @@
 % ensuring that initial Fluents hold at time point 0
 holds(Fluent,0) :- init(Fluent).
 
-% describing the transition form the situation of one time point to the situation of its successor
+% describing the transition from the situation of one time point to the situation of its successor
 #program transition(t).
 
 % each robot may execute one potential action each time point
@@ -29,6 +29,8 @@ holds(Fluent,t) :- holds(Fluent,t-1), not abnormal(Fluent,t).
 
 % the request to move to a specific content as external event
 #external _request(ID,moveto(Content),t)	: id(ID),content(Content).
+% canceling the request with the id ID
+#external _cancel(ID,t)				: id(ID).
 % the return values of actions executed as external events
 #external _value(Robot,success,t)		: robot(Robot).
 #external _value(Robot,failure,t)		: robot(Robot).
@@ -39,7 +41,7 @@ goal(t) :- not holds(request(_,_),t).
 
 % an external identifying the last time step of the task plan
 #external horizon(t).
-% the last time step of the task plan must be an situation with a the goal achived
+% the last time step of the task plan must be an situation with the goal achieved
 :- not goal(t), horizon(t).
 
 %%%%%%%%%%% Do your own work here
@@ -51,7 +53,7 @@ goal(t) :- not holds(request(_,_),t).
 % WHENEVER I know the content of a QR-Code THEN I know the content of it's counterpart
 
 %%% scan action %%%
-% possible: WHEN a robot is at a location AND the location has a QR-Code AND the content of the QR-Code was not known in the previous time point THEN it is possible for the robot to execute a scan action
+% possible: WHENEVER a robot is at a location AND the location has a QR-Code AND the content of the QR-Code was not known in the previous time point THEN it is possible for the robot to execute a scan action
 
 % effect: a robot successfully executing a scan action AND the action having return value AND the robot being at a location with a QR-Code CAUSES the QR-Code to have the content of the return value
 
