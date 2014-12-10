@@ -15,7 +15,7 @@ def send_goal(content):
 def example():
  handlers = []
  client.wait_for_server()
- question = 'Please enter a request \'r Content\' or cancel \'c ID\': '
+ question = 'Please enter a request \'r [1-6]\' or cancel \'c ID\': '
  input = raw_input(question)
  while (input != ""):
   inlist = input.split(" ")
