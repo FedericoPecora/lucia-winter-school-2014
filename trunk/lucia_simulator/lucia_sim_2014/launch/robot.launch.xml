@@ -14,7 +14,7 @@
               -y $(arg y)                                                                                                                             
               -z $(arg z)                                                                                                                             
               -model $(arg robot_name)                                                                                                                
-              " respawn="false" output="screen">
+              " respawn="false">
   </node>
 
 
@@ -58,13 +58,7 @@
     <remap from="$(arg robot_name)_navigation_velocity_smoother/robot_cmd_vel" to="commands/velocity"/>
   </node>
 
-<!-- Safety controller-->
-  <node pkg="nodelet" type="nodelet" name="$(arg robot_name)_kobuki_safety_controller" args="load kobuki_safety_controller/SafetyControllerNodelet $(arg robot_name)_nodelet_manager">
-    <remap from="$(arg robot_name)_kobuki_safety_controller/cmd_vel" to="cmd_vel_mux/input/safety_controller"/>
-    <remap from="$(arg robot_name)_kobuki_safety_controller/events/bumper" to="events/bumper"/>
-    <remap from="$(arg robot_name)_kobuki_safety_controller/events/cliff" to="events/cliff"/>
-    <remap from="$(arg robot_name)_kobuki_safety_controller/events/wheel_drop" to="events/wheel_drop"/>
-  </node>
+
 
   <!-- robot_pose_ekf -->
  <node  pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf" >
@@ -104,10 +98,13 @@
   </node>
 
   <!-- lucia services -->
-  <node pkg="lucia_sim_2014" type="lucia_services" name="lucia_services" output="screen">
+  <node pkg="lucia_sim_2014" type="lucia_services" name="lucia_services">
     <remap from="commands/velocity" to="$(arg robot_name)/commands/velocity"/>
     <param name="robot_id" type="string" value="$(arg robot_name)" />
    </node>
+
+
+
 
 </launch>
 
