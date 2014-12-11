@@ -56,6 +56,7 @@
 #include <kobuki_msgs/MotorPower.h>
 #include <kobuki_msgs/CliffEvent.h>
 #include <kobuki_msgs/BumperEvent.h>
+#include <geometry_msgs/Pose2D.h>
 
 namespace gazebo
 {
@@ -159,6 +160,8 @@ private:
   sensors::RaySensorPtr cliff_sensor_right_;
   /// ROS publisher for cliff detection events
   ros::Publisher cliff_event_pub_;
+  /// ROS publisher for cliff detection events
+  ros::Publisher pose_pub_ ;
   /// Kobuki ROS message for cliff event
   kobuki_msgs::CliffEvent cliff_event_;
   /// Cliff flag for the left sensor
