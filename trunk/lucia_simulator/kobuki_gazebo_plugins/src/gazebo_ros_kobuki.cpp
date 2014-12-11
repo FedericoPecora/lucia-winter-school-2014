@@ -306,7 +306,12 @@ void GazeboRosKobuki::Load(physics::ModelPtr parent, sdf::ElementPtr sdf)
     return;
   }
   bumper_->SetActive(true);
-  bumper_event_pub_ = nh_priv_.advertise<kobuki_msgs::BumperEvent>(node_name_ + "/events/bumper", 1);
+  bumper_event_pub_ = nh_priv_.advertise<kobuki_msgs::BumperEvent>("events/bumper", 1);
+
+  pose_pub_ = nh_priv_.advertise<geometry_msgs::Pose2D>("gazebo/pose", 1);
+
+
+
 
   /*
    * Prepare IMU
@@ -594,10 +599,10 @@ void GazeboRosKobuki::OnUpdate()
   contacts = bumper_->GetContacts();
   math::Pose current_pose = model_->GetWorldPose();
   double robot_heading = current_pose.rot.GetYaw();
-
+double rel_contact_pos;
   for (int i = 0; i < contacts.contact_size(); ++i)
   {
-    double rel_contact_pos =  contacts.contact(i).position(0).z() - current_pose.pos.z;
+     rel_contact_pos =  contacts.contact(i).position(0).z() - current_pose.pos.z;
     if ((rel_contact_pos >= 0.015)
         && (rel_contact_pos <= 0.085)) // only consider contacts at the height of the bumper
     {
@@ -621,49 +626,80 @@ void GazeboRosKobuki::OnUpdate()
     }
   }
 
+
+
   // check for bumper state change
   if (bumper_left_is_pressed_ && !bumper_left_was_pressed_)
   {
     bumper_left_was_pressed_ = true;
     bumper_event_.state = kobuki_msgs::BumperEvent::PRESSED;
     bumper_event_.bumper = kobuki_msgs::BumperEvent::LEFT;
-    bumper_event_pub_.publish(bumper_event_);
+    //bumper_event_pub_.publish(bumper_event_);
+    //ROS_ERROR_STREAM("[" << node_name_ <<"]" );
   }
   else if (!bumper_left_is_pressed_ && bumper_left_was_pressed_)
   {
     bumper_left_was_pressed_ = false;
     bumper_event_.state = kobuki_msgs::BumperEvent::RELEASED;
     bumper_event_.bumper = kobuki_msgs::BumperEvent::LEFT;
-    bumper_event_pub_.publish(bumper_event_);
+    //bumper_event_pub_.publish(bumper_event_);
+    //ROS_ERROR_STREAM("[" << node_name_ <<"]" );
   }
   if (bumper_center_is_pressed_ && !bumper_center_was_pressed_)
   {
     bumper_center_was_pressed_ = true;
     bumper_event_.state = kobuki_msgs::BumperEvent::PRESSED;
     bumper_event_.bumper = kobuki_msgs::BumperEvent::CENTER;
-    bumper_event_pub_.publish(bumper_event_);
+    //bumper_event_pub_.publish(bumper_event_);
+    //ROS_ERROR_STREAM("[" << node_name_ <<"]" );
   }
   else if (!bumper_center_is_pressed_ && bumper_center_was_pressed_)
   {
     bumper_center_was_pressed_ = false;
     bumper_event_.state = kobuki_msgs::BumperEvent::RELEASED;
     bumper_event_.bumper = kobuki_msgs::BumperEvent::CENTER;
-    bumper_event_pub_.publish(bumper_event_);
+    //bumper_event_pub_.publish(bumper_event_);
+    //ROS_ERROR_STREAM("[" << node_name_ <<"]");
   }
   if (bumper_right_is_pressed_ && !bumper_right_was_pressed_)
   {
     bumper_right_was_pressed_ = true;
     bumper_event_.state = kobuki_msgs::BumperEvent::PRESSED;
     bumper_event_.bumper = kobuki_msgs::BumperEvent::RIGHT;
-    bumper_event_pub_.publish(bumper_event_);
+    //bumper_event_pub_.publish(bumper_event_);
+    //ROS_ERROR_STREAM("[" << node_name_ <<"]" );
   }
   else if (!bumper_right_is_pressed_ && bumper_right_was_pressed_)
   {
     bumper_right_was_pressed_ = false;
     bumper_event_.state = kobuki_msgs::BumperEvent::RELEASED;
     bumper_event_.bumper = kobuki_msgs::BumperEvent::RIGHT;
-    bumper_event_pub_.publish(bumper_event_);
+    //bumper_event_pub_.publish(bumper_event_);
+    //ROS_ERROR_STREAM("[" << node_name_ <<"]" );
   }
+
+
+  math::Pose current_pose1 = model_->GetWorldPose();
+  double robot_heading1 = current_pose.rot.GetYaw();
+//ROS_ERROR_STREAM("["<< node_name_ <<"["<<current_pose1.pos.x<<"]["<<current_pose1.pos.y<<"]["<<robot_heading1<<"]");
+
+geometry_msgs::Pose2D robot_pose_;
+robot_pose_.x=current_pose1.pos.x;
+robot_pose_.y=current_pose1.pos.y;
+robot_pose_.theta=robot_heading1;
+
+pose_pub_.publish(robot_pose_);
+
+
+
+ /* if (!bumper_right_is_pressed_ && !bumper_right_is_pressed_ && !bumper_center_is_pressed_)
+  {
+    bumper_event_.state = kobuki_msgs::BumperEvent::RELEASED;
+    bumper_event_pub_.publish(bumper_event_);
+  }*/
+
+
+
 }
 
 void GazeboRosKobuki::spin()
