@@ -95,7 +95,9 @@ def get_qr(robot):
 			rospy.sleep(0.5)
 			status = get_status(robot).status
 		resp = my_get_qr(0)
-		return resp.qrcode
+		qrcode = resp.qrcode 
+		if qrcode == 0: qrcode = 4
+		return qrcode
 	except rospy.ServiceException, e:
 		print "Service call failed: %s"%e
 
