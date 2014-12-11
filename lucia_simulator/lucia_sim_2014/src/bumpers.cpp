@@ -51,7 +51,7 @@ int main(int argc, char** argv)
   ros::Subscriber sub4 = n.subscribe("/turtlebot_4/gazebo/pose", 100, tb4_pose);
 
 //get panle location:
-  ros::ServiceClient getPanelLoc = n.serviceClient<lucia_sim_2014::getPanel>("/getPanel");
+  ros::ServiceClient getPanelLoc = n.serviceClient<services::getPanel>("/getPanel");
 
    bump_tb[1] = n.advertise<kobuki_msgs::BumperEvent>("/turtlebot_1/events/bumper", 100);
    bump_tb[2] = n.advertise<kobuki_msgs::BumperEvent>("/turtlebot_2/events/bumper", 100);
