@@ -63,7 +63,7 @@ int main(int argc, char** argv)
    while (ros::ok())
    {
 
-if(rotationAfter) //this veriable is handled by sendGoal and rotate services
+//if(rotationAfter) //this veriable is handled by sendGoal and rotate services
     rotation(nh_,rotate_pub);
 
 
@@ -118,16 +118,16 @@ void imageCb(const sensor_msgs::ImageConstPtr& msg)
   if(red   > PIX_THRESHOLD) {code=1;}
   if(green > PIX_THRESHOLD) {code=2;}
   if(blue  > PIX_THRESHOLD) {code=3;}
-  if(black > PIX_THRESHOLD) {code=4;}
-  if(purple > PIX_THRESHOLD) {code=5;}
-  if(yellow > PIX_THRESHOLD) {code=6;}
+  if(black > PIX_THRESHOLD) {code=0;}
+  if(purple > PIX_THRESHOLD) {code=4;}
+  if(yellow > PIX_THRESHOLD) {code=5;}
 
  red = green = blue = black = purple = yellow = 0;
 
   }
 
 //========================================================================
-bool sendQR(services::getQR::Request &req, services::getQR::Response &res)
+bool sendQR(lucia_sim_2014::getQR::Request &req, lucia_sim_2014::getQR::Response &res)
 //========================================================================
  {
   res.qrcode= code;
@@ -135,7 +135,7 @@ bool sendQR(services::getQR::Request &req, services::getQR::Response &res)
  }
 
 //========================================================================
-bool sendStatus(services::getStatus::Request &req, services::getStatus::Response &res)
+bool sendStatus(lucia_sim_2014::getStatus::Request &req, lucia_sim_2014::getStatus::Response &res)
 //========================================================================
  {
   res.status = statusOfMove;
@@ -143,7 +143,7 @@ bool sendStatus(services::getStatus::Request &req, services::getStatus::Response
  }
 
 //========================================================================
-bool sendRot(services::rotate::Request &req, services::rotate::Response &res)
+bool sendRot(lucia_sim_2014::rotate::Request &req, lucia_sim_2014::rotate::Response &res)
 //========================================================================
  {
   rotationAfter = req.rotate;
@@ -155,7 +155,7 @@ bool sendRot(services::rotate::Request &req, services::rotate::Response &res)
  }
 
 //================================================================================
-bool sendGoal(services::sendGoal::Request &req, services::sendGoal::Response &res)
+bool sendGoal(lucia_sim_2014::sendGoal::Request &req, lucia_sim_2014::sendGoal::Response &res)
 //================================================================================
  {
    //  MoveBaseClient ac("move_base", true);
@@ -185,7 +185,7 @@ bool sendGoal(services::sendGoal::Request &req, services::sendGoal::Response &re
  }
 
 //=========================================================================================
-bool getLocation(services::getLocation::Request &req, services::getLocation::Response &res)
+bool getLocation(lucia_sim_2014::getLocation::Request &req, lucia_sim_2014::getLocation::Response &res)
 //=========================================================================================
  {
   btScalar roll, pitch, yaw;
@@ -254,7 +254,7 @@ void rotation(ros::NodeHandle nh_, ros::Publisher rotate_pub)
 
   if(!status.status_list.empty()           &&
      (int)status.status_list[0].status==SUCCEEDED  &&
-     code<0 && curr_yaw<=(2*M_PI))
+     code<0 && curr_yaw<=(2*M_PI) && rotationAfter)
      {
      if(init)
        {
@@ -274,7 +274,7 @@ void rotation(ros::NodeHandle nh_, ros::Publisher rotate_pub)
     statusOfMove = -1;
     std::cout << robot_id <<" ++ empty (-1)" << std::endl;
   }
-  else if ((int)status.status_list[0].status==SUCCEEDED && code<0 && curr_yaw<=(2*M_PI)) {
+  else if ((int)status.status_list[0].status==SUCCEEDED && code<0 && curr_yaw<=(2*M_PI) && rotationAfter) {
     statusOfMove = 1;
     std::cout << robot_id <<" ++ succed but still turning (1)" << std::endl;
   }
@@ -303,6 +303,10 @@ void rotation(ros::NodeHandle nh_, ros::Publisher rotate_pub)
     statusOfMove = -1;
     std::cout << robot_id <<" ++ recalled (-1)" << std::endl;
   }
+  else if ((int)status.status_list[0].status==SUCCEEDED && rotationAfter==0) {
+    statusOfMove = -1;
+    std::cout << robot_id <<"++ succed without rotation" << std::endl;
+    }
   else if ((int)status.status_list[0].status==ACTIVE) {
     statusOfMove = 1;
     last_yaw=0;
