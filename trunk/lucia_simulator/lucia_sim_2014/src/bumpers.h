@@ -4,7 +4,7 @@
 #include <actionlib/client/simple_action_client.h>
 
 
-#include <lucia_sim_2014/getLocation.h>
+#include <services/getLocation.h>
 #include <std_msgs/Int8.h>
 #include <std_msgs/Int64.h>
 
