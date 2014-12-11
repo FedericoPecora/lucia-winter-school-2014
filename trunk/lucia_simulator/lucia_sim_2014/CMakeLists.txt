@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
   actionlib
   nav_msgs
+  kobuki_msgs
 )
 
 find_package( OpenCV REQUIRED )
@@ -60,6 +61,18 @@ endif( OpenCV_FOUND )
 #   Message1.msg
 #   Message2.msg
 # )
+
+## Generate services in the 'srv' folder
+ add_service_files(
+   FILES
+   getQR.srv
+   getStatus.srv
+   sendGoal.srv
+   getLocation.srv
+   getPanel.srv
+   rotate.srv
+ )
+
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -109,12 +122,26 @@ include_directories(
 
 ## Declare a cpp executable
  add_executable(lucia_sim_2014_node src/lucia_sim_2014.cpp)
+ add_executable(lucia_sim_2014_benchmark_node_csp src/lucia_sim_benchmark_csp_2014.cpp)
+ add_executable(lucia_sim_2014_benchmark_node_asp src/lucia_sim_benchmark_asp_2014.cpp)
  add_executable(lucia_services src/lucia_services.cpp)
  add_executable(panel_serv src/panel_serv.cpp)
-
+ add_executable(bumpers_node src/bumpers.cpp)
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(lucia_sim_2014_node lucia_sim_2014_generate_messages_cpp)
+ add_dependencies(lucia_sim_2014_node lucia_sim_2014_generate_messages_cpp)
+
+## Specify libraries to link a library or executable target against
+ target_link_libraries(lucia_sim_2014_benchmark_node_csp
+   ${catkin_LIBRARIES}
+   ${OpenCV_LIBS}
+ )
+ 
+ ## Specify libraries to link a library or executable target against
+ target_link_libraries(lucia_sim_2014_benchmark_node_asp
+   ${catkin_LIBRARIES}
+   ${OpenCV_LIBS}
+ )
 
 ## Specify libraries to link a library or executable target against
  target_link_libraries(lucia_sim_2014_node
@@ -132,7 +159,10 @@ include_directories(
    ${OpenCV_LIBS}
  )
 
-
+ target_link_libraries(bumpers_node
+   ${catkin_LIBRARIES}
+   ${OpenCV_LIBS}
+ )
 
 
 #############
