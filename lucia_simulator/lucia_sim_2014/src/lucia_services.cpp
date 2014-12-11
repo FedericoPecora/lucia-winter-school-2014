@@ -63,7 +63,7 @@ int main(int argc, char** argv)
    while (ros::ok())
    {
 
-//if(rotationAfter) //this veriable is handled by sendGoal and rotate services
+if(rotationAfter) //this veriable is handled by sendGoal and rotate services
     rotation(nh_,rotate_pub);
 
 
@@ -118,9 +118,9 @@ void imageCb(const sensor_msgs::ImageConstPtr& msg)
   if(red   > PIX_THRESHOLD) {code=1;}
   if(green > PIX_THRESHOLD) {code=2;}
   if(blue  > PIX_THRESHOLD) {code=3;}
-  if(black > PIX_THRESHOLD) {code=0;}
-  if(purple > PIX_THRESHOLD) {code=4;}
-  if(yellow > PIX_THRESHOLD) {code=5;}
+  if(black > PIX_THRESHOLD) {code=4;}
+  if(purple > PIX_THRESHOLD) {code=5;}
+  if(yellow > PIX_THRESHOLD) {code=6;}
 
  red = green = blue = black = purple = yellow = 0;
 
@@ -254,7 +254,7 @@ void rotation(ros::NodeHandle nh_, ros::Publisher rotate_pub)
 
   if(!status.status_list.empty()           &&
      (int)status.status_list[0].status==SUCCEEDED  &&
-     code<0 && curr_yaw<=(2*M_PI) && rotationAfter)
+     code<0 && curr_yaw<=(2*M_PI))
      {
      if(init)
        {
@@ -274,7 +274,7 @@ void rotation(ros::NodeHandle nh_, ros::Publisher rotate_pub)
     statusOfMove = -1;
     std::cout << robot_id <<" ++ empty (-1)" << std::endl;
   }
-  else if ((int)status.status_list[0].status==SUCCEEDED && code<0 && curr_yaw<=(2*M_PI) && rotationAfter) {
+  else if ((int)status.status_list[0].status==SUCCEEDED && code<0 && curr_yaw<=(2*M_PI)) {
     statusOfMove = 1;
     std::cout << robot_id <<" ++ succed but still turning (1)" << std::endl;
   }
@@ -303,10 +303,6 @@ void rotation(ros::NodeHandle nh_, ros::Publisher rotate_pub)
     statusOfMove = -1;
     std::cout << robot_id <<" ++ recalled (-1)" << std::endl;
   }
-  else if ((int)status.status_list[0].status==SUCCEEDED && rotationAfter==0) {
-    statusOfMove = -1;
-    std::cout << robot_id <<"++ succed without rotation" << std::endl;
-    }
   else if ((int)status.status_list[0].status==ACTIVE) {
     statusOfMove = 1;
     last_yaw=0;
