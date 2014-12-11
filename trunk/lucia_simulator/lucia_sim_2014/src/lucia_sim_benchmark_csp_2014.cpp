@@ -174,7 +174,7 @@ int main(int argc, char** argv){
    bool_panels[3] = true;
    
    std::vector<int> param;
-   n.getParam("/lucia_meta_csp_lecture/used_panels", param);
+   n.getParam("/Ex789/used_panels", param);
    std::cout<< "Number of Panel (Achievements): " << param.size()<<std::endl;
    std::cout << "Panels list: [ ";
    
